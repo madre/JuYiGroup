@@ -1,0 +1,69 @@
+== Why Hadoop Works ==
+
+* Locality of reference and the speed of light
+* Disk is the new tape -- Random access on bulk storage is very slow
+* Fun -- Resilient distributed frameworks have traditionally been very conceptually complex, where by complex I mean "MPI is a soul-sucking hellscape"
+
+    
+=== Disk is the new tape ===
+
+Doug Cutting's example comparing speed of searching by index vs. searching by full table scan 
+
+see ch05, 'the rules of scaling'.
+
+
+=== Hadoop is Secretly Fun ===
+
+Walk into any good Hot Rod shop and you'll see a sign reading "Fast, Good or Cheap, choose any two". Hadoop is the first distributed computing framework that can claim "Simple, Resilient, Scalable, choose all three".
+
+The key, is that simplicity + decoupling + embracing constraint 
+unlocks significant power.
+
+Heaven knows Hadoop has its flaws, and its codebase is long and hairy, but its core is 
+
+* speculative execution
+* compressed data transport
+* memory management of buffers
+* selective application of combiners
+* fault-tolerance and retry
+* distributed counters
+* logging
+* serialization
+
+==== Economics: ====
+
+Say you want to store a billion objects, each 10kb in size. At commodity cloud storage prices in 2012, this will cost roughly [^1]
+
+* $250,000 a month to store in RAM
+* $ 25,000 a month to store it in a database with a 1:10 ram-to-storage ratio
+* $  1,500 a month to store it flat on disk
+
+CPU
+
+
+A 30-machine cluster with 240 CPU cores, 2000 GB total RAM and 50 TB of raw disk [^1]:
+
+* purchase: (-> find out purchase price)
+* cloud: about $60/hr; $10,000 to run for 8 hours a day every work day.
+
+
+By contrast, it costs [^1]
+
+* $  1,600 a month to hire an intern for 25 hours a week
+* $ 10,000 a month to hire an experienced data scientist, if you can find one
+
+In a database world, the dominant cost of an engineering project is infrastructure. In a hadoop world, the dominant cost is engineers.
+
+[^1] I admit these are not apples-to-apples comparisons. But the differences are orders of magnitude: subtly isn't called for
+
+=== Notes ===
+
+[1] "Linear" means that increasing your cluster size by a factor of `S` increases the rate of progress by a factor of `S` and thus solves problems in `1/S` the amount of time. 
+
+[2] Even if you did find yourself on a supercomputer, Einsten and the speed of light take all the fun out of it. Light travels about a foot per nanosecond, and on a very fast CPU each instruction takes about half a nanosecond, so it's impossible to talk to a machine more than a hands-breadth away. Even with all that clever hardware you must always be thinking about locality, which is a Hard Problem. The Chimpanzee Way says "Do not solve Hard Problems. Turn a Hard Problem into a Simple Problem and solve that instead"
+
+[3] http://en.wikipedia.org/wiki/K_computer
+
+[4] over and over in scalable systems you'll find the result of Simplicity, Decoupling and Embracing Constraint is great power.
+
+[5] you may be saying to yourself, "Self, I seem to recall my teacher writing on the chalkboard that sorting records takes more than linear time -- in fact, I recall it is `O(N log N)`". This is true. But in practice you typically buy more computers in proportion to the size of data, so the amount of data you have on each computer remains about the same. This means that the sort stage takes the same amount of time as long as your data is reasonably well-behaved. In fact, because disk speeds are so slow compared to RAM, and because the merge sort algorithm is very elegant, it takes longer to read or process the data than to sort it.

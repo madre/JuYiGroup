@@ -1,0 +1,8 @@
+{
+  "airport.rb|idio": {},
+  "dataex*sample.csv|snippet" : {},
+  
+  "*.asciidoc|jinja" : { "allinputs": true },
+  "*.tsv|snippet|wulign":    { },
+  
+"end":{}}

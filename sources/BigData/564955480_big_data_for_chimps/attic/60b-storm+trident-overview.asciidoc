@@ -1,0 +1,152 @@
+== Storm+Trident
+
+INTRO SECTION:
+
+////Weave in a couple of buisness examples to round out this chapter, refer to a few business problem scenarios and how they can be solved (like, "Say your finance client wants to understand x...")  Amy////
+
+* what should reader learn?
+* match with the three goals
+
+* chapter completion is when the three goals are served, not when all ideas exhausted
+  -
+  - recognize the pattern
+  - advance grok
+
+=== Storm+Trident: Overview
+
+One of the biggest changes to the practice of big data over the last year has been the rapid adoption of streaming data analytics.
+The obvious applications are extract/transform/load ("ETL") processes -- the automated version of chapter (TODO REF) on Data Munging -- and complex event processing ("CEP") -- the kind of real-time data handling that powers Wall Street and high-scale security monitoring.
+
+It's best instead to think of Stream Analytics as a way to query your data on the way _in_ to your datastore. A full-capability big data platform has all three of the following pieces:
+
+* queryable scalable datastores, like HBase or Elasticsearch;
+* batch processing, typically Hadoop; and
+* stream analytics, like Storm or Spark Streaming.
+
+You're probably familiar with the datastore layer's responsibilities: direct row-level access to records, and answers in simple context at read time (summing counts by hour to form counts across days, or a simple faceted rollup on sales by dealership to sales by region). Batch processing gives you answers in global context, but delayed from both write time and read time. 
+
+The most powerful feature of stream processing is that it lets you assemble data in simple context at _write_ time. /// More to come here.
+
+The Storm+Trident data processing system, developed by Backtype and Twitter, is a remarkably elegant open-source project that's emerging as the dominant streaming analytics platform.
+
+While the raw API of Storm+Trident is quite different from that of Hadoop, the interesting parts are the same. Wukong unifies the two, letting us concentrate on data and questions. Let's dive in.
+
+=== Storm+Trident
+
+Storm is the underlying framework that handles transport, messaging, process supervision and so forth. It guarantees reliable processing of each record using a brilliantly simple scheme that will scale to millions of records without requiring its own massive data flow for bookkeeping. ////For example, in healthcare, it's used to...  Amy////
+
+Trident builds on Storm to provide exactly once processing and transactional
+* layer on the flow DSL
+* some primitive aggregators
+
+==== Orchestration and Transformation
+
+* Spouts and Bolts, to produce and transform records respectively;
+* Topologies, to orchestrate the grouping and combining of data streams
+
+==== Reliability and Guaranteed Processing
+
+The central challenge of high-scale stream analytics is this: the amount of metadata required to coordinate and process the data reliably can itself grow to such a volume that it becomes difficult to coordinate and process reliably. (TODO: wow needs rewording)
+
+A distributed framework can provide one of the following guarantees:
+
+* "best-effort":
+* "at least once": every record will be successfully processed at least once. If your data
+* "exactly-once": every record is successfully processed, and every unsuccessful attempt can be reliably invalidated or retracted
+
+A surprising number of tasks require only best-effort or at-least-once processing
+But exactly-once processing is essential for analytics processes: counting distinct records,
+
+
+==== Storm
+
+...
+
+===== Tuple
+
+It's important to know that a Tuple is not a data-level object, it is a topology-level object.
+
+There's a temptation to take your 'Car' model and put its fields -- make, model, color, etc -- into fields in the tuple.
+
+===== Aggregator
+
+A CombinerAggregator and a ReducerAggregator MUST NOT be stateful.
+
+There is also such a thing as a AccumulatorAggregator. This *does* have state,
+
+
+===== Reliability
+
+Storm provides "at least once" processing of data.
+
+Storm uses an incredibly elegant strategy to track the successful completion in whole of a tuple tree.
+The acker task tracks a check
+(TODO: verify -- attempt id combines the tuple's id (`messageId`) and task id)
+For each tuple tree. Each execute attempt id is XORed onto the checksum on execute and again on completion.
+
+The XOR function is commutative: `A ^ B == B ^ A`, and the XOR of a number with itself is zero. So if the acker got the events `A_beg, B_beg, A_end, C_beg, C_end, B_end`, the resulting checksum would be `A ^ B ^ A ^ C ^ C ^ B`, which is the same as `A ^ A ^ B ^ B ^ C ^ C` -- which collapses to zero. Without proving the second point,
+
+* If the tuple tree is processed successfully, each attempt id will appear twice and so the sum must be zero if successful
+* If the tuple tree is not -- if some one or more tuples are incorrectly acked -- it is exceedingly unlikely the the checksum will be zero.
+
+This lets Storm process millions of tuples in very little memory or processor.
+
+==== Trident
+
+In trident, a batch does indeed succeed or fail as a whole, and it will be replayed as a whole (later I'll add an important clarification about what 'replayed as a whole' means).
+
+Trident sits on Storm, which still processes records one-by-one. It's *not* the case, as many people meeting Trident for the first time think, that a general trident operator receives a full batch and than is asked to act on it. Whenever you're forced to pool records you face grave evils like synchronization and memory pressure.
+
+Think about a field trip of school kids to the museum. A school trip (batch) shows up at its chosen time slot (txid) to tour the museum. The buses all show up together, and they will all depart together; but in the meantime the kids will tour the museum as individuals organized within manageably-accounted partitions.
+
+The school buses (trident spouts) each dispense a set of kids one by one in front of the museum, who tour the museum together as a partition. In this analogy we'll also make the kids stay in order, and tie a balloon (the $coord tuple) to the belt of the last kid in the partition. Most of the time, the kids walk at their own pace past the exhibits, and each exhibit is enjoyed individually. Some few operations (the lunchtime partitionQuery) require that everyone in a partition be in the same place and time. The chaperones can just start accumulating kids in the same partition; once it sees the baloon that trails the last kid, it knows the partition is all presend. Other operations, like the final partitionPersist back into the schoolbus, can't commit until the chaperone for every partition in the batch signals that its partition is assembled and accounted. Every time you do these batch operations, though, you have some kids sitting around bored and hungry waiting for the stragglers, and you need to ensure there's enough space for the partition to gather together without blocking the hallway. The great thing is that this loose supervision is enough to keep the kids safe while letting various partitions enjoy different wings of the museum concurrently, at their own pace, and without letting one crowded exhibit slow down the whole museum trip.
+
+('replayed as a whole' -- an OpaqueTransactional spout might not replay each batch with the same contents, as long as it never dispenses a record into more than one successful batch.
+
+
+* Website request vs customer info
+* Tweet vs followers
+* Activity content vs geo context
+* Trade request - risk analysis - hedge - verification
+* Document security - patterns of access
+*
+
+=== Writing to a database from a stream
+
+Writing to a database with the wrong data consistency model can submarine your project when it hits production
+
+1. If you have unique immutable complete records, life is good -- use an _id.
+2. Try really, really hard to have unique immutable complete records. Usually you can, and you'll find you're thinking more clearly about the data when you do.
+3. Otherwise use a transactional write.
+
+* if you have multiple types of records -- "website profile", "pledge form", etc then they should probably be multiple types (and probably multiple indexes), combining the records at read time. If this causes chaos at read time, though, then we have to get clever
+for counters, use an ES State-backed aggregator (see spongecell for an example)
+* if scores can't be handled by an aggregator, then they should be done using an update script, understanding the efficiency hit and the consistency issues.
+* ES State-backed aggregators are straightforward, efficient and give you transactional guarantees. Your favorite type of write is the 'clobber', for records that are unique immutable and complete; your second-favorite type of write is to use an OpaqueTransactional state-based aggregator.
+
+Regardless of the speed of refresh, doing a "query to see if it's there then a write if it isn't" will be bad juju -- race conditions WILL happen.
+
+==== Types of writes
+
+===== Unique records
+
+If those records are identical, immutable and complete, then the email (or email and other fields) will form an effective unique id. Use it or them to create an _id field. This is the best option, and you should do so whenever you can.
+
+* guarantees uniqueness on indexing
+* no waiting for refresh -- it's available in the index immediately
+* fetch will retrieve the record much more efficiently
+
+===== Partial records
+
+If you need to update parts of a record, you will still need to have a unique id.
+
+===== Distinguishable Records
+
+If you are indexing distinct records with distinguishable fields, write them all and use a query restriction when you retrieve them.
+
+===== Record Timestamps
+
+Lastly, if records are not immutable, elasticsearch offers a way to do timestamps. I haven't used this, but I _believe_ you can use Time.now.utc.to_i and it won't care if it gets records out of order.
+
+One thing I don't like here is optimistic locking, where you do a "read the record, write back with a serially incremented ID" -- ie. 1,2,3,4,5 rather than as above.
+

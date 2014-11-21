@@ -1,0 +1,84 @@
+
+==== Basic Toolset
+
+We think you are doing it wrong if you are not using :
+
+- for most general-purpose jobs, a high-level data orchestration tool such as Pig or Hive
+- for the dirty stuff (e.g. parsing, contacting external apis, etc..), a high-level scripting language such as Ruby or Python
+- for deeper exploration of your data once it's been cut down to size, a statistical analysis tool -- R, Pandas or Julia
+- Additionally: toolkits (Mahout, Scikit, Kiji; NLTK / Stanford / OpenNLP)
+
+Infrastructure:
+
+- Batch analytics: Hadoop, from either the Cloudera or Hortonworks distributions (or, for the moneyed, Map/R)
+- Streaming Analytics: Storm+Trident, although Spark Streaming shows promise.
+- One or more scalable datastores -- for storing billions of objects, HBase, Accumulo or Cassandra; and for storing millions of results, Elasticsearch or MongoDB
+- Optionally, an in-memory OLAP tool such as Impala, Druid or Redshift.
+
+// ==== Visualization And Business Insight (BI) Tools
+//
+// NOT TODAY(?):
+//   - Datameer
+//   - Pentaho
+//   - Tableau
+//   - Platfora
+// Amino
+// Spotfire
+// Tableau Desktop and Server
+//   - chartio, Raw, d3, ???
+//
+// Lastly, because we do not know where else to put them, there are several Hadoop “environments,” some combination of IDE frameworks and conveniences that aim to make Hadoop friendlier to the Enterprise programmer.  If you are one of those, they are worth a look.
+
+// ==== Cloud and Managed Services
+//
+// TODAY:
+//
+// -  Qubole, Elastic Map/Reduce, Mortar Data, Treasure Data, Continuity and Infochimps
+// -  Heroku-based options
+// -  AWS Redshift
+// -  Azure, HDInsight
+//
+// ==== Operational Components
+//
+// * Workflow Tools
+//   - Azkaban, Oozie
+//
+//   - Mesos
+//   - WANDisco
+// * Administration
+//   - Cloudera Manager
+//   - Ambari - monitoring thru RESTful APIs
+//   - Provisioning: Ironfan, Juju, Whirr, Serengeti, Openstack Hadoop barclamp
+//   - Monitoring: Chukwa, Cactus, Ganglia,
+//   - StackIQ
+//
+// Cloudera Enterprise
+// Hortonworks Data Platform
+//
+// ===== Alternative HDFS Implementations
+//
+// TODAY:
+//
+//     - WANDisco
+//     - OrangeFS
+//     - glusterfs
+//     - Quantcast QFS
+//     - Map/R NFS
+//     - ...
+//   - Direct datastore: DataStax Brisk,
+//
+// ===== Security
+//
+//   - Kerberos; MS/Hortonworks has Active Directory integration
+//   - fundamental limitations
+//   - Gazzang, Dataguise
+//
+// ==== Vertical-Focused and System Integrators
+//
+//   - ThinkBig Analytics
+//   - Tresata - Big Data Analytics Platform for the Financial Services Industry
+//   - Mu Sigma
+//   - Booz-Allen
+//   - Wibidata Real-time personalization framework
+//   - Metamarkets
+//   - Infochimps/CSC
