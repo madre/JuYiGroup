@@ -1,0 +1,259 @@
+=== Graph of Airline Flights ===
+
+==== Airline Passenger Flow Network ====
+
+http://www.infochimps.com/datasets/35-million-us-domestic-flights-from-1990-to-2009
+
+__________________________________________________________________________
+
+Over 3.5 million monthly domestic flight records from 1990 to 2009. Data are arranged as an adjacency list with metadata. Ready for immediate database import and analysis.
+Fields:
+
+    Origin             	String	 Three letter airport code of the origin airport
+    Destination       	String	 Three letter airport code of the destination airport
+    Origin City        	String	 Origin city name
+    Destination City	String	 Destination city name
+    Passengers        	Integer	 Number of passengers transported from origin to destination
+    Seats            	Integer	 Number of seats available on flights from origin to destination
+    Flights            	Integer	 Number of flights between origin and destination (multiple records for one month, many with flights > 1)
+    Distance        	Integer	 Distance (to nearest mile) flown between origin and destination
+    Fly Date        	Integer	 The date (yyyymm) of flight
+    Origin Population	Integer	 Origin city’s population as reported by US Census
+    Destination Population	Integer	 Destination city’s population as reported by US Census
+__________________________________________________________________________
+
+
+==== Minimum Spanning Tree ====
+
+
+Best practice: recapitulable
+
+Make edge weights unique by using node id as lsb.
+
+TODO: verify size estimates below.
+
+* Send each edge `{a,b,weight}` to `<rk=pt(a)%k,pt(b)%k | weight | a, b>` and `<rk=pt(b)%k,pt(a)%k | weight | a, b>`. The input size is E (the number of edges); the output size is less than 2E.
+* For each partitioned graph, find the MST. 
+* Emit `{a,b,weight}`. There are C(2,k) partitioned graphs; each reducer emits at most one edge per node (the one connecting it to its parent).  There are thus C(2,k) * 2V/k output edges.
+*  Repeat -- Probably using one reducer this time.
+
+
+
+===== Union Find =====
+
+From http://en.wikipedia.org/wiki/Union-find --
+
+__________________________________________________________________________
+The first way, called union by rank, is to always attach the smaller tree to the root of the larger tree, rather than vice versa. Since it is the depth of the tree that affects the running time, the tree with smaller depth gets added under the root of the deeper tree, which only increases the depth if the depths were equal. In the context of this algorithm, the term rank is used instead of depth since it stops being equal to the depth if path compression (described below) is also used. One-element trees are defined to have a rank of zero, and whenever two trees of the same rank r are united, the rank of the result is r+1. Just applying this technique alone yields a worst-case running-time of  per MakeSet, Union, or Find operation. Pseudocode for the improved MakeSet and Union:
+
+     function MakeSet(x)
+         x.parent := x
+         x.rank   := 0
+     function Union(x, y)
+         xRoot := Find(x)
+         yRoot := Find(y)
+         if xRoot == yRoot
+             return
+
+         // x and y are not already in same set. Merge them.
+         if xRoot.rank < yRoot.rank
+             xRoot.parent := yRoot
+         else if xRoot.rank > yRoot.rank
+             yRoot.parent := xRoot
+         else
+             yRoot.parent := xRoot
+             xRoot.rank := xRoot.rank + 1
+             
+The second improvement, called path compression, is a way of flattening the structure of the tree whenever Find is used on it. The idea is that each node visited on the way to a root node may as well be attached directly to the root node; they all share the same representative. To effect this, as Find recursively traverses up the tree, it changes each node's parent reference to point to the root that it found. The resulting tree is much flatter, speeding up future operations not only on these elements but on those referencing them, directly or indirectly. Here is the improved Find:
+  
+     function Find(x)
+         if x.parent != x
+            x.parent := Find(x.parent)
+         return x.parent
+__________________________________________________________________________
+
+
+
+=== Clustering ===
+
+==== k-means ====
+
+==== canopy clustering  ====
+
+
+=== Recommendations / biparte blah blah ===
+
+Make note about smoothing votes to a prior (2 votes of 5 stars << 293 votes avg 4.78 stars). Can use a principled prior (see Imdb top 100) or just use an offset (eg 10 dummy votes at 65th %ile).
+
+Need to scale by underlying enthusiasm (all students are above average!)
+
+=== Mahout  ===
+
+Mahout has
+
+Collaborative Filtering
+User and Item based recommenders
+K-Means, Fuzzy K-Means clustering
+Mean Shift clustering
+Dirichlet process clustering
+Latent Dirichlet Allocation
+Singular value decomposition
+Parallel Frequent Pattern mining
+Complementary Naive Bayes classifier
+Random forest decision tree based classifier
+
+In time series, pondering 
+
+* anomaly detection
+* predictive models
+* sessionizing
+
+Also:
+
+Simple regression
+Logistic regression
+
+=== Full Mahout list: ===
+
+Algorithms
+This section contains links to information, examples, use cases, etc. for the various algorithms we intend to implement. Click the individual links to learn more. The initial algorithms descriptions have been copied here from the original project proposal. The algorithms are grouped by the application setting, they can be used for. In case of multiple applications, the version presented in the paper was chosen, versions as implemented in our project will be added as soon as we are working on them.
+
+Original Paper: Map Reduce for Machine Learning on Multicore
+
+Papers related to Map Reduce:
+
+Evaluating MapReduce for Multi-core and Multiprocessor Systems
+Map Reduce: Distributed Computing for Machine Learning
+For Papers, videos and books related to machine learning in general, see Machine Learning Resources
+
+All algorithms are either marked as integrated, that is the implementation is integrated into the development version of Mahout. Algorithms that are currently being developed are annotated with a link to the JIRA issue that deals with the specific implementation. Usually these issues already contain patches that are more or less major, depending on how much work was spent on the issue so far. Algorithms that have so far not been touched are marked as open.
+
+What, When, Where, Why (but not How or Who) - Community tips, tricks, etc. for when to use which algorithm in what situations, what to watch out for in terms of errors. That is, practical advice on using Mahout for your problems.
+
+Classification
+A general introduction to the most common text classification algorithms can be found at Google Answers: http://answers.google.com/answers/main?cmd=threadview&id=225316 For information on the algorithms implemented in Mahout (or scheduled for implementation) please visit the following pages.
+
+Logistic Regression (SGD)
+
+Bayesian
+
+Support Vector Machines (SVM) (open: MAHOUT-14, MAHOUT-232 and MAHOUT-334)
+
+Perceptron and Winnow (open: MAHOUT-85)
+
+Neural Network (open, but MAHOUT-228 might help)
+
+Random Forests (integrated - MAHOUT-122, MAHOUT-140, MAHOUT-145)
+
+Restricted Boltzmann Machines (open, MAHOUT-375, GSOC2010)
+
+Online Passive Aggressive (integrated, MAHOUT-702)
+
+Boosting (awaiting patch commit, MAHOUT-716)
+
+Hidden Markov Models (HMM) (MAHOUT-627, MAHOUT-396, MAHOUT-734) - Training is done in Map-Reduce
+
+Clustering
+Reference Reading
+
+* Canopy Clustering (MAHOUT-3 - integrated)
+* 
+* K-Means Clustering (MAHOUT-5 - integrated)
+* 
+* Fuzzy K-Means (MAHOUT-74 - integrated)
+* 
+* Expectation Maximization (EM) (MAHOUT-28)
+* 
+* Mean Shift Clustering (MAHOUT-15 - integrated)
+* 
+* Hierarchical Clustering (MAHOUT-19)
+* 
+* Dirichlet Process Clustering (MAHOUT-30 - integrated)
+* 
+* Latent Dirichlet Allocation (MAHOUT-123 - integrated)
+* 
+* Spectral Clustering (MAHOUT-363 - integrated)
+* 
+* Minhash Clustering (MAHOUT-344 - integrated)
+* 
+* Top Down Clustering (MAHOUT-843 - integrated)
+* 
+* Pattern Mining
+* Parallel FP Growth Algorithm (Also known as Frequent Itemset mining)
+* 
+* Regression
+* Locally Weighted Linear Regression (open)
+* 
+* Dimension reduction
+* Singular Value Decomposition and other Dimension Reduction Techniques (available since 0.3)
+* 
+* Stochastic Singular Value Decomposition with PCA workflow (PCA workflow now integrated)
+* 
+* Principal Components Analysis (PCA) (open)
+* 
+* Independent Component Analysis (open)
+* 
+Gaussian Discriminative Analysis (GDA) (open)
+
+Evolutionary Algorithms
+see also: MAHOUT-56 (integrated)
+
+You will find here information, examples, use cases, etc. related to Evolutionary Algorithms.
+
+Introductions and Tutorials:
+
+Evolutionary Algorithms Introduction
+How to distribute the fitness evaluation using Mahout.GA
+Examples:
+
+Traveling Salesman
+Class Discovery
+
+==== Recommenders / Collaborative Filtering ====
+
+Mahout contains both simple non-distributed recommender implementations and distributed Hadoop-based recommenders.
+
+* Non-distributed recommenders ("Taste") (integrated)
+* Distributed Item-Based Collaborative Filtering (integrated)
+* Collaborative Filtering using a parallel matrix factorization (integrated)
+* First-timer FAQ
+
+==== Vector Similarity ====
+
+Mahout contains implementations that allow one to compare one or more vectors with another set of vectors. This can be useful if one is, for instance, trying to calculate the pairwise similarity between all documents (or a subset of docs) in a corpus.
+
+* RowSimilarityJob – Builds an inverted index and then computes distances between items that have co-occurrences. This is a fully distributed calculation.
+* VectorDistanceJob – Does a map side join between a set of "seed" vectors and all of the input vectors.
+
+==== Other ====
+* Collocations
+# Notes on Graph Algorithms
+
+## Datasets
+
+> Saccharomyces cerevisiae (PIN-1) compiled by Bu et al. [32] on data obtained by von Mering et al. [33] by assessing a total of 80,000 interactions among 5400 proteins assigning each interaction a confidence value. Bu et al. [32] focused on 11,855 interactions between 2617 proteins with high and medium confidence in order to reduce the influence of false positives. The PIN of the bacterium Helicobacter pylori (PIN-2) obtained from the Database of Interacting Proteins [34]; (iii–iv) two vocabulary networks in which nodes represent words taken from a dictionary. A directed link from a word to another exists if the first word is used in the definition of the second one. One of these networks is built using the Roget’s Thesaurus of English (Roget) [35], and the other is built using the Online Dictionary of Library and Information Science (ODLIS) [36]; (v) a scientific collaboration network in the field of computational geometry compiled from the Computational Geometry Database, version of February 2002 [37] where nodes represent scientists, and two nodes are connected if the corresponding authors wrote a paper together; (vi) a citation network of papers published in the Proceedings of Graph Drawing in the period 1994– 2000 [38] where nodes are papers and two nodes are connected if one paper cites another; (vii– viii) the Internet at the autonomous systems (AS) level as of September 1997 and of April 1998 analyzed by Faloutsos et al. [6]. Although some of these relationships are inherently directed, we have ignored direction and consider networks to be undirected for the current analysis. On the other hand, in order to make appropriate comparisons between SC and the other centrality measures, we studied only the main component of these networks owing to the fact that some of the centrality measures cannot be defined for nonconnected graphs. Datasets were collected from the European Project COSIN (http://www.cosin.org/) and from Pajek program datasets (http://vlado.fmf.uni-lj.si/pub/networks/data/).
+
+> Datasets were collected from the European Project COSIN (http://www.cosin.org/) and from Pajek program datasets (http://vlado.fmf.uni-lj.si/pub/networks/data/)
+
+
+## Statistics
+
+### centrality
+
+#### Newman & Girvan
+
+> Shortest-path betweenness
+> At first sight, it appears that calculating the edge be- tweenness measure based on geodesic paths for all edges will take O(mn2) operations on a graph with m edges and n vertices: calculating the shortest path between a particular pair of vertices can be done using breadth-first search in time O(m) [28, 29], and there are O(n2) ver- tex pairs. Recently however new algorithms have been proposed by Newman [30] and independently by Bran- des [31] that can perform the calculation faster than this, finding all betweennesses in O(mn) time. Both Newman and Brandes gave algorithms for the standard Freeman vertex betweenness, but it is trivial to adapt their algo- rithms for edge betweenness. We describe the resulting method here for the algorithm of Newman.
+> Breadth-first search can find shortest paths from a sin- gle vertex s to all others in time O(m). In the simplest case, when there is only a single shortest path from the source vertex to any other (we will consider other cases in a moment) the resulting set of paths forms a shortest- path tree—see Fig. 4a. We can now use this tree to calcu- late the contribution to betweenness for each edge from this set of paths as follows. We find first the “leaves” of the tree, i.e., those nodes such that no shortest paths to other nodes pass through them, and we assign a score of 1 to the single edge that connects each to the rest of the tree, as shown in the figure. Then, starting with those edges that are farthest from the source vertex on the tree, i.e., lowest in Fig. 4a, we work upwards, assigning a score to each edge that is 1 plus the sum of the scores on the neighboring edges immediately below it. When we have gone though all edges in the tree, the resulting scores are the betweenness counts for the paths from vertex s. Repeating the process for all possible vertices s and sum- ming the scores, we arrive at the full betweenness scores for shortest paths between all pairs. The breadth-first search and the process of working up through the tree
+
+## Clustering
+
+### random Walk Clustering
+
+#### from 0906
+
+> Random walks (Hughes, 1995) can also be useful to find communities. If a graph has a strong community structure, a random walker spends a long time inside a community due to the high density of internal edges and consequent number of paths that could be followed. Here we describe the most popular clustering algorithms based on random walks. All of them can be trivially extended to the case of weighted graphs.
+> Zhou used random walks to define a distance between pairs of vertices (Zhou, 2003a): the distance dij between i and j is the average number of edges that a random walker has to cross to reach j starting from i. Close vertices are likely to belong to the same community. Zhou defines a “global attractor” of a vertex i to be a closest vertex to i (i. e. any vertex lying at the smallest distance from i), whereas the “local attractor” of i is its closest neighbour. Two types of communities are defined, according to local or global attractors: a vertex i has to be put in the same community of its attractor and of all other vertices for which i is an attractor. Communities must be minimal subgraphs, i. e. they cannot include smaller subgraphs which are communities according to the chosen criterion. Applications to real networks, like Zachary’s karate club (Zachary, 1977) and the college football network compiled by Girvan and Newman (Girvan and Newman, 2002) (Section XV.A), along with artificial graphs like the benchmark by Girvan and Newman (Girvan and Newman, 2002) (Sec- tion XV.A), show that the method can find meaningful partitions. The method can be refined, in that vertex i is associated to its attractor j only with a probability proportional to exp(−βdij), β being a sort of inverse temperature. The computation of the distance matrix requires solving n linear-algebra equations (as many as the vertices), which requires a time O(n3). On the other hand, an exact computation of the distance matrix is not necessary, as the attractors of a vertex can be identified by considering only a localized portion of the graph around the vertex; therefore the method can be applied to large graphs as well. In a successive paper (Zhou, 2003b), Zhou introduced a measure of dissimilarity between vertices based on the distance defined above. The measure resembles the definition of distance based on structural equivalence of Eq. 7, where the elements of the adjacency matrix are replaced by the corresponding distances. Graph partitions are obtained with a divisive procedure that, starting from the graph as a single community, performs successive splits based on the criterion that vertices in the same cluster must be less dissimilar than a running threshold,
+> which is decreased during the process. The hierarchy of partitions derived by the method is representative of actual community structures for several real and artifi- cial graphs, including Zachary’s karate club (Zachary, 1977), the college football network (Girvan and Newman, 2002) and the benchmark by Girvan and Newman (Girvan and Newman, 2002) (Section XV.A). The time complexity of the procedure is again O(n3). The code of the algorithm can be downloaded from http://www.mpikg-golm.mpg.de/theory/people/zhou /networkcommunity.html.
+> In another work (Zhou and Lipowsky, 2004), Zhou and Lipowsky adopted biased random walkers, where the bias is due to the fact that walkers move preferentially towards vertices sharing a large number of neighbours with the starting vertex. They defined a proximity index, which indicates how close a pair of vertices is to all other ver- tices. Communities are detected with a procedure called NetWalk, which is an agglomerative hierarchical cluster- ing method (Section IV.B), where the similarity between vertices is expressed by their proximity. The method has a time complexity O(n3): however, the proximity index of a pair of vertices can be computed with good approx- imation by considering just a small portion of the graph around the two vertices, with a considerable gain in time. The performance of the method is comparable with that of the algorithm of Girvan and Newman (Section V.A).
+> A different distance measure between vertices based on random walks was introduced by Latapy and Pons (Lat- apy and Pons, 2005). The distance is calculated from the probabilities that the random walker moves from a vertex to another in a fixed number of steps. The number of steps has to be large enough to explore a significant portion of the graph, but not too long, as otherwise one would approach the stationary limit in which transition probabilities trivially depend on the vertex degrees. Vertices are then grouped into communities through an agglomerative hierarchical clustering technique based on Ward’s method (Ward, 1963). Modularity (Section III.C.2) is used to select the best partition of the resulting dendrogram. The algo- rithm runs to completion in a time O(n2d) on a sparse graph, where d is the depth of the dendrogram. Since d is often small for real graphs [O(log n)], the expected complexity in practical computations is O(n2 log n). The software of the algorithm can be found at http://www-rp.lip6.fr/∼latapy/PP/walktrap.html.

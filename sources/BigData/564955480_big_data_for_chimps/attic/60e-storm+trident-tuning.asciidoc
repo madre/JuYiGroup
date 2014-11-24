@@ -1,0 +1,183 @@
+== Storm+Trident Tuning
+
+Outline
+
+Our approach for Storm+Trident, as it is for Hadoop, is to use it from the "outside". If you find yourself seeking out details of its internal construction to accomplish a task, stop and consider whether you're straying outside its interface. But once your command of its external model solidifies and as your application reaches production, it's worth understanding what is going on. This chapter describes the lifecycle of first, a Storm+Trident tuple, and next, 
+
+Along the way, we can also illuminate how Storm+Trident acheives its breakthroughs -- its ability to do exactly-once processing is a transformative improvement over transfer-oriented systems (such as Flume or S4) and wall street-style Complex Event Processing (CEP) systems (such as Esper). 
+
+
+Because Storm+Trident has not reached Hadoop's relative maturity, it's far more important for the regular data scientist to understand its internals than for Hadoop.
+
+In this chapter, we'll cover:
+
+* Tuning constraints -- refer to earlier discussion on acceptable delay, thruput, horizon of compute, et
+* Process for initial tuning
+* General recommendations
+* cloud tuning
+
+=== The Dataflow Tuning Rules
+
+Tuning a dataflow system is, in principle, easy:
+
+----
+The Dataflow Tuning Rules:
+* Ensure each stage is always ready to accept records, and
+* Deliver each processed record promptly to its destination
+----
+
+That may seem insultingly simplistic, but most tuning questions come down to finding some barrier to one or the other. It also implies a corollary: once your dataflow does obey the Dataflow Tuning Rules, stop tuning it. Storm+Trident flows are not subtle: they either work (in which case configuration changes typically have small effect on performance) or they are catastrophically bad. So most of the tuning you’ll do is to make sure you don’t sabotage Storm’s ability to meet the Dataflow Tuning Rules
+
+=== Goal
+
+First, identify your principal goal and principal bottleneck.
+
+The goal of tuning here is to optimize one of latency, throughput, memory or cost, without sacrificing sabotaging the other measures or harm stability.
+
+Next, identify your dataflow's principal bottleneck, the constraining resource that most tightly bounds the performance of its slowest stage. A dataflow can't pass through more records per second than the cumulative output of its most constricted stage, and it can't deliver records in less end-to-end time than the stage with the longest delay.
+
+The principal bottleneck may be:
+
+* _IO volume_:  a hardware bottleneck for the number of bytes per second that a machine's disks or network connection can sustain. For example, event log processing often involves large amounts of data, but only trivial transformations before storage.
+* _CPU_: by contrast, a CPU-bound flow spends more time in calculations to process a record than to transport that record.
+* _memory_: large windowed joins or memory-intensive analytics algorithms will in general require you to provision each machine for the largest expected memory extent. Buying three more machines won’t help: if you have a 10 GB window, you need a machine with 10 GB+ of RAM.
+* _concurrency_: If your dataflow makes external network calls, you will typically find that the network request latency for each record is far more than the time spent to process and transport the record. The solution is to parallelize the request by running small batches and and high parallelism for your topology. However, increasing parallelism has a cost: eventually thread switching, per-executor bookkeeping, and other management tasks will consume either all available memory or CPU.
+* _remote rate limit_: alternatively, you may be calling an external resource that imposes a maximum throughput limit. For example, terms-of-service restrictions from a third-party web API might only permit a certain number of bulk requests per hour, or a legacy datastore might only be able to serve a certain volume of requests before its performance degrades. If the remote resource allows bulk requests, you should take care that each Trident batch is sized uniformly. For example, the https://dev.twitter.com/docs/api/1.1/get/users/lookup[twitter users lookup API] returns user records for up to 100 user IDs -- so it’s essential that each batch consist of 100 tuples (and no more). Otherwise, there’s not much to do here besides tuning your throughput to comfortably exceed the maximum expected rate.
+
+For each of the cases besides IO-bound and CPU-bound, there isn’t that much to say:
+for memory-bound flows, it’s "buy enough RAM" (though you should read the tips on JVM tuning later in this chapter). For remote rate-limited flows, buy a better API plan or remote datastore --  otherwise, tune as if CPU-bound, allowing generous headroom.
+
+For concurrency-bound flows, apply the recommendations that follow, increase concurrency until things get screwy. If that per-machine throughput is acceptable to your budget, great; otherwise, hire an advanced master sysadmin to help you chip away at it.
+
+=== Provisioning
+
+Unless you're memory-bound, the Dataflow Tuning Rules imply network performance and multiple cores  are valuable, but that you should not need machines with a lot of RAM. Since tuples are handled and then handed off, they should not be accumulating in memory to any significant extent. Storm works very well on commodity hardware or cloud/virtualized machines. Buy server-grade hardware, but don't climb the price/performance curve.
+
+The figures of merit here are the number and quality of CPU cores, which govern how much parallelism you can use; the amount of RAM per core, which governs how much memory is available to each parallel executor chain; and the cost per month of CPU cores (if CPU-bound) or cost per month of RAM (if memory-bound. Using the Amazon cloud machines as a reference, we like to use either the `c1.xlarge` machines (7GB ram, 8 cores, $424/month, giving the highest CPU-performance-per-dollar) or the `m3.xlarge` machines (15 GB ram, 4 cores, $365/month, the best balance of CPU-per-dollar and RAM-per-dollar). You shouldn't use fewer than four worker machines in production, so if your needs are modest feel free to downsize the hardware accordingly.
+
+=== Topology-level settings
+
+Use one worker per machine for each topology: since sending a tuple is much more efficient if the executor is in the same worker, the fewer workers the better. (Tuples go directly from send queue to receive queue, skipping the worker transfer buffers and the network overhead). Also, if you’re using Storm pre-0.9, set the number of ackers equal to the number of workers -- previously, the default was one acker per topology.
+
+The total number of workers per machine is set when the supervisor is launched -- each supervisor manages some number of JVM child processes. In your topology, you specify how many worker slots it will try to claim.
+
+In our experience, there isn't a great reason to use more than one worker per topology per machine. With one topology running on those three nodes, and parallelism hint 24 for the critical path, you will get 8 executors per bolt per machine, i.e. one for each core. This gives you three benefits.
+
+The primary benefit is that when data is repartitioned (shuffles or group-bys) to executors in the same worker, it will not have to hit the transfer buffer -- tuples will be directly deposited from send to receive buffer. That's a big win. By contrast, if the destination executor were on the same machine in a different worker, it would have to go send -> worker transfer -> local socket -> worker recv -> exec recv buffer. It doesn't hit the network card, but it's not as big a win as when executors are in the same worker.
+
+Second, you're typically better off with three aggregators having very large backing cache than having twenty-four aggregators having small backing caches. This reduces the effect of skew, and improves LRU efficiency.
+
+Lastly, fewer workers reduces control flow chatter.
+
+For CPU-bound stages, set one executor per core for the bounding stage (If there are many cores, uses one less). Using the examples above, you would run parallelism of 7 or 8 on a `c1.xlarge` and parallism of 4 on an `m3.xlarge`. Don't adjust the parallelism unless there's good reason -- even a shuffle implies network transfer, and shuffles don't impart any load-balancing. For memory-bound stages, set the parallelism to make good use of the system RAM; for concurrency-bound stages, find the parallelism that makes performance start to degrade and then back off to say 80% of that figure.
+
+Match your spout parallelism to its downstream flow. Use the same number of kafka partitions as kafka spouts (or a small multiple). If there are more spouts than kafka machines*kpartitions, the extra spouts will sit idle.
+
+Map states or persistentAggregates accumulate their results into memory structures, and so you'll typically see the best cache efficiency and lowest bulk-request overhead by using one such stage per worker.
+
+=== Initial tuning
+
+If you have the ability to specify your development hardware, start tuning on a machine with many cores and over-provisioned RAM so that you can qualify the flow's critical bottleneck. A machine similar to Amazon's `m3.2xlarge` (30 GB ram, 8 cores) lets you fall back to either of the two reference machines described above.
+
+For a CPU-bound flow:
+
+* Construct a topology with parallelism one
+* set max-pending to one, use one acker per worker, and ensure that storm's `nofiles` ulimit is large (65000 is a decent number).
+* Set the trident-batch-delay to be comfortably larger than the end-to-end latency -- there should be a short additional delay after each batch completes.
+* Time the flow through each stage.
+* Increase the parallelism of CPU-bound stages to nearly saturate the CPU, and at the same time adjust the batch size so that state operations (aggregates, bulk database reads/writes, kafka spout fetches) don't slow down the total batch processing time.
+* Keep an eye on the GC activity. You should see no old-gen or STW GCs, and efficient new-gen gcs (your production goal no more than one new-gen gc every 10 seconds, and no more than 10ms pause time per new-gen gc, but for right now just overprovision -- set the new-gen size to give infrequent collections and don't worry about pause times).
+
+Once you have roughly dialed in the batch size and parallelism, check in with the First Rule. The stages upstream of your principal bottleneck should always have records ready to process. The stages downstream should always have capacity to accept and promptly deliver processed records.
+
+==== Sidebar: Little's Law
+
+Little's Law is a simple but very useful formula to keep in mind. It says that for any flow,
+
+    `Capacity (records in system) = Throughput (records/second) / Latency (seconds to pass through)`
+
+This implies that you can't have better throughput than the collective rate of your slowest stage, and you can't have better latency than the sum of the individual latencies.
+
+For example, if all records must pass through a stage that handles 10 records per second, then the flow cannot possibly proceed faster than 10 records per second, and it cannot have latency smaller than 100ms (1/10 second).
+
+What's more, with 20 parallel stages, the 95th percentile latency -- your slowest stage -- becomes the median latency of the full set. (TODO: nail down numbers) Current versions of Storm+Trident don't do any load-balancing within batches, and so it's worth benchmarking each machine to ensure performance is uniform.
+
+==== Batch Size
+
+Next, we'll set the batch size.
+
+===== Kafka Spout: Max-fetch-bytes
+
+Most production deployments use the Kafka spout, which for architectural reasons does not allow you to specify a precise count of records per batch. Instead, the batch count for the Kafka spout is controlled indirectly by the max fetch bytes. The resulting total batch size is at most `(kafka partitions) * (max fetch bytes)`.
+
+For example, given a topology with six kafka spouts and four brokers with three kafka-partitions per broker, you have twelve kafka-partitions total, two per spout. When the MBCoordinator calls for a new batch, each spout produces two sub-batches (one for each kafka-partition), each into its own trident-partition. Now also say you have records of 1000 +/- 100 bytes, and that you set max-fetch-bytes to 100_000. The spout fetches the largest discrete number of records that sit within max-fetch-bytes -- so in this case, each sub-batch will have between 90 and 111 records. That means the full batch will have between 1080 and 1332 records, and 1_186_920 to 1_200_000 bytes.
+
+===== Choosing a value
+
+In some cases, there is a natural batch size: for example the twitter `users/lookup` API call returns information on up to 100 distinct user IDs. If so, use that figure.
+
+Otherwise, you want to optimize the throughput of your most expensive batch operation. `each()` functions should not care about batch size -- batch operations like bulk database requests, batched network requests, or intensive aggregation (`partitionPersist`, `partitionQuery`, or `partitionAggregate`) do care.
+
+Typically, you'll find that there are three regimes:
+
+1. when the batch size is too small, the response time per batch is flat -- it's dominated by bookeeping.
+2. it then grows slowly with batch size. For example, a bulk put to elasticsearch will take about 200ms for 100 records, about 250ms for 1000 records, and about 300ms for 2000 records (TODO: nail down these numbers).
+3. at some point, you start overwhelming some resource on the other side, and execution time increases sharply.
+
+Since the execution time increases slowly in case (2), you get better and better records-per-second throughput. Choose a value that is near the top range of (2) but comfortably less than regime (3).
+
+===== Executor send buffer size
+
+Now that the records-per-batch is roughly sized, take a look at the disruptor queue settings (the internal buffers between processing stages). 
+
+As you learned in the storm internals chapter, each slot in the executor send buffer queue holds a single tuple. The worker periodically sweeps all its hanging records, dispatching them in bunches either directly into executor receive buffers (for executors in the same worker) or the worker transfer buffer (for remote executors). Let us highlight the important fact that the executor send queue contains _tuples_, while the receive/transfer queues contain _bunches of tuples_.
+
+These are advanced-level settings, so don't make changes unless you can quantify their effect, and make sure you understand why any large change is necessary. In all cases, the sizes have to be an even power of two (1024, 2048, 4096, and so forth).
+
+As long as the executor send queue is large enough, further increase makes no real difference apart from increased ram use and a small overhead cost. If the executor send queue is way too small, a burst of records will clog it unnecessarily, causing the executor to block.  The more likely pathology is that if it is _slightly_ too small, you'll get skinny residual batches that will make poor use of the downstream receive queues. Picture an executor that emits 4097 tuples, fast enough to cause one sweep of 4096 records and a second sweep of the final record -- that sole record at the end requires its own slot in the receive queue.
+
+Unfortunately, in current versions of Storm it applies universally so everyone has to live with the needs of the piggiest customer.
+
+This is most severe in the case of a spout, which will receive a large number of records in a burst, or anywhere there is high fanout (one tuple that rapidly turns into many tuples). 
+
+Set the executor send buffer to be larger than the batch record count of the spout or first couple stages. 
+
+=== Garbage Collection and other JVM options
+
+TODO: make this amenable for the non-dragonmaster
+
+* New-gen size to 1000 MB (`-XX:MaxNewSize=1000m`). Almost all the objects running through storm are short-lived -- that's what the First Rule of data stream tuning says -- so almost all your activity is here.
+* Apportions that new-gen space to give you 800mb for newly-allocated objects and 100mb for objects that survive the first garbage collection pass.
+* Initial perm-gen size of 96m (a bit generous, but Clojure uses a bit more perm-gen than normal Java code would), and a hard cap of 128m (this should not change much after startup, so I want it to die hard if it does).
+* Implicit old-gen size of 1500 MB (total heap minus new- and perm-gens) The biggest demand on old-gen space comes from long-lived state objects: for example an LRU counting cache or dedupe'r. A good initial estimate for the old-gen size is the larger of a) twice the old-gen occupancy you observe in a steady-state flow, or b) 1.5 times the new-gen size. The settings above are governed by case (b).
+* Total heap of 2500 MB (`-Xmx2500m`): a 1000 MB new-gen, a 100 MB perm-gen, and the implicit 1500 MB old-gen. Don't use gratuitously more heap than you need -- long gc times can cause timeouts and jitter. Heap size larger than 12GB is trouble on AWS, and heap size larger than 32GB is trouble everywhere.
+* Tells it to use the "concurrent-mark-and-sweep" collector for long-lived objects, and to only do so when the old-gen becomes crowded.
+* Enables that a few mysterious performance options
+* Logs GC activity at max verbosity, with log rotation
+
+If you watch your GC logs, in steady-state you should see
+
+* No stop-the-world (STW) gc's -- nothing in the logs about aborting parts of CMS
+* old-gen GCs should not last longer than 1 second or happen more often than every 10 minutes
+* new-gen GCs should not last longer than 50 ms or happen more often than every 10 seconds
+* new-gen GCs should not fill the survivor space
+* perm-gen occupancy is constant
+
+Side note: regardless of whether you're tuning your overall flow for latency or throughput, you want to tune the GC for latency (low pause times). Since things like committing a batch can't proceed until the last element is received, local jitter induces global drag.
+
+=== Tempo and Throttling
+
+Max-pending (`TOPOLOGY_MAX_SPOUT_PENDING`) sets the number of tuple trees live in the system at any one time.
+
+Trident-batch-delay (`topology.trident.batch.emit.interval.millis`) sets the maximum pace at which the trident Master Batch Coordinator will issue new seed tuples. It's a cap, not an add-on: if t-b-d is 500ms and the most recent batch was released 486ms, the spout coordinator will wait 14ms before dispensing a new seed tuple. If the next pending entry isn't cleared for 523ms, it will be dispensed immediately. If it took 1400ms, it will also be released immediately -- but no make-up tuples are issued.
+
+Trident-batch-delay is principally useful to prevent congestion, especially around startup. As opposed to a traditional Storm spout, a Trident spout will likely dispatch hundreds of records with each batch. If max-pending is 20, and the spout releases 500 records per batch, the spout will try to cram 10,000 records into its send queue.
+
+
+In general:
+
+* number of workers a multiple of number of machines; parallelism a multiple of number of workers; number of kafka partitions a multiple of number of spout parallelism
+* Use one worker per topology per machine
+* Start with fewer, larger aggregators, one per machine with workers on it
+* Use the isolation scheduler
+* Use one acker per worker -- [pull request #377](https://github.com/nathanmarz/storm/issues/377) makes that the default.

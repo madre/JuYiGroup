@@ -1,0 +1,9 @@
+== Cloud vs Static
+
+* your cluster is too big and too small
+* re-size mid job -- why not?
+* tuning cluster to the job is way easier than v/v
+* your data isn't that big (yet)
+* with small teams, worry about downtime not utilization
+* encourage profligacy -- humans are important, robots are cheap. "Don't want data scientist
+  watching a cluster whose hourly rate is smaller than hers."
