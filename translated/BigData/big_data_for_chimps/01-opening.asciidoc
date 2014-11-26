@@ -106,8 +106,8 @@ So our first definition of Big Data is a response to a crisis: "A collection of 
 // Hadoop is the ubiquitous choice for processing batches of data at high
 // Hadoop is the tool to use when you want to understand how patterns in data from your manufacturing devices corresponds to defective merchandise returned months later, or how patterns in patients' postoperative medical records correspond to the likelihood they'll be re-admitted with complications.
 
-=== Big Data: Algorithms to Capitalize on the Opportunity of Comprehensive Data
-大数据：使错综复杂的数据资本化的算法
+=== Big Data: Algorithms to Capitalize on the Opportunity of Comprehensive Data大数据：使错综复杂的数据资本化的算法
+
 The excitement around Big Data is more than you could explain as "like databases, but bigger". Those tools don't just unlock a new region of scalability, they enable transformative new capabilities.
 围绕大数据的兴奋点要超出人们解释的“像数据库，只不过大一些”。这些工具不仅是开启一个新的可拓展领域，它们更开启了变化的新能力
 
