@@ -107,10 +107,12 @@ So our first definition of Big Data is a response to a crisis: "A collection of 
 // Hadoop is the tool to use when you want to understand how patterns in data from your manufacturing devices corresponds to defective merchandise returned months later, or how patterns in patients' postoperative medical records correspond to the likelihood they'll be re-admitted with complications.
 
 === Big Data: Algorithms to Capitalize on the Opportunity of Comprehensive Data
-
+大数据：使错综复杂的数据资本化的算法
 The excitement around Big Data is more than you could explain as "like databases, but bigger". Those tools don't just unlock a new region of scalability, they enable transformative new capabilities.
+围绕大数据的兴奋点要超出人们解释的“像数据库，只不过大一些”。这些工具不仅是开启一个新的可拓展领域，它们更开启了变化的新能力
 
 The data that's powering this revolution isn't just comprehensive, it's _connected_. When your one-in-a-thousand events manifest in sample of ten thousand records, it's noise. When they manifest in ten million records, tiny coincidences reinforce each other to produce patterns. The website etsy.com (an open marketplace for handcrafted goods) has millions of records showing which handcrafted goods people browse and buy. And thanks to their Facebook app they have access to millions of people who have shown interest in those handcrafted goods. Thanks to Facebook's data, they have as well the overlapping interests of those potential customers: "surfing", "big data", "barbeque". Now work backwards. From each interest, find the customers, and from the customers find the purchases, and from the purchase find the categories. What comes forth are unmistakeable patterns such as "People who like the band Lynrd Skynrd are overwhelmingly more likely to purchase Taxidermy". Etsy can better connect people with the things they love, their sellers can better connect with a their fans, and southern-fried rockers can accessorize their living room with that elk's head they always wanted.
+发动这场变革的数据不仅是广泛的，它们是互相连接的。
 
 Here's what's surprising and important: the algorithms to expose these patterns are not specific to e-commerce, and don't require coming in with guesses about the associations to draw. The work proceeds in three broad steps: (a) provide comprehensive data, identifying its features and connectivity; (b) apply generic methods that use only those features and connectivity (and not a domain-specific model), to expose patterns in the data; (c) interpret those patterns back into the original domain.
 
