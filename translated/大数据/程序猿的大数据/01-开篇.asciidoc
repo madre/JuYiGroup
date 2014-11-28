@@ -1,98 +1,88 @@
-== 浅谈语境下的大数据
+== 洞察力从何而来，来源于上下文中的数据
 
-本文开篇完全可以就大数据的庞大性及重要性展开长篇大论——这一点现已能被综合衡量，同时使我们充分认识到大数据的必要性，可是在诸如“观众参与”、“无法预知事件”，“……”这些先前无法量化的特质面前用这样的叙述未免显得太过苍白。不过既然您已经在阅读这篇文章，本文将以全新地视角来讲述大数据（随后是“怎样让你的老板认识大数据”和“什么是大数据（‘一个真正好的营销工具’）？”）
+本文开篇完全可以就大数据的庞大性及重要性展开长篇大论——这一点现已能被综合衡量，同时使我们充分认识到大数据的必要性，可是在诸如“观众参与”、“无法预知事件”，“……”这些先前无法量化的特质面前用这番言论未免太过苍白。不过既然您已经在阅读这篇文章，本文将以全新地视角来讲述大数据（随后是“怎样让你的老板认识大数据”和“什么是大数据（‘一个真正好的营销工具’）？”）
 
 现在，让我们来谈谈机器人跟人类。
 
-在 x 年，计算机“深蓝”向卡斯帕罗夫发起了挑战。随后在 y 年,“深蓝”战胜了卡斯帕罗夫，计算机战胜了人类，卡斯帕罗夫最终放弃然后回到了家里。这种营销炒作的大数据使我们获得了无法预知的能力，然而在得到这种能力的时我们很容易犯一个错误，我们利用它、依赖它、离不开它、最终，成为它的奴隶——我们赞同“我们只相信上帝，其他人带来数据”——仅仅只有它能被足够的保真度所量化时它才能被加以利用。
+在 x 年，计算机“深蓝”向卡斯帕罗夫发起了挑战。随后在 y 年,“深蓝”战胜了卡斯帕罗夫，计算机战胜了人类，卡斯帕罗夫不无沮丧地放弃回到了家中。这种营销炒作的大数据使我们获得了无法预知的能力，然而在得到这种能力的时我们很容易犯一个错误，我们利用它、依赖它、离不开它、最终，成为它的奴隶——我们赞同“我们只相信上帝，其他人带来数据”——仅仅只有它能被足够的保真度所量化时它才能被加以利用。
 
-在这次人机大战中机器人“深蓝”大败加里·卡斯帕罗夫，大数据工具的能力初现端倪
+在这次人机大战中，机器人“深蓝”大败加里·卡斯帕罗夫，大数据工具的能力初现端倪
 
 .加里·卡斯帕罗夫, "国际象棋大师对战计算机", 2010 
 ________
-在1996年的一场比赛中，我以微弱优势战胜了超级计算机“深蓝”。随后，1997年，IBM加倍投入，使“深蓝”的处理能力翻了一番———由于复赛中的一个失误我丢掉了比赛，全世界争相报导。这样的结果使很多人感到震惊跟悲痛,他们将其看为是人类向万能电脑俯首称臣的一个信号。（见《新闻周刊》头条：“大脑的最后一站”）。其他人耸了耸肩,惊讶于人类到1997年还能够与具有无穷计算能力的计算机进行竞争，它们几乎占据了第一世界的所有席位。……无人理解在笔记本上带有一个超级大师所能带来的全部影响,尤其不知道这在职业象棋比赛中到底意味什么。
+在1996年的一场比赛中，我以微弱优势战胜了超级计算机“深蓝”。随后，1997年，IBM加倍投入，使“深蓝”的处理能力翻了一番———由于复赛中的一个失误我丢掉了比赛，全世界争相报导。这样的结果使很多人感到悲痛震惊，他们将其看为是人类向万能电脑俯首称臣的一个信号；（见《新闻周刊》头条：“大脑的最后一站”）。其他人则耸了耸肩,惊讶于人类到1997年还能够与具有无穷计算能力的计算机进行竞争，它们几乎占据了第一世界的所有席位。……无人理解在笔记本上带有一个超级大师所能带来的全部影响，尤其不知道这在职业象棋比赛中到底意味什么。
 
-强大象棋软件快速扩张流行，产生了很多意想不到的结果，正面影响及负面后果皆有之。孩子们喜欢并很自然地接受了计算机，所以勿需惊讶于他们同样接受了计算机与象棋的真正结合。随着超强软件的引进，年轻人在家就有可能拥有一个顶级的对手，而不是从小就需要一个专业的教练。对于那些只有少数象棋传统以及为数不多教练的国家，现在也能够创造象棋神童了。事实上，我这些年正在训练19岁的马格努斯卡尔森，他是他们中的一员，来自玩象棋相对较少的国家挪威。
+强大象棋软件快速扩张流行，产生了很多意想不到的结果，正面影响及负面后果皆有之。孩子们喜欢并很自然地接受了计算机，所以勿需惊讶于他们同样接受了计算机与象棋的无缝融合。随着超强软件的引进，年轻人在家就有可能拥有一个顶级的对手，而不是从小就需要一个专业的教练。对于那些只有少数象棋传统以及为数不多教练的国家，现在也能够创造象棋神童了。事实上，我这些年正在训练19岁的马格努斯卡尔森，他是他们中的一员，来自玩象棋相对较少的国家挪威。
 
-计算机分析的深度应用将象棋本身推进向新的方向。机器不关注象棋的风格、棋谱或是数百年来已经建立的学说。它计算出每步棋子的值，分析数十亿计的棋路，然后再重新进行计算（为了将游戏简化为一堆可动作的数字，计算机将每一个棋子及其位置因子转化成一个值）。它完全免于经验主义及偏见，它致力于棋手的发展，通过机器在训练过程中使他们免受经验主义的影响。逐渐地，一步棋是好是坏不能因为这棋看起来是那样或是以前从来没有那样走过来衡量。仅仅只要这步棋是有效的就是好棋，反之，无效就是坏棋。尽管我们仍然需要大力权衡直觉跟逻辑推理来下好一盘棋，但现在越来越多的人类开始像计算机一样下棋。
-
-
-在数据库中数百万随手可用的游戏同样使最佳玩家越来越年轻化。消化了数千种重要的棋谱及数年来被广泛使用的棋路后，正好验证了马尔科姆·格拉德威尔的那句话“10 000小时成为一个专家”，如同他的新作《局外人》所阐述的那样（他早前的一本著作，《闪烁》，如果能更具创造性地改编，那么更多认知心理题材将在围棋隐喻文化中不断刷新）。如今的年青人，以及年青前人，通过插入象棋信息数字档案室增速这个过程并充分利用优越的年青大脑来记住所有的信息。
-能够增速这种进程。在无电脑的时代，年青的大师很稀少，他们几乎总是注定要为世界冠军而战。博比·菲舍尔作为1958年记录的保持者，他早在15岁获得了大师称号，然而这个记录仅仅在1991就被打破。随后，该记录被一次次刷新，共有20次，现在世界记录的保持者是乌克兰的谢尔盖卡札金，被声明为最年轻的大师，他在2002年以12岁这个悖理的年纪刷新了该记录。现在他20岁了，作为最佳棋手的一员，然而就像许多当下的神童青年，他不是领军者费希尔——费希尔很快足够征服象棋世界的每个角落。
-
-如同象棋比赛，在很多事情中，计算机所擅长的正是人类所欠缺的，反之亦然，瑞斯卡-古特曼将其解释为莫拉维克悖论。我灵机一动，想起了一个实验，如果下棋的时候，机器跟人不是对手而是伙伴，会发什么呢？以此之长，补彼之短，这样的组合是不是就会战无不胜了？
+计算机分析的深度应用将象棋本身推进向新的方向。机器不关注象棋的走法、棋谱或是数百年来已经建立的学说。它计算出每步棋子的值，分析数十亿计的棋路，然后再重新计算（为了将比赛简化为一堆可动作的数字，计算机将每一个棋子及其位置因子转化成一个值）。它完全免于经验主义及偏见，致力于棋手的发展，通过机器在训练过程中使他们免受经验主义的影响。慢慢地，一步棋是好是坏不能因为这棋看起来是那样或是以前从来没有那种下法来衡量。仅仅只要这步棋有效就称之为好棋，反之，无效就是坏棋。尽管我们仍然需要大力权衡直觉跟逻辑推理来下好一盘棋，但现在越来越多的人类开始像计算机一样下棋。
 
 
-拥有一个计算机小伙伴同样意味着你决不会担心犯战术失误，计算机能预测出走任意一步棋所能带来的影响，指出其能产生的后果及本来可能不被我们采纳的对策。在这样的配合下，我们不需要花费那么多的时间进行计算，从面能够集中精力进行战略规划。人类的创造力在这样的条件下更显得尤为重要。一个月以前，我在一场常规赛中以4-0战胜了一个保加利亚人。在先前比赛中，我们以3-3平局结束比赛。这次之所以能得胜，我的优势在于计算机帮我分担了策略计算的工作。
+在数据库中数百万随手可用的游戏同样使最佳玩家越来越年轻化。消化了数千种重要的棋谱及数年来被广泛使用的棋路后，正好验证了马尔科姆·格拉德威尔的那句话“10 000小时成为一个专家”，如同他的新作《局外人》所阐述的那样（他早前的一本著作，《闪烁》，如果能更具创造性地改编，那么更多认知心理题材将在围棋隐喻文化中不断刷新）。如今的年青人，以及幼童，通过植入象棋信息数字档案室并充分利用优越的年青大脑来记住所有的信息，能够增速棋手养成。在无电脑的时代，年青的大师很稀少，而他们也几乎总是注定要为世界冠军而战。博比·菲舍尔作为1958年记录的保持者，他早在15岁获得了大师称号，然而这个记录仅仅在1991就被打破。随后，该记录被一次次刷新，共有20次。现在世界记录的保持者是乌克兰的谢尔盖卡札金，被称之为最年轻的大师，他在2002年以12岁这个悖理的年纪刷新了该记录。现在他20岁了，作为最佳棋手的一员，然而就像许多当下的神童青年一样，他不是领军者费希尔——费希尔很快足够征服象棋世界的每个角落。
 
-2005年，在线象棋游戏网站Playchess.com发布了一个被称之为“自由范”的象棋比赛，棋队中的任何棋手都能向其他棋手或是计算机发起挑战。……由大师级棋手组成的几组棋队跟几个计算机搭档，一同进入了比赛。最初，似乎能够预见到比赛的结果，由棋手跟计算机组成的棋队压制了纯计算机棋队，甚至于更高明的计算机棋队，这台顶级象棋计算机与使用水平相对较弱的计算机的大师相较量，最终败下阵来。在象棋界，人类对战略的指导力与计算机对战术的敏锐性相结合，绝对可以称霸群雄、横扫千军、战无不胜。
+如同象棋比赛，在很多事情中，计算机所擅长的正是人类所欠缺的，反之亦然，瑞斯卡-古特曼将其解释为莫拉维克悖论。我灵光乍现，想起了一个实验，如果下棋的时候，机器跟人不是对手而是伙伴，会发生什么呢？以此之长，补彼之短，这样的组合是不是就会无往不胜了？
 
-The surprise came at the conclusion of the event. The winner was revealed to be not a grandmaster with a state-of-the-art PC but a pair of amateur American chess players using three computers at the same time. Their skill at manipulating and “coaching” their computers to look very deeply into positions effectively counteracted the superior chess understanding of their grandmaster opponents and the greater computational power of other participants. Weak human + machine + better process was superior to a strong computer alone and, more remarkably, superior to a strong human + machine + inferior process. http://www.nybooks.com/articles/archives/2010/feb/11/the-chess-master-and-the-computer/
+拥有一个计算机小伙伴同样意味着你决不会担心犯战术失误，计算机能预测出走任意一步棋所能带来的影响，指出其能产生的后果及本来可能不被我们采纳的对策。在这样的配合下，我们不需要花费那么多的时间进行计算，从面能够集中精力进行战略规划，人类的创造力在这样的条件下更显得尤为重要。一个月以前，我在一场常规赛中以4-0战胜了一个保加利亚人。在先前比赛中，我们以3-3平局结束比赛，这次之所以能得胜，我的优势在于计算机帮我分担了策略计算的工作。
+
+2005年，在线象棋游戏网站Playchess.com发布了一个被称之为“自由范”的象棋比赛，棋队中的任何棋手都能向其他棋手或是计算机发起挑战。……由大师级棋手组成的几组棋队跟几个计算机搭档，一同进入了比赛。最初似乎能够预见到比赛的结果，由棋手跟计算机组成的棋队压制了纯计算机棋队，甚至于更高性能的计算机棋队，这台顶级象棋计算机与使用性能较低计算机的大师相较量，最终败下阵来。在象棋界，人类对战略的指导力与计算机对战术的敏锐性相结合，绝对可以称霸群雄、横扫千军、战无不胜。
+
+人们惊讶于这样的结果，获胜方不是一位拥有最高技术水平计算机的大师，而是一队同时使用3台计算进行比赛的美国象棋爱好者，他们操纵、“指导”计算机，使之能深度综观全盘，有效地抵制了获败方的较高认知水平。次等棋手 + 机器 + 稍高性能的棋队优于一台单独的高性能计算机，更无需说特等棋手 + 机器+ 次等性能的棋队了。 http://www.nybooks.com/articles/archives/2010/feb/11/the-chess-master-and-the-computer/
 ________
 
-The goal of this book is that you become just such an expert coach. You don't need to be a grandmaster in statistics, have
+本书意在使你成为一个如同此般的专业教练。你不需要成为统计学的泰斗；你不需要成为一个编程专家，我们偏爱于简短精练可读性高的脚本；你不需要在数据库上达到第三形态闪电龙的水准，你只需知道数据怎样运作，如果你能预测执行过程，你能知道什么时候投资，什么时候改进，什么时候有趣的事情将会发生，更重要的是，你将知道得到自己想要的数据要怎样进行评估。（The goal of this book is that you become just such an expert coach. You don't need to be a grandmaster in statistics, have
 What you do need is intuition about how to
 You don't need to be an expert programmer. We favor short, elegant readable scripts
 You don't need to have reached the third dan of dragon-lightning form in database
-
 What you need is intuition about how data moves around
 If you can predict the execution, you can know when to invest in improving it and when something funny is going on
 Strategic execution
 More importantly know how to turn the measurements you have into the data you need
-How to augment
+How to augment）
+
+本书将告诉读者怎样去训练计算机，怎样运用卓越的技术。
+
+我们以 “ 机器人为辅，人类为主 ” 为原则（关于从冰箱得到苏打水的数学，关于在云中运行一台计算机的数学）（We have a principle "Robots are cheap, Humans are important,(Math about getting soda from the fridge, about running a computer in the cloud)
+）
 
 
-This book will show you how to coach
- the computer, how to apply superior process.
+我们以演示Hadoop内在机制作为开篇，精确却又恰恰点到为止地让你理解数据怎样运作。在大数据环境中，数据的行为（而不是CPU）几乎总是占主导地位，同样计算容量所产生的开销也几乎总是约束着计算的性能。
 
-We have a principle "Robots are cheap, Humans are important,
-(Math about getting soda from the fridge, about running a computer in the cloud)
+大数据的一个好处在于其性能的预测原始而又分明 -- ...
+（坏处就是它不可能有坏的时候）
 
-We start by demonstrating the internal mechanics of Hadoop
-Exactly and only deep enough that you can understand how data moves around
-In a Big Data system, motion of data (not CPU) is nearly always the dominant cost of compute.
-Memory capacity is nearly always the fundamental constraint of computation.
+一旦读者对正在发生的事情产生了生理直觉，我们将转移到战术领域。我们参考领先的SQL手册来匹配已定义并经过数十年使用实践的模型（贸易的技术）（We consulted the leading SQL cookbooks to find what patterns of use(And tricks of the trade) decades of practice have defined.）抓着"NoSQL"不放，抛开传统知识不提总不会是一个好的计划。
 
-One nice thing about big data is that the performance estimation is brutally stark -- ...
-(The not-as-nice is that it when it is bad it is impossible)
-
-Once you have a physical intuition of what's happening, we move to tactics.
-We consulted the leading SQL cookbooks to find what patterns of use
-(And tricks of the trade) decades of practice have defined.
-Screw "NoSQL". Throwing out the old lore is always a bad plan.
-
-// four levels: explain, optimize, predict, control (operations research blog)
+// 四个层级：解释，优化，预测，控制（运筹学博客）
 
 
 
-Tracking every path your delivery tricks take
-Fleet improve fuel usage, safety for driver and the rest of us, operating efficiency and costs.
+跟踪你每一次的交货方式使车队提高燃油使用率，既能确保司机跟乘客的安全又提高操作效率，降低成本。
 
 
 
 
 
-// IMPROVEME: put in an interlude that is JT & Nanette meeting. (Told as a flashforward.)
+// 深度阅读: 一个JT＆南妮特会议的插曲 (未来闪影)
 
-Data is worthless. Actually, it's worse than worthless: it requires money and effort to collect, store, transport and organize. Nobody wants data.
+数据是毫无价值的。事实上，它比毫无价值更糟糕：它需要金钱跟精力去采集、存储、传输及组织，没有人想要它。
 
-What's valuable is _insight_ -- summaries, patterns and connections that lead to deeper understanding and better decisions. And insight comes from synthesizing data in context. We can predict air flight delays by placing commercial flight arrival times in context with hourly global weather data (as we do in Chapter (REF)). Take the mountain of events in a large website's log files, and regroup using context defined by the paths users take through the site, and you'll illuminate articles of similar interest (see Chapter (REF)). In Chapter (REF), we'll dismantle the text of every article on Wikipedia, then reassemble the words from each article about a physical place into context groups defined by the topic's location -- and produce insights into human language not otherwise quantifiable.
+有价值的是 _洞察力_ -- 总结、模型及关系将引导我们拥有更深的理解跟更好的决定。同时，洞察力来源于上下文中数据合成。我们能够通过定位商业航班的到达时间及其上下文中以小时计的全球天气数据来预测航班延误（具体算法见本章参考）。捕获某大型网站的日志文件中的事件高峰期，使用由用户浏览网站的路径所定义的上下文对其重组，你将能叙述与之相类似的兴趣的文章（见本章（参考））。在本章（参考），我们将对维基百科中的每一个文本进行拆解，然后重组词汇，将其从每一个实际存在的文章中重组至一个被主题定位所定义一个文本组中 – 将洞察力转化为人类语言，否则无法对其量化。
 
-Within each of those examples are two competing forces that move them out of the domain of traditional data analysis and into the topic of this book: "big data" analytics and simple analytics. Due to the volume of data, it is far too large to comfortably analyze on a single machine; and due to the comprehensiveness of the data, simple methods are able to extract patterns not visible in the small.
+在每一个这样的示例内部都有两个相矛盾的抗力，它们相互作用促进开路事物的发展，使数据脱离传统数据分析的统治进而转入本书的主题：“大数据”分析及简易分析。数据容量的限制，使如此之大的数据量无法方便地在单个机器上进行分析；同样，数据的综合性，在小规模范围内能够抽取样本的简单策略如同沧海一粟，起不到作用。
 
-=== Big Data: Tools to Solve the Crisis of Comprehensive Data
+=== 大数据 : 解决综合数据危机的工具
 
-Let's take an extremely basic analytic operation: counting. To count the votes for a bill in the state legislature, or for what type of pizza to order, we gather the relevant parties into the same room at a fixed time and take a census of opintions. The logistics here are straightforward.
+让我们来做一个超基础的分析作业:计数。在州议会为投票表决一项法案计数，或是为订购各种类型的披萨计数，我们在确定的时间将相关人员聚集到同一个房间，进行一次普查，其投票人流走向简单而又快速。
 
-It is impossible, however, to count votes for the President of the United States this way. No conference hall is big enough to hold 300 million people; if there were, no roads are wide enough to get people to that conference hall; and even still the processing rate would not greatly exceed the rate at which voters come of age or die.
+然而，用这种方法不可能计数美国总统的投票表决。没有大到可容纳300人的会议厅；即使有，也没有足够宽的道路让人们顺畅通行；甚至于选举者的出生率或死亡率能与这持续进行中的选举率相拼。
 
-Once the volume of data required for synthesis exceeds some key limit of available computation -- limited memory, limited network bandwith, limited time to prepare a relevant answer, or such -- you're forced to fundamentally rework how you synthesize insight from data.
+一旦合成所需的数据容量超出了某些可用预算的关键阈值—— 有限的存储空间，有限的网络带宽，有限的时间去准备一个相关反馈，或如此这般 —— 你必须一次又一次地从根本上改变你从数据中提取见解的方法。
 
-We conduct a presidential election by sending people to local polling places, distributed so that the participants to not need to travel far, and sized so that the logistics of voting remain straightforward. At the end of day the vote totals from each polling place are summed and sent to the state Elections Division. The folks in the Elections Division office add the results from each polling place to prepare the final result. This new approach doesn't completely discard the straightforward method (gathering people to the same physical location) that worked so well in the small. Instead, it applies another local method (summing a table of numbers). The orchestration of a gathering stage, an efficient data transfer stage, and a final tabulation stage arrives at a correct result, and the volume of people and data never exceeds what can be efficiently processed.
 
-So our first definition of Big Data is a response to a crisis: "A collection of practical data analysis tools and processes that continue to scale even as the volume of data for justified synthesis exceeds some limit of available computation".
+我们进行了一次总统选举，将人们聚集到每个当地的投票站进行投票。多地域的分布使得投票者不需要走太远就能参与投票，同时选举的规模使得选举人流走向能保持简单而又快速。当这一天结束，我们对每一个投票站的票额进行合计，将其送到州选举部，选举办公室的官员将各投票站的选票计入结果中以形成最终的选举结果。这种新的途径并没有完全抛弃这种简单快速的方法（将人们聚集到同一个物理位置），引申应用了另一种本地策略（数表内求和）。这是一曲将一个数据采集舞台，高效数据传送舞台，达成一个正确结果的最终报表舞台的管弦乐编曲，人和数据的容量决不会超过其可高效处理的数据量。
 
-// In Chapter 6 (REF) we'll map out the riotous diversity of tools in the Big Data ecosystem,
-// Hadoop is the ubiquitous choice for processing batches of data at high
-// Hadoop is the tool to use when you want to understand how patterns in data from your manufacturing devices corresponds to defective merchandise returned months later, or how patterns in patients' postoperative medical records correspond to the likelihood they'll be re-admitted with complications.
+因此我们是对该危机的回答正是对大数据的第一个定义：“实用数据分析工具及流程的集合，这个集合不断扩张，甚至随着进行正当合成的数据容量超越可用预算的某些阈值而不断增大。”
+
+// 在第六章（参考）中，我们将在大数据生态系统中绘制出各丰富多彩的工具,
+// Hadoop是高水平进行数据批处理普及性选择。
+// 工具可以用来了解你制造机的数据模型以确定这个商品是否有缺陷需要在几个月后返厂，或是患者术后的医药记录模型以确定他们患并发病而入院的可能性。
 
