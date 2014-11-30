@@ -201,26 +201,52 @@ Here's a similar operation using Pig:
     STORE state_sightings_ct INTO '$out_dir/state_sightings_ct_pig';
 ----
 
-=== The triad: batch, stream, scale
+=== 三剑客: 批量, 流式, 缩放
+早期，我们把洞察力定义为更深层的认识和更好的决策。
+Hadoop处理任意规模数据的能力，加上我们提高企业方方面面的综合仪器实力，
+代表着在揭露模式上有了根本好转，也说明了人力在模式开发上能达到的范围。
 
-Earlier, we defined insight as deeper understanding and better decisions. Hadoop's ability to process data of arbitrary scale, combined with our increasing ability to comprehensively instrument every aspect of an enterprise, represent a fundamental improvement in how we expose patterns and the range of human endeavors available for pattern mining.
+但当Hadoop组织的科研成果开始取得成功时，发生了一件有趣的事情：
+研发人员意识到，他们不是只想对模式有更深的理解，
+他们希望对这些模式采取行动并且快速作出决定。
+工厂老板想要停止生产线，当信号预测随后会出现缺陷时；
+医院会希望有社工跟进，当病人不喜欢吃手术后药物时。
+必须要及时，因此一个显着的新功能已经进入大数据工具集的核心：流分析（趋势分析）。
 
-But a funny thing happens as an organization's Hadoop investigations start to pay off: they realize they don't just want a deeper understanding of the patterns, they want to act on those patterns and make prompt decisions. The factory owner will want to stop the manufacturing line when signals predict later defects; the hospital will want to have a social worker follow up with patients unlikely to fill their postoperative medications. Just in time, a remarkable new capability has entered the core Big Data toolset: Streaming Analytics.
+流分析获取你_相关的快速洞察分析_，交给Hadoop做深层的全局洞察分析。
+Storm+Trident（完全领先的工具集）能够处理低延迟和异常产出的数据；
+它可以在Java、Ruby和更多环境下执行复杂的处理;
+它可以支持远程APIs或者高并发数据库。
 
-Streaming Analytics gets you _fast relevant insight_ to go with Hadoop's _deep global insight_. Storm+Trident (the clear frontrunner toolkit) can process data with low latency and exceptional throughput (we've benchmarked it at half a million events per second); it can perform complex processing in Java, Ruby and more; it can hit remote APIs or databases with high concurrency.
 
 // It's an analytic platform that should be regarded as an essential counterpart to Hadoop and scalable data stores.
 // On way to think of Trident is as a tool to do your query on the way _in_ to the database. Rather than insisting every application use the same database and same data model,
 
-This triad -- Batch Analytics, Stream Analytics, and Scalable Datastores -- are the three legs of the Big Data toolset. Together they let you analyze data at terabytes and petabytes, data at milliseconds, and data from ponderously many sources.
+三剑客 -- 批量分析、流分析、可伸缩的数据存储 --
+是大数据工具集的三个支柱。
+他们在一起，能够让你在毫秒时间内分析 terabytes和petabytes
+的海量数据，当然也包括数据源杂乱分布在各处时。
 
-=== Grouping and Sorting: Analyzing UFO Sightings with Pig
 
-While those embarassingly parallel, Map-only jobs are useful, Hadoop also shines when it comes to filtering, grouping, and counting items in a dataset. We can apply these techniques to build a travel guide of UFO sightings across the continental US.
 
-Whereas our last example used the wukong framework, this time around we'll use another Hadoop abstraction, called Pig. footnote:[http://pig.apache.org]  Pig's claim to fame is that it gives you full Hadoop power, using a syntax that lets you think in terms of data flow instead of pure Map and Reduce operations.
+=== 分组和排序: 用Pig来分析目击UFO
 
-The example data included with the book includes a data set from the  http://www.infochimps.com/datasets/60000-documented-ufo-sightings-with-text-descriptions-and-metada[National UFO Reporting Center], containing more than 60,000 documented UFO sightings footnote:[For our purposes, although sixty thousand records are too small to justify Hadoop on their own, it's the perfect size to learn with.]. Now it's sad to say, but many of the sighting reports are likely to be bogus, and we'd like to eliminate them. How will we define bogus? As a first guess, let's reject descriptions that are fewer than 12 characters (too short), or contain the word 'lol' (by an internet troll).
+虽然这些事件令人尴尬的相似，只有采用映射任务(map-only jobs)才有作用，
+但Hadoop在涉及到数据集的过滤、分组、统计条目依然表现出众。
+我们可以应用这些技术来构建整个美国大陆UFO目击旅行指南。
+
+因为上个示例我们使用了wukong框架，
+所以这次我们将使用另外一个叫 Pig 的Hadoop抽象工具。footnote:[http://pig.apache.org]
+Pig最声名鹊起的是它给你完整Hadoop能力，
+并且使用一个能让你关注数据关系的语法来代替原生的映射和分解操作。
+
+示例数据，包括本书附带的数据集都来自 http://www.infochimps.com/datasets/60000-documented-ufo-sightings-with-text-descriptions-and-metada[美国国家飞碟报告中心]，
+包含了超过60,000个UFO目击事件记录。footnote:[对于我们而言，
+尽管六万记录太小不足以证明Hadoop拥有的能力，
+但这算是一个学习的完美大小了。] 现在不得不痛心地说，许多目击报告都可能是假的，我们需要锡除它们。
+我们将如何界定假？作为第一个猜测，让我们拒绝说明是少于12个字符（太短），
+或包含词语"lol"（网络巨魔，煽动性信息）。
+
 
 ----
 sightings     = load_sightings();
@@ -229,7 +255,9 @@ sig_sightings = FILTER sightings BY
   ((SIZE(description) >= 12) AND NOT (description MATCHES '(^|.*\W)lol(\W.*|$)'));
 ----
 
-A key activity in a Big Data exploration is summarizing big datasets into a comprehensible smaller ones. Each sighting has a field giving the shape of the flying object: cigar, disk, etc. This script will tell us how many sightings there are for each craft type:
+在大数据探索中一个关键性的行为是总结较大的数据集拆分成可理解的较小数据集。
+每个观察集都有一个字段用来给出飞行物体的形状：雪茄、圆盘等等。
+下面这个脚本将会告诉我们每个大空船类型有多少次目击：
 
 ----
 sightings = load_sightings();
@@ -238,7 +266,9 @@ craft_cts       = FOREACH cf_sightings GENERATE COUNT_STAR(sightings)
 STORE craft_cts INTO '$out_dir/craft_cts';
 ----
 
-We can make a little travel guide for the sightings by amending each sighting with the Wikipedia article about its place. The JOIN operator matches records from different tables based on a common key:
+我们可以通过修改维基百科上每次目击的文章，制作一些关于发生地点的小旅行指南。
+使用联接运算符基于公共密钥的从不同表匹配记录：
+
 
 ----
 DEFINE Wikipedify  pigsy.text.Wikipedify;
@@ -248,31 +278,51 @@ articled_sightings = JOIN
   USING replicated;
 ----
 
-Here's the part that was easy: searching through 4+ million articles to find matches. Here's the part that was hard: _preparing_ that common key. Pig doesn't have that capability built in, but it does let you extend its language with User-Defined Functions (UDFs). We have enabled such a UDF -- a function to prepare a string in Wikipedia's article id format -- using the `DEFINE` statement. On the fourth line, we combine the city and state into a single value and apply our `Wikipedify` function, giving a common basis for matching records. Here's the part that is clever: knowing when to attach `USING replicated`, and which order to place `articles` and `sightings` in the statement. The correct choice can mean a multiple times speedup in how fast this query executes. This book will equip you to trust the framework for the easy part, push past the hard part, and know when and why to attach the clever part.
+其中相对简单的部分：从超过4百万的文章中搜索找到匹配项。
+其中相对复杂的部分：准备那个公共密钥。
+Pig没有相关的内置功能，但它允许你使用用户定义的函数（User-Defined Functions, UDFs）扩展它的语言。
+我们已经启用了这样的UDF——一个函数来准备维基百科的文章编号格式的字符
+串——使用` DEFINE`声明。
+在第四行，我们合并城市和国家为一个单值，并且执行我们
+的` Wikipedify`函数，给出一个匹配记录的通用基础。
+其中相对需要技巧的部分：知道什么时候附加 `USING replicated` 声明，
+知道在声明中放`articles` 和 `sightings` 的顺序。
+正确的选择可能意味执行此查询的速率会有几倍的加速。
+这本书将会让你任赖框架去处理简单的部分，加速通过复杂的部分，
+并且知道什么时候又因为什么去使用那些需要技巧的部分。
+
 
 ----
 TODO: sample output
 ----
 
-This travel guide is a bit of a gimmick so far, but hey, we're only at the end of the first chapter. We can come up with all sorts of ways to improve it. For instance, a proper guide would hold not just the one article about the general location, but a set of nearby places of interest. Later in the book we'll show you how to do a nearby-ness query (in the Geodata chapter (REF)), which is fiendishly hard until you know how. You'll immediately find that an undifferentiated listing of points of interest is almost worse than only listing one. Later in the book, we'll show you how to attach a notion of "prominence" (in the event log chapter (REF)).
+这个旅行指南到目前为止确实有点仅像一个噱头，不过你知道的，
+我们目前仅仅在第一章的结尾处。我们可以想出各种方法来改善它。
+举例来说，一个适当的引导将不只是在关于大体位置的一篇文章，
+而是一系列附近的有趣地方。在这本书的后续部分，我们会告诉你如何做一个
+附近的周边查询（在地理数据章节（REF）），
+在你知道怎么做之前，这确实是极其困难。
+你会立刻发现，找一个未分化的兴趣点列表，几乎比只列一个兴趣更糟糕。
+在这本书的后续部分中，我们也将向你展示如何附加一个“突出”的
+概念（在事件日志中章（REF））。
 
-To get us started, we're going to meet Chimpanzee & Elephant, some new friends whose adventures seem to curiously correspond to ours...
+让我们一起开始，我们将遇到 猩猩 和 大象，
+这些新朋友的冒险看起来正奇怪地迎向我们……
 
-=== Applications
+
+=== 应用范围
 
 
-* E-commerce
-* Biotech
-* Manufacturing defects
-* Security
-* Reccommenders
-* Finance
-* Intelligence
+* 电子商务
+* 生物技术
+* 制造业次品
+* 安全
+* 推荐
+* 财政
+* 情报
 
-* Recommender
-  -
-* Defect patterns (security breach, manufacturing defect, insider security,
-  - anomaly detection
-  - causal analysis
-* Prediction
-  - patient likely to get sepsis
+* 缺陷模式 (安全漏洞, 制造业次品, 内部安全,
+  - 异常检测
+  - 因果分析
+* 预言
+  - 病人患败血症的可能性
