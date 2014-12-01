@@ -37,13 +37,13 @@ The librarians in turn notify Nanette which copies of which translations they ho
 The fact that each chimpanzee's work is independent of any other's -- no interoffice memos, no meetings, no requests for documents from other departments -- made this the perfect first contract for the C&E crew. JT and Nanette, however, were cooking up a new way to put their million-chimp army to work, one that could radically streamline the processes of any modern paperful office footnote:[Some chimpanzee philosophers have put forth the fanciful conceit of a "paper-less" office, requiring impossibilities like a sea of electrons that do the work of a chimpanzee, and disks of magnetized iron that would serve as scrolls. These ideas are, of course, pure lunacy!]. JT and Nanette would soon have the chance of a lifetime to try it out for a customer in the far north with a big, big problem.
 ******
 
-=== Map-only Jobs: Process Records Individually ===
+=== Map-only 作业：单独的处理记录 ===
 
-As you'd guess, the way Chimpanzee and Elephant organize their files and workflow corresponds directly with how Hadoop handles data and computation under the hood. We can now use it to walk you through an example in detail.
+正如你所猜测，Chimpanzee 和 Elephant组织文件和工作流程的方式与Hadoop处理数据和后台计算正好对应。接下来我们通过一个详细的例子给你展示。
 
-The bags on trees scheme represents transactional relational database systems. Nanette is the Hadoop http://wiki.apache.org/hadoop/NameNode[NameNode]. The NameNode stores the directory tree structure (card catalog), and references to the data nodes for each file (librarians). JT is the http://wiki.apache.org/hadoop/JobTracker[JobTracker]. He coordinates the work of individual MapReduce tasks into a cohesive whole system. To illustrate how Hadoop works, lets dive into some code with the simplest example possible.
+在目录树上的方案包代表业务关系数据库系统。 Nanette是Hadoop的一个主节点，主节点存储的目录树结构（类似卡片目录）和每个文件的数据节点引用（类似图书管理员）。JT是任务追踪的简称，它使每个独立的MapReduce任务进入一个非常连贯的系统并协同工作。让我们从一些尽可能简单的代码入手来阐明Hadoop是如何工作的。
 
-We may not be as clever as JT's multilingual chimpanzees, but even we can translate text into a language we'll call _Igpay Atinlay_. footnote:[Sharp-eyed readers will note that this language is really called _Pig Latin._ That term has another name in the Hadoop universe, though, so we've chosen to call it Igpay Atinlay -- Pig Latin for "Pig Latin".]. For the unfamiliar, here's how to http://en.wikipedia.org/wiki/Pig_latin#Rules[translate standard English into Igpay Atinlay]:
+我们也许没有像JT的会多种语言的黑猩猩一样聪明，但即使我们能将一个文本翻译成一种被称作_Igpay Atinlay_的语言。 footnote:[Sharp-eyed readers will note that this language is really called _Pig Latin._ That term has another name in the Hadoop universe, though, so we've chosen to call it Igpay Atinlay -- Pig Latin for "Pig Latin".]. 对于不熟悉Igpay Atinlay语言者，如下两点说明如何 http://en.wikipedia.org/wiki/Pig_latin#Rules[将标准英语翻译成Igpay Atinlay语言]:
 
 * If the word begins with a consonant-sounding letter or letters, move them to the end of the word adding "ay": "happy" becomes "appy-hay", "chimp" becomes "imp-chay" and "yes" becomes "es-yay".
 * In words that begin with a vowel, just append the syllable "way": "another" becomes "another-way", "elephant" becomes "elephant-way".
