@@ -11,7 +11,6 @@
 | Insight                  | Insight comes from Data in Context |  洞察力     | 
 | Context                  | Insight comes from Data in Context |  上下文     | 
 | marketing hype           | The marketing hype is Big data lets us Unprecedented power |  市场炒作 |
-| first world              |                 |             |
 | patterns                 | design patterns | 模式         |
 | first world              | the first world | 第一世界     |
 | available computation    |                 | 可用计算     |
