@@ -21,9 +21,12 @@
 |                          |                 |            |
 
 
-* internet troll 
+* internet troll
+
 > 译义：网络巨魔，煽动性信息  
 > 语境：contain the word 'lol' (by an internet troll).
+
 * available computation
+
 > 译义：可用计算  
 > 语境：Once the volume of data required for synthesis exceeds some key limit of available computation 
