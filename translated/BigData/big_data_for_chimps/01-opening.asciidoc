@@ -122,21 +122,21 @@ This new path to truth is what Peter Norvig (Google's Director of Research) call
 The proposition that the Unreasonaly-Effective Method is a worthwhile rival to the Scientific Method is sure to cause barroom brawls at scientific conferences for years to come. This book will not go deeply into advanced algorithms, but we will repeatedly see examples of Unreasonable Effectiveness, as the data comes forth with patterns of its own. Unreasonaly-Effective Method的提出是科学方法的强有力的对手，这必将在未来几年再学术论坛上引来无数争论。这本书将不会讲太深的高级算法，但是将会不停地用Unreasonable Effectiveness的案列，来看看数据是如何从自身衍生出来模式的
 === The Answer to the Crisis如何处理数据危机
 
-One solution to the big data crisis is high-performance supercomputing (HPC): push back the limits of computation with brute force. We could conduct our election by gathering supporters of one candidate on a set of cornfields in Iowa, supporters of the other on cornfields in Iowa, and using satellite imaging to tally the result. HPC solutions are exceptionally expensive, require the kind of technology seen only when military and industrial get complex, and though the traditional "all data is local" methods continue to work, they lose their essential straightforward flavor. A supercomputer is not one giant connected room, it's a series of largish rooms connected by very wide multidimensional hallways; HPC programmers have to constantly think about the motion of data among caches, processors, and backing store.其中一个解决大数据危机的方法是高性能超级计算：加大计算能力防止瓶颈发生。
+One solution to the big data crisis is high-performance supercomputing (HPC): push back the limits of computation with brute force. We could conduct our election by gathering supporters of one candidate on a set of cornfields in Iowa, supporters of the other on cornfields in Iowa, and using satellite imaging to tally the result. HPC solutions are exceptionally expensive, require the kind of technology seen only when military and industrial get complex, and though the traditional "all data is local" methods continue to work, they lose their essential straightforward flavor. A supercomputer is not one giant connected room, it's a series of largish rooms connected by very wide multidimensional hallways; HPC programmers have to constantly think about the motion of data among caches, processors, and backing store.其中一个解决大数据危机的方法是高性能超级计算：加大计算能力防止瓶颈发生。我们可以通过在爱德华州的一片稻田统计一方候选人的支持者，在其它稻田统计另一方的支持者数量来进行选举，并通过卫星地图来计算结果。高性能超级计算的费用是非常昂贵的，通常是因军事或者产业复杂化要求技术变革，虽然传统的“数据本地化”方法论仍然在延续，但是失去了他们最本质的味道。超级计算机不是某个连接空间的庞然大物，它是通过非常庞大的多维通道连接的一系列比较大的空间；高性能超级计算程序设计师必须不断地思考缓存中的数据移动，处理器，和后备存储器
 
 The most important alternative to the HPC approach is the big data tool http://hadoop.apache.org[Hadoop]
-which effectively takes the opposite approach. Instead of full control over all aspects of computation and the illusion of data locality, Hadoop revokes almost all control over the motion of data.  Furthermore, unlike the HPC solutions of yore, Hadoop runs on commodity hardware and addresses a wide range of problem domains (finance, medicine, marketing; images, logfiles, mathmatical computation). This power comes at a cost, though. Hadoop understands only a limited vocabulary known as Map/Reduce, and you'll need to learn that vocabulary if Hadoop is to do any work for you.
+which effectively takes the opposite approach. Instead of full control over all aspects of computation and the illusion of data locality, Hadoop revokes almost all control over the motion of data.  Furthermore, unlike the HPC solutions of yore, Hadoop runs on commodity hardware and addresses a wide range of problem domains (finance, medicine, marketing; images, logfiles, mathmatical computation). This power comes at a cost, though. Hadoop understands only a limited vocabulary known as Map/Reduce, and you'll need to learn that vocabulary if Hadoop is to do any work for you.对高性能超级计算方法的最重要的替代要数大数据工具http://hadoop.apache.org[Hadoop]了，它能很有效地采取相反的办法，来替代对计算各个方面的全局控制和数据本地化的观念，Hadoop几乎取消了所有对数据的运行控制。此外，与从前的高性能超级计算方案不同的是，Hadoop在商品软件商运行并且解决广泛领域中的问题（财政，医药，市场；图像，日志文件，统计计算）当然，能力是有代价的，Hadoop仅能理解有限的语言比如Map/Reduce，如果你想让Hadoop为你做任何事情，你得先学会这些语言
 
-To get a taste of Map/Reduce, imagine a publisher that banned all literary forms except the haiku:
+To get a taste of Map/Reduce, imagine a publisher that banned all literary forms except the haiku:初谈Map/Reduce，想象一下出版商禁止了除了俳句以外的所有文学形式：
 
-[verse, The Map/Reduce Haiku]
+[verse, The Map/Reduce Haiku]诗，Map/Reduce俳句
 ____________________________________________________________________
-data flutters by
-    elephants make sturdy piles
-  context yields insight
+data flutters by 数据飘扬
+    elephants make sturdy piles大象打下坚固的桩
+  context yields insight环境收益可预见
 ____________________________________________________________________
 
-Our Map/Reduce haiku illustrates Hadoop's template:
+Our Map/Reduce haiku illustrates Hadoop's template: Map/Reduce俳句阐明了Hadoop的模式：
 
 1. The Mapper portion of your script processes records, attaching a label to each.
 2. Hadoop assembles those records into context groups according to their label.
