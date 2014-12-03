@@ -118,85 +118,178 @@ This new path to truth is what Peter Norvig (Google's Director of Research) call
 
 The proposition that the Unreasonaly-Effective Method is a worthwhile rival to the Scientific Method is sure to cause barroom brawls at scientific conferences for years to come. This book will not go deeply into advanced algorithms, but we will repeatedly see examples of Unreasonable Effectiveness, as the data comes forth with patterns of its own.
 
-=== The Answer to the Crisis
+=== 对该危机的解决方案
 
-One solution to the big data crisis is high-performance supercomputing (HPC): push back the limits of computation with brute force. We could conduct our election by gathering supporters of one candidate on a set of cornfields in Iowa, supporters of the other on cornfields in Iowa, and using satellite imaging to tally the result. HPC solutions are exceptionally expensive, require the kind of technology seen only when military and industrial get complex, and though the traditional "all data is local" methods continue to work, they lose their essential straightforward flavor. A supercomputer is not one giant connected room, it's a series of largish rooms connected by very wide multidimensional hallways; HPC programmers have to constantly think about the motion of data among caches, processors, and backing store.
 
-The most important alternative to the HPC approach is the big data tool http://hadoop.apache.org[Hadoop]
-which effectively takes the opposite approach. Instead of full control over all aspects of computation and the illusion of data locality, Hadoop revokes almost all control over the motion of data.  Furthermore, unlike the HPC solutions of yore, Hadoop runs on commodity hardware and addresses a wide range of problem domains (finance, medicine, marketing; images, logfiles, mathmatical computation). This power comes at a cost, though. Hadoop understands only a limited vocabulary known as Map/Reduce, and you'll need to learn that vocabulary if Hadoop is to do any work for you.
 
-To get a taste of Map/Reduce, imagine a publisher that banned all literary forms except the haiku:
+大数据危机的一个解决方案是高性能超计算（HPC）:使之回溯到蛮力（brute force）计算的范畴。我们能够以这样的方式进行我们的选举，将一个侯选人的支持者们聚集到爱荷华州的一块玉米地中，将其他侯选者的支持者们聚集到爱荷华州其他的玉米地中，并通过卫星成像技术统计结果。HPC解决方案异常昂贵，似乎只有当军事跟工业变得复杂时该技术才被需要，尽管传统的“所有数据都是本地的”方法继续动作，但它们失去了它们即简单而又快速的根本特征。一台超级计算机不是一个巨型的无隔断房间，而是由很宽的多维的走廊连接起来的一系列稍大房间；HPC程序员不得不经常考虑数据在缓存、处理器以及后备存储器之间的运行。
+
+
+
+HPC解决方案最重要的可选性方法是大数据工具http://hadoop.apache.org[Hadoop]它有效地采用了相反的方法，Hadoop几乎撤销了所有对数据运动的控制，而不是全部控制计算的所有点及局部数据的错觉。此外，跟以往的HPC解决方案不同，Hadoop运行在商业硬件上，解决广泛的问题域（囊括商业，医药，营销，镜像，日志文件，数学计算）。尽管得到这些能力需要成本。Hadoop 只理解一个有限的词汇表，它以Map/Reduce被人熟知，你只需要知道那些能让hadoop为你服务的词汇。
+
+
+
+让我们来体验一下Map/Reduce，想像一个出版商，他除了俳句外不采用其他所有文学形式:
+
+
 
 [verse, The Map/Reduce Haiku]
+
 ____________________________________________________________________
+
 data flutters by
+
     elephants make sturdy piles
+
   context yields insight
+
 ____________________________________________________________________
 
-Our Map/Reduce haiku illustrates Hadoop's template:
 
-1. The Mapper portion of your script processes records, attaching a label to each.
-2. Hadoop assembles those records into context groups according to their label.
-3. The Reducer portion of your script processes those context groups and writes them to a data store or external system.
 
-While it would be unworkable to have every novel, critical essay, or sonnet be composed of haikus, map/reduce is surprisingly more powerful. From this single primitive, we can construct the familiar relational operations (such as GROUPs and ROLLUPs) of traditional databases, many machine-learning algorithms, matrix and graph transformations and the rest of the advanced data analytics toolkit.
+我们的Map/Reduce俳句说明了Hadoop的模板:
 
-In the coming chapters, we'll walk you through Map/Reduce in its pure form.  We recognize that raw Map/Reduce can be intimidating and inefficient to develop, so we'll also spend a fair amount of time on Map/Reduce abstractions such as Wukong and Pig.
 
-Wukong is a thin layer atop Hadoop using the Ruby programming language. It's the most easily-readable way for us to demonstrate the patterns of data analysis, and you will be able to lift its content into the programming language of your choice footnote:[In the spirit of this book's open-source license, if an eager reader submits a "translation" of the example programs into the programming language of their choice we would love to fold it into in the example code repository and acknowledge the contribution in future printings.]. It's also a powerful tool you won't grow out of.
 
-The high-level Pig programming language has you describe the kind of full-table transformations familiar to database programmers (selecting filtered data, groups and aggregations, joining records from multiple tables). Pig carries out those transformations using efficient map/reduce scripts in Hadoop, based on optimized algorithms you'd otherwise have to reimplement or do without. To hit the sweet spot of "common things are simple, complex things remain possible", you can extend Pig with User-Defined Functions (UDFs), covered in chapter (REF).
+1. 脚本的Mapper部分处理记录，给每个记录附加一个标签。
 
-This book's code will be roughly 30% Wukong, 60% Pig, and 10% using Java to extend Pig.
+2. Hadoop根据标签将这些记录组合为文本组。
 
-Let's take a quick look at some code to compare the two tools.
+3. 脚本的Reducer部分处理这些文本组，将其写入到一个数据仓库或是外部系统中。
 
-First, here's a Wukong script.  Don't worry about understanding it in full; just try to get a feel for the flow.
+
+
+虽说它不能对所有的小说，批判文章，或是由俳句组成的十四行诗生效，但map/reduce体现出令人惊讶的能力。从这最基本点出发，我们能够构建传统数据库中熟悉的关系运算（例如GROUP和ROLLUP ），许多机器学习算法，图和矩阵的转换及其他先进的数据分析工具包。
+
+
+
+在下一章，我们将在Map/Reduce的纯粹形式中漫游。我们认识到用原始的Map/Reduce来开发是吓人跟低效的，因此我们同样将花费大量时间了解Map/Reduce抽象例如Wukong跟Pig。
+
+
+
+Wukong是在Hadoop上使用Ruby编程语言的薄层抽象。它是演示数据分析模式最简单可读的方法，你将能够将它内容升华为你选择的编程语言 footnote:[本书的开源许可证精神中，如果一个求知欲很强的读者提交了用自己选择的编程语言翻译的示例程序的一个翻译，我们将很高兴将它收纳入示例代码知识库中，并在未来的出版物中对此表示感谢]. 它同样是你用了就会被牢牢抓住而不会抛弃的强大工具。
+
+
+
+高层次的Pig编程语言有跟数据库程序员很熟悉的你所描述的这种全表转换（从多个表中查询过滤的数据，分组、聚合、联接记录）。
+
+(这以以最佳的算法为基础，这算法你可以实现当然不用也行)，在Hadoop中Pig使用有效的map/reduce脚本执行这些转换。为了击中 “常见的事物是简单的，复杂的事物是有可能的”的“最佳听音位置”，你可以使用用户定义函数拓展Pid，详见参考章。
+
+
+
+本书的代码大约使用30%的Wukong，60%的Pig,以及10%的Java来拓展Pig。
+
+
+
+让我们快速地浏览若干代码来比较这两个工具。
+
+
+
+首先，让我们来看一段Wukong脚本。
+
+
+
+不用担心不能全部读懂它，你只需要试着跟随脚本流来感受感受Wukong脚本。
+
+
 
     # CODE validate script, column number, file naming
-    cat ufo_sightings.tsv		      | \
-      egrep "\w+\tUnited States of America\t" | \
-      cut -f 11				      | \
-      sort				      | \
+
+    cat ufo_sightings.tsv		      | 
+
+
+
+      egrep "w+	United States of America	" | 
+
+
+
+      cut -f 11				      | 
+
+
+
+      sort				      | 
+
+
+
       uniq -c > /tmp/state_sightings_ct_sh.tsv
 
+
+
     SELECT COUNT(*), `state`
+
       FROM `ufo_sightings`.sightings ufos
+
       WHERE (`country` = 'United States of America') AND (`state` != '')
+
       GROUP BY `ufos`.`state`
+
       INTO OUTFILE '/tmp/state_sightings_ct_sql.tsv';
 
+
+
     outfile = File.open('/tmp/state_sightings_ct_rb.tsv', "w");
+
     File.open('ufo_sightings.tsv').
-      select{|line| line =~ /\w+\tUnited States of America\t/ }.
-      map{|line| line.split("\t")[10] }.
+
+      select{|line| line =~ /w+	United States of America	/ }.
+
+      map{|line| line.split("	")[10] }.
+
       sort.chunk(&:to_s).
+
       map{|key,grp| [grp.count, key] }.
-      each{|ct,key| outfile << [ct, key].join("\t") << "\n" }
+
+      each{|ct,key| outfile << [ct, key].join("	") << "
+
+" }
+
     outfile.close
 
-We simply _load_ a table, _project_ one field from its contents, _sort_ the values (and in so doing, group each state name's occurrences in a contiguous run), _aggregate_ each group into value and count, and _store_ them into an output file.
+
+
+我们简单地 _加载_ 一张表 ,从它的内容中 _映射_ 一个域,对值 _排序_  (在做些的过程中，在持续的流动中对每一州名字的出现进行分组),将每个组 _聚合_ 成值和总个数, 并将其 _存储_ 到一个外部文件中。
+
+
 
 ----
+
     mapper(:tsv) do |_,_,_,_,_,_,_,_,_,state,country,*_|
+
       yield state if country = "United States of America"
+
     end
+
+
 
     reducer do |state, grp|
+
       yield [state, grp.count]
+
     end
-----
-
-Here's a similar operation using Pig:
 
 ----
+
+
+
+现在，让我们来看使用Pig脚本的相似操作:
+
+
+
+----
+
     sightings          = load_sightings();
+
     sightings_us       = FILTER sightings BY (country == 'United States of America') AND (state != '');
+
     states             = FOREACH sightings_us GENERATE state;
+
     state_sightings_ct = FOREACH (GROUP states BY state)
+
       GENERATE COUNT_STAR(states), group;
+
     STORE state_sightings_ct INTO '$out_dir/state_sightings_ct_pig';
+
 ----
 
 === 三剑客: 批量, 流式, 缩放
