@@ -120,18 +120,18 @@ Everywhereway eythay areway isestway Theyway areway ethay agimay
 
 注：在本地的一个数据子集上开展开发工作不仅仅是因为更快和更便宜，还有更多原因。更重要的是，然而提取一个有意义的表的子集同时也迫使你去了解你的数据及其数据间的关系。由于所有的数据在本地，会迫使首先找到好的做法“我将会用这些数据做什么”和进一步考虑“我该如何有效的去处理这些数据”。往往初学者会相信其对立面，但经验告诉我们，为准备一个子集的前期投资总是值得的，而不是从一开始就关注效率问题。
 
-=== Data on the cluster
+=== 集群上的数据
 
-If you've skimmed Hadoop's documentation already, you've probably seen the terms _fully-distributed,_ _pseudo-distributed,_ and _local_ bandied about. Those describe different ways to setup your Hadoop cluster, and they're relevant to how you'll run the examples in this chapter.
-We've setup a virtual Hadoop environment for you using Docker, and you can develop and test Hadoop jobs using your laptop, just like having a real cluster. Your jobs will run in fully-distributed mode, making use of the cluster's filesystem called HDFS (Hadoop Distributed File System).
+如果你之前阅读了Hadoop的官方文档, 那么你可能已经看到过这些广为使用的术语 _fully-distributed(完全分布模式),_ _pseudo-distributed(伪分布模式) 和 _local_（本地模式）。 他们描述了配置Hadoop集群的不同方式, 本章中如何运行这些实例和他们密切相关。
+借助Docker，我们已经为您建立一套虚拟Hadoop环境, 你可以在你的电脑中通过虚拟环境开发和测试Hadoop作业运行情况, 就像在真实集群中操作一样. 你的作业通过使用称为HDFS(Hadoop分布式文件系统)的集群文件系统，运行于完全分布模式状态。
 
-Run the following commands to check out what lies on HDFS:
+运行如下的Hadoop 命令，检查HDFS上有何变化:
 
 ------
 hadoop fs -ls .
 ------
 
-The dot `.` is treated as your HDFS home directory (use it as you would `~` in Unix.). The `hadoop fs` command takes a command and a path, just like the *nix command. In addition to `-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` and `-tail` also work. Now check out /data:
+点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`). The `hadoop fs` command takes a command and a path, just like the *nix command. In addition to `-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` and `-tail` also work. Now check out /data:
 
 ------
 hadoop fs -ls /data/gold
@@ -149,7 +149,7 @@ First, let's test on the same tiny little file we used at the command-line. This
 hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar -file ./examples/ch_01/pig_latin.py -mapper ./examples/ch_01/pig_latin.py -input /data/gold/text/gift_of_the_magi.txt -output ./translation.out
 ------
 
-You should see something like this:
+你会看到类似如下的输出结果:
 
 ------
 14/11/20 06:03:51 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
@@ -227,7 +227,7 @@ packageJobJar: [./examples/ch_01/pig_latin.py] [/usr/lib/hadoop-mapreduce/hadoop
 14/11/20 06:04:10 INFO streaming.StreamJob: Output directory: ./translation.out
 ------
 
-.The Job Browser
+.作业浏览窗口
 ********
 While the script outputs a bunch of happy robot-ese to your screen, open up the job browser at http://$CLUSTER_IP:9001/jobbrowser/ in your browser window. You'll need to login with chimpy/chimpy. The job should appear on the job browser window within a few seconds.
 
@@ -235,19 +235,19 @@ The job browser offers a built-in console for monitoring and diagnosing jobs. It
 
 image:images/01_job_browser_1.png[Hue Job Browser Interface]
 
-You will notice a list of jobs, the only entry being the job you just executed. Columns called map and reduce denote the percentage of completeness for mappers and reducers. Clicking on the job's id will take you to a page summarizing that job. To the left of the page is a box summarizing the job: user, status, a link to logs, as well as a count of maps and reduces and the duration of the job. You can also view the logs of the job, which is helpful during debugging.
+你将会看到一个作业列表, the only entry being the job you just executed. Columns called map and reduce denote the percentage of completeness for mappers and reducers. Clicking on the job's id will take you to a page summarizing that job. To the left of the page is a box summarizing the job: user, status, a link to logs, as well as a count of maps and reduces and the duration of the job. 你还可以查看作业执行日志, which is helpful during debugging.
 
 image:images/01_job_browser_2.png[Hue Job Browser Interface - Job Page]
 
 ******
 
-You can compare the job's output to the local execution we ran earlier by running:
+通过运行如下命令，你可以与之前本地运行输出结果进行对比:
 
 ------
 hadoop fs -cat ./translation.out/*
 ------
 
-That command, like the Unix ‘cat’ command, dumps the contents of a file to standard out, so you can pipe it into any other command line utility. It produces the full contents of the file, which is what you would like for use within scripts but if your file is hundreds of MB large, as HDFS files typically are, dumping its entire contents to your terminal screen is ill appreciated. We typically, instead, use the Unix ‘head’ or 'tail' command to limit its output (in this case, to the last ten lines).
+该命令, 功能同 Unix 中的‘cat’ 命令相同, 标准输出文件的内容, so you can pipe it into any other command line utility. It produces the full contents of the file, which is what you would like for use within scripts but if your file is hundreds of MB large, as HDFS files typically are, dumping its entire contents to your terminal screen is ill appreciated. We typically, instead, use the Unix ‘head’ or 'tail' command to limit its output (in this case, to the last ten lines).
 
 ------
 hadoop fs -cat ./translation.out/* | tail -n 20
@@ -259,13 +259,13 @@ Here's what the head and tail of your output should contain:
 
 image:images/01_pig_latin_output_1.png[Pig Latin Job Output]
 
-Hadoop has its own 'head' and 'tail' commands:
+Hadoop 也实现了自己的 'head' 'tail' 命令:
 
 ------
 hadoop fs -tail ./translation.out/*
 ------
 
-=== Outro
+=== 结尾
 
-In the next chapter, you'll learn about map/reduce jobs -- the full power of Hadoop's processing paradigm. Let's start by joining JT and Nannette with their next client.
+在下一章, 你将会学习到 map/reduce 作业 -- Hadoop 处理模型的强大功能. Let's start by joining JT and Nannette with their next client.
 
