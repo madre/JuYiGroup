@@ -1,7 +1,7 @@
 [[hadoop_basics]]
-== Hadoop Basics
+== Hadoop 基础
 
-=== Introduction
+=== 简介
 
 ++++
 <remark>Please make sure the Chimpanzee and Elephant Start a Business big does NOT appear before this Introduction</remark>
@@ -37,20 +37,20 @@ The librarians in turn notify Nanette which copies of which translations they ho
 The fact that each chimpanzee's work is independent of any other's -- no interoffice memos, no meetings, no requests for documents from other departments -- made this the perfect first contract for the C&E crew. JT and Nanette, however, were cooking up a new way to put their million-chimp army to work, one that could radically streamline the processes of any modern paperful office footnote:[Some chimpanzee philosophers have put forth the fanciful conceit of a "paper-less" office, requiring impossibilities like a sea of electrons that do the work of a chimpanzee, and disks of magnetized iron that would serve as scrolls. These ideas are, of course, pure lunacy!]. JT and Nanette would soon have the chance of a lifetime to try it out for a customer in the far north with a big, big problem.
 ******
 
-=== Map-only Jobs: Process Records Individually ===
+=== Map-only 作业：单独的处理记录 ===
 
-As you'd guess, the way Chimpanzee and Elephant organize their files and workflow corresponds directly with how Hadoop handles data and computation under the hood. We can now use it to walk you through an example in detail.
+正如你所猜测，Chimpanzee 和 Elephant组织文件和工作流程的方式与Hadoop处理数据和后台计算正好对应。接下来我们通过一个详细的例子给你展示。
 
-The bags on trees scheme represents transactional relational database systems. Nanette is the Hadoop http://wiki.apache.org/hadoop/NameNode[NameNode]. The NameNode stores the directory tree structure (card catalog), and references to the data nodes for each file (librarians). JT is the http://wiki.apache.org/hadoop/JobTracker[JobTracker]. He coordinates the work of individual MapReduce tasks into a cohesive whole system. To illustrate how Hadoop works, lets dive into some code with the simplest example possible.
+在目录树上的方案包代表业务关系数据库系统。 Nanette是Hadoop的一个主节点，主节点存储的目录树结构（类似卡片目录）和每个文件的数据节点引用（类似图书管理员）。JT是任务追踪的简称，它使每个独立的MapReduce任务进入一个非常连贯的系统并协同工作。让我们从一些尽可能简单的代码入手来阐明Hadoop是如何工作的。
 
-We may not be as clever as JT's multilingual chimpanzees, but even we can translate text into a language we'll call _Igpay Atinlay_. footnote:[Sharp-eyed readers will note that this language is really called _Pig Latin._ That term has another name in the Hadoop universe, though, so we've chosen to call it Igpay Atinlay -- Pig Latin for "Pig Latin".]. For the unfamiliar, here's how to http://en.wikipedia.org/wiki/Pig_latin#Rules[translate standard English into Igpay Atinlay]:
+我们也许没有像JT的会多种语言的黑猩猩一样聪明，但即使我们能将一个文本翻译成一种被称作_Igpay Atinlay_的语言。 footnote:[Sharp-eyed readers will note that this language is really called _Pig Latin._ That term has another name in the Hadoop universe, though, so we've chosen to call it Igpay Atinlay -- Pig Latin for "Pig Latin".]. 对于不熟悉Igpay Atinlay语言者，如下两点说明如何 http://en.wikipedia.org/wiki/Pig_latin#Rules[将标准英语翻译成Igpay Atinlay语言]:
 
-* If the word begins with a consonant-sounding letter or letters, move them to the end of the word adding "ay": "happy" becomes "appy-hay", "chimp" becomes "imp-chay" and "yes" becomes "es-yay".
-* In words that begin with a vowel, just append the syllable "way": "another" becomes "another-way", "elephant" becomes "elephant-way".
+* 如果一个词是以辅音字母或者辅音发音的字母开头，将它们移到词尾并加上“ay”，如：“happy”就变成了“appy-hay”，“chimp”就变成了”imp-chay”,进而”yes”就变成了“es-yay”。
+* •	如果一个词是以元音开头，仅在词尾加上附加音节“way”即可，如：“another”就变成了“another-way”，“elephant”就变成了“elephant-way”。
 
-<<pig_latin_translator>>  is our first Hadoop job, a program that translates plain text files into Igpay Atinlay. This is a Hadoop job stripped to its barest minimum, one that does just enough to each record that you believe it happened but with no distractions. That makes it convenient to learn how to launch a job; how to follow its progress; and where Hadoop reports performance metrics such as run time and amount of data moved.  What's more, the very fact that it's trivial makes it one of the most important examples to run. For comparable input and output size, no regular Hadoop job can out-perform this one in practice, so it's a key reference point to carry in mind.
+<<pig_latin_translator>>  是我们的第一个Hadoop作业，即这个解释器只是把普通的文本文件解释成Igpay Atinlay语言。Hadoop作业只能够记录每一条你认为可以发生的记录，这就是Hadoop作业的最低限能。这使得很容易的知道它是如何发起一项作业；如何跟踪其进展，并通过运行时间、大量的数据迁移来评测Hadoop的性能情况。更重要的事实是，它在平常执行时也使它成为一个最重要的一个实例。通过适当的输入输出，不规则的Hadoop作业还能够进行熟练的超常作业，因此记住这点尤为关键。
 
-We've written this example in Python, a language that has become the lingua franca of data science. You can run it over a text file from the command line -- or run it over petabytes on a cluster (should you for whatever reason have a petabyte of text crying out for pig-latinizing).
+让我们来看一个Python的例子，Python是一种通用的数据科学语言，你可以在命令行里通过运行一个文本文件来执行它，或者在超过拍字节的集群上执行它（无论什么原因产生一个拍字节的文本迫切需要翻译成“猪拉丁语”）。
 
 [[pig_latin_translator]]
 .Igpay Atinlay translator (ch_01/pig_latin.rb)
@@ -95,13 +95,13 @@ for each line,
 end
 ----
 
-It's best to begin developing jobs locally on a subset of data, because they are faster and cheaper to run. To run the Python script locally, enter this into your terminal's command line:
+你最好在本地的一个数据子集上开始开发工作，那是因为他们执行起来更快并且更便宜。在本地执行Python脚本，只需在你的命令行里输入如下指令来执行：
 
 ------
 cat /data/gold/text/gift_of_the_magi.txt|python examples/ch_01/pig_latin.py
 ------
 
-The output should look like this:
+可能的输出结果如下：
 ------
 Theway agimay asway youway owknay ereway iseway enmay onderfullyway iseway enmay owhay oughtbray
 iftsgay otay ethay Babeway inway ethay angermay Theyway inventedway ethay artway ofway ivinggay
@@ -116,9 +116,9 @@ Everywhereway eythay areway isestway Theyway areway ethay agimay
 
 ------
 
-That's what it looks like when run locally. Let's run it on a real Hadoop cluster to see how it works when an elephant is in charge.
+它在本地执行是如上结果，让我们看看在一个真正的Hadoop集群下执行时它是如何运行的。
 
-NOTE: There are even more reasons why it's best to begin developing jobs locally on a subset of data than just faster and cheaper. What's more, though, extracting a meaningful subset of tables also forces you to get to know your data and its relationships. And since all the data is local, you're forced into the good practice of first addressing "what would I like to do with this data" and only then considering "how shall I do so efficiently". Beginners often want to believe the opposite, but experience has taught us that it's nearly always worth the upfront investment to prepare a subset, and not to think about efficiency from the beginning.
+注：在本地的一个数据子集上开展开发工作不仅仅是因为更快和更便宜，还有更多原因。更重要的是，然而提取一个有意义的表的子集同时也迫使你去了解你的数据及其数据间的关系。由于所有的数据在本地，会迫使首先找到好的做法“我将会用这些数据做什么”和进一步考虑“我该如何有效的去处理这些数据”。往往初学者会相信其对立面，但经验告诉我们，为准备一个子集的前期投资总是值得的，而不是从一开始就关注效率问题。
 
 === Data on the cluster
 
