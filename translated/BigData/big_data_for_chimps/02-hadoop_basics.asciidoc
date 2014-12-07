@@ -131,7 +131,7 @@ Everywhereway eythay areway isestway Theyway areway ethay agimay
 hadoop fs -ls .
 ------
 
-点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`). `hadoop fs` 命令需要传入2个参数：一个命令和一个路径, 如同*nix 命令。 In addition to `-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` and `-tail` also work. Now check out /data:
+点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`). `hadoop fs` 命令需要传入2个参数：一个命令和一个路径, 如同*nix 命令。 除了`-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` 和`-tail` 同样如此操作。现在，让我们査看/data目录：
 
 ------
 hadoop fs -ls /data/gold
