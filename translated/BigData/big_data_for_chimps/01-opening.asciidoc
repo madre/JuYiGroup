@@ -99,13 +99,16 @@ It is impossible, however, to count votes for the President of the United States
 Once the volume of data required for synthesis exceeds some key limit of available computation -- limited memory, limited network bandwith, limited time to prepare a relevant answer, or such -- you're forced to fundamentally rework how you synthesize insight from data.一旦需要合成的数据量超过一些关键的计算瓶颈 -- 有限的内存，有限的网络带宽，有限的时间来准备相关回应，等等 -- 你将被迫从根本上重新思考怎样从数据中合成insight
 
 We conduct a presidential election by sending people to local polling places, distributed so that the participants to not need to travel far, and sized so that the logistics of voting remain straightforward. At the end of day the vote totals from each polling place are summed and sent to the state Elections Division. The folks in the Elections Division office add the results from each polling place to prepare the final result. This new approach doesn't completely discard the straightforward method (gathering people to the same physical location) that worked so well in the small. Instead, it applies another local method (summing a table of numbers). The orchestration of a gathering stage, an efficient data transfer stage, and a final tabulation stage arrives at a correct result, and the volume of people and data never exceeds what can be efficiently processed.
-我们派人到地方投票处进行总统选举，分散开来以便于参与者不用长途跋涉，定量以便于选举的流程保持流畅。反而，这运用的是另外一个土办法（对某个数字表进行求和）。数据收集阶段的编配，这是一个有效数据传输阶段
+我们派人到地方投票点进行总统选举，分散开来以便于参与者不用长途跋涉，定量以便于选举的流程保持流畅。在一天结束之时，各个投票点进行汇总总票数，并送往州选举部门。州选举办公厅的工作人员汇总所有投票点的票数并准备最终票选结果。这种新方法并没有完全摒弃简单有效的办法（聚集人们到同一个实际位置），反而，它运用了另外一个土办法（对某个数字表进行求和）。对数据收集阶段的编配，这是一个有效数据传输阶段，最终生成正确的报表，这种情况下人和数据量永远不会超过那些需要有效处理的量。
 
-So our first definition of Big Data is a response to a crisis: "A collection of practical data analysis tools and processes that continue to scale even as the volume of data for justified synthesis exceeds some limit of available computation".
+So our first definition of Big Data is a response to a crisis: "A collection of practical data analysis tools and processes that continue to scale even as the volume of data for justified synthesis exceeds some limit of available computation".因此我们对大数据最根本的定义是应对危机：“它是实际数据分析工具的集合，即使合理生成的数据量超出了一些可用性的瓶颈，也可以继续规模化地处理”
 
 // In Chapter 6 (REF) we'll map out the riotous diversity of tools in the Big Data ecosystem,
 // Hadoop is the ubiquitous choice for processing batches of data at high
 // Hadoop is the tool to use when you want to understand how patterns in data from your manufacturing devices corresponds to defective merchandise returned months later, or how patterns in patients' postoperative medical records correspond to the likelihood they'll be re-admitted with complications.
+//在第六章（REF）我们会介绍大数据系统中工具的多样性，
+//Hadoop是高速批处理数据的普遍选择
+//Hadoop是当你想搞清楚从生产设备的数据中获取的模式是如何反应出几个月后退回的有缺陷的产品，或者从病人的术后医疗记录中获取的模式是如何反应出引发并发症的可能性
 
 === Big Data: Algorithms to Capitalize on the Opportunity of Comprehensive Data大数据：使错综复杂的数据资本化的算法
 
