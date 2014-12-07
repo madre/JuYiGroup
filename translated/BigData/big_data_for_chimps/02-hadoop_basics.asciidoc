@@ -26,7 +26,7 @@ A few years back, two friends -- JT, a gruff chimpanzee, and Nanette, a meticulo
 
 The publishing firm’s project was to translate the works of Shakespeare into every language known to man, so JT and Nanette devised the following scheme. Their crew set up a large number of cubicles, each with one elephant-sized desk and several chimp-sized desks, and a command center where JT and Nanette can coordinate the action.
 
-As with any high-scale system, each member of the team has a single responsibility to perform. The task of each chimpanzee is simply to read a set of passages and type out the corresponding text in a new language. JT, their foreman, efficiently assigns passages to chimpanzees, deals with absentee workers and sick days, and reports progress back to the customer. The task of each librarian elephant is to maintain a neat set of scrolls, holding either a passage to translate or some passage's translated result. Nanette serves as chief librarian. She keeps a card catalog listing, for every book, the location and essential characteristics of the various scrolls that maintain its contents. 
+As with any high-scale system, each member of the team has a single responsibility to perform. The task of ǒǒeach chimpanzee is simply to read a set of passages and type out the corresponding text in a new language. JT, their foreman, efficiently assigns passages to chimpanzees, deals with absentee workers and sick days, and reports progress back to the customer. The task of each librarian elephant is to maintain a neat set of scrolls, holding either a passage to translate or some passage's translated result. Nanette serves as chief librarian. She keeps a card catalog listing, for every book, the location and essential characteristics of the various scrolls that maintain its contents. 
 
 When workers clock in for the day, they check with JT, who hands off the day's translation manual and the name of a passage to translate. Throughout the day the chimps radio progress reports in to JT; if their assigned passage is complete, JT will specify the next passage to translate.
 
@@ -131,7 +131,7 @@ Everywhereway eythay areway isestway Theyway areway ethay agimay
 hadoop fs -ls .
 ------
 
-点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`). The `hadoop fs` command takes a command and a path, just like the *nix command. In addition to `-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` and `-tail` also work. Now check out /data:
+点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`). `hadoop fs` 命令需要传入2个参数：一个命令和一个路径, 如同*nix 命令。 In addition to `-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` and `-tail` also work. Now check out /data:
 
 ------
 hadoop fs -ls /data/gold
@@ -257,7 +257,7 @@ hadoop fs -cat ./translation.out/* | tail -n 20
 
 以下为你的输出结果中头，尾应该包含的内容:
 
-image:images/01_pig_latin_output_1.png[Pig Latin Job Output]
+image:images/01_pig_latin_output_1.png[Pig Latin 作业输出]
 
 Hadoop 也实现了自己的 'head' 'tail' 命令:
 
