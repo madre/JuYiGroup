@@ -88,50 +88,39 @@ How to augment）
 
 
 
-=== Big Data: Tools to Solve the Crisis of Comprehensive Data
+=== 大数据：处理错综复杂的数据的工具
 
-Let's take an extremely basic analytic operation: counting. To count the votes for a bill in the state legislature, or for what type of pizza to order, we gather the relevant parties into the same room at a fixed time and take a census of opintions. The logistics here are straightforward.
-
-It is impossible, however, to count votes for the President of the United States this way. No conference hall is big enough to hold 300 million people; if there were, no roads are wide enough to get people to that conference hall; and even still the processing rate would not greatly exceed the rate at which voters come of age or die.
-
-Once the volume of data required for synthesis exceeds some key limit of available computation -- limited memory, limited network bandwith, limited time to prepare a relevant answer, or such -- you're forced to fundamentally rework how you synthesize insight from data.
-
-We conduct a presidential election by sending people to local polling places, distributed so that the participants to not need to travel far, and sized so that the logistics of voting remain straightforward. At the end of day the vote totals from each polling place are summed and sent to the state Elections Division. The folks in the Elections Division office add the results from each polling place to prepare the final result. This new approach doesn't completely discard the straightforward method (gathering people to the same physical location) that worked so well in the small. Instead, it applies another local method (summing a table of numbers). The orchestration of a gathering stage, an efficient data transfer stage, and a final tabulation stage arrives at a correct result, and the volume of people and data never exceeds what can be efficiently processed.
-
-So our first definition of Big Data is a response to a crisis: "A collection of practical data analysis tools and processes that continue to scale even as the volume of data for justified synthesis exceeds some limit of available computation".
+我们派人到地方投票点进行总统选举，分散开来以便于参与者不用长途跋涉，定量以便于选举的流程保持流畅。在一天结束之时，各个投票点进行汇总总票数，并送往州选举部门。州选举办公厅的工作人员汇总所有投票点的票数并准备最终票选结果。这种新方法并没有完全摒弃简单有效的办法（聚集人们到同一个实际位置），反而，它运用了另外一个土办法（对某个数字表进行求和）。对数据收集阶段的编配，这是一个有效数据传输阶段，最终生成正确的报表，这种情况下人和数据量永远不会超过那些需要有效处理的量。
+因此我们对大数据最根本的定义是应对危机：“它是实际数据分析工具的集合，即使合理生成的数据量超出了一些可用性的瓶颈，也可以继续规模化地处理”
 
 // In Chapter 6 (REF) we'll map out the riotous diversity of tools in the Big Data ecosystem,
 // Hadoop is the ubiquitous choice for processing batches of data at high
 // Hadoop is the tool to use when you want to understand how patterns in data from your manufacturing devices corresponds to defective merchandise returned months later, or how patterns in patients' postoperative medical records correspond to the likelihood they'll be re-admitted with complications.
+//在第六章（REF）我们会介绍大数据系统中工具的多样性，
+//Hadoop是高速批处理数据的普遍选择
+//Hadoop是当你想搞清楚从生产设备的数据中获取的模式是如何反应出几个月后退回的有缺陷的产品，或者从病人的术后医疗记录中获取的模式是如何反应出引发并发症的可能性
 
-=== Big Data: Algorithms to Capitalize on the Opportunity of Comprehensive Data
+=== 大数据：使错综复杂的数据资本化的算法
 
-The excitement around Big Data is more than you could explain as "like databases, but bigger". Those tools don't just unlock a new region of scalability, they enable transformative new capabilities.
+围绕大数据的兴奋点要超出人们解释的“像数据库，只不过大一些”那样。这些工具不仅是开启一个新的可拓展领域，它们更开启了变化的新能力
 
-The data that's powering this revolution isn't just comprehensive, it's _connected_. When your one-in-a-thousand events manifest in sample of ten thousand records, it's noise. When they manifest in ten million records, tiny coincidences reinforce each other to produce patterns. The website etsy.com (an open marketplace for handcrafted goods) has millions of records showing which handcrafted goods people browse and buy. And thanks to their Facebook app they have access to millions of people who have shown interest in those handcrafted goods. Thanks to Facebook's data, they have as well the overlapping interests of those potential customers: "surfing", "big data", "barbeque". Now work backwards. From each interest, find the customers, and from the customers find the purchases, and from the purchase find the categories. What comes forth are unmistakeable patterns such as "People who like the band Lynrd Skynrd are overwhelmingly more likely to purchase Taxidermy". Etsy can better connect people with the things they love, their sellers can better connect with a their fans, and southern-fried rockers can accessorize their living room with that elk's head they always wanted.
+发动这场变革的数据不仅是广泛的，它们是互相连接的。千分之一的事件在1万个样本中表明的，是杂乱的数据。但当这些事件在千万的样本中所表明的是，细微的巧合相互作用从而生成一个模式。etsy.com网站（一个开放的手工制品市场）有成千上万的数据显示哪些手工制品被人们浏览和购买。并且，归功于他们的脸书应用，他们已经获知对这些手工制品感兴趣的上百万用户信息。归功于脸书的数据，他们同样能获知那些潜在消费者的其他共同兴趣：“冲浪”， “大数据”，“烧烤”。现在往回推论。从每一个兴趣点，找寻消费者，从每个消费者追溯到商品，再从商品找到类别。得到的是不易出错的模式就像“喜欢Lynrd Skynrd乐队的人绝大多数都购买动物标本制作品”。Etsy可以很好的连接人和他们喜欢的事物，销售商可以很好的连接他们的商品粉丝，还有南方摇滚们可以装饰他们一直向往的麋鹿头在他们的卧室里。
 
-Here's what's surprising and important: the algorithms to expose these patterns are not specific to e-commerce, and don't require coming in with guesses about the associations to draw. The work proceeds in three broad steps: (a) provide comprehensive data, identifying its features and connectivity; (b) apply generic methods that use only those features and connectivity (and not a domain-specific model), to expose patterns in the data; (c) interpret those patterns back into the original domain.
+让人惊讶和重要的是：揭露这些模式的算法不是特定于电子商务，也不需要对未来将要制定出的种种关联模式的各种猜想。它有三大步：（a）提供广泛数据，辨明特性和关联；（b）应用泛型方法分析这些特性和关联（并非在某一特定领域模型），以揭露数据中的各种模式；（c）回归原始环境来阐释这些模式
 
-This does _not_ follow the accepted path to truth, namely the Scientific Method. Roughly speaking, the scientific method has you (a) use a simplified model of the universe to make falsifiable predictions; (b) test those predictions in controlled circumstances; (c) use established truths to bound any discrepancies footnote:[plus (d) a secret dose of our sense of the model's elegance]. Under this paradigm, data is non-comprehensive: scientific practice demands you carefully control experimental conditions, and the whole point of the model is to strip out all but the reductionistically necessary parameter. A large part of the analytic machinery acts to account for discrepancies from sampling (too little comprehensiveness) or discrepancies from "extraneous" effects (too much comprehensiveness). If those discrepancies are modest, the model is judged to be valid.
+这并不遵循过去被人们认知的真理，也就是科学方法。大约说来，科学方法可以使你（a）运用特定领域的简单化模型做出可证伪的预测；（b）可控的环境下测试这些预测；（c）用已经存在的真理来界定出任何的差异 脚注：【加上（d）我们感知来分析模型】。在这种范例下，数据不是错综复杂的：科学实践需要人们严禁地控制实验环境，对模型全部的关注点在于简化必要的参数，剩下的被剔除。相当大部分的分析器被用来解释从样本中获取的差异（太少的全面性），或者通过外力效应获取的差异（太全面）。如果这些差异并不大，那么模型将被视为有效的
 
-This new path to truth is what Peter Norvig (Google's Director of Research) calls "http://static.googleusercontent.com/media/research.google.com/en/us/pubs/archive/35179.pdf[The unreasonable effectiveness of data]". You don't have to start with a model and you don't necessarily end up with a model. There's no simplification of the universe down to a smaller explanation you can carry forward. Sure, we can apply domain knowledge and say that the correspondence of Lynrd Skynrd with Taxidermy means the robots have captured the notion of "Southern-ness". But for applying the result in practice, there's no reason to do so. The algorithms have replaced a uselessly complicated thing (the trillions of associations possible from interest to product category) with an _actionably_ complicated thing (a scoring of what categories to probabilistically present based on interest). You haven't confirmed a falsifiable hypothesis. But you can win at the track.
-
-The proposition that the Unreasonaly-Effective Method is a worthwhile rival to the Scientific Method is sure to cause barroom brawls at scientific conferences for years to come. This book will not go deeply into advanced algorithms, but we will repeatedly see examples of Unreasonable Effectiveness, as the data comes forth with patterns of its own.
+新的真理是被Peter Norvig（谷歌的调研主管）称作为“http://static.googleusercontent.com/media/research.google.com/en/us/pubs/archive/35179.pdf
+【数据的unreasonable effectiveness】”你不需要开始于模型，也不必结束于模型。这里没有对整个领域进行简化到人们可以推进的细微程度。当然，我们可以应用领域知识说Lynrd Skynrd乐队和剥制术的对应关系意味着机器已经捕捉到南方人的特性。但是为了应用结果到实践中，根本就没有理由要这样做。此算法已经替代了无用的复杂的事物（从产品分类获取到万亿种潜在的关联），取而代之的是可控的复杂的事物（每种类别基于兴趣呈现的概率值）。你还没有印证一个可证伪的假设。但是你可以在追踪的过程中取胜。
+Unreasonaly-Effective Method的提出是科学方法的强有力的对手，这必将在未来几年再学术论坛上引来无数争论。这本书将不会讲太深的高级算法，但是将会不停地用Unreasonable Effectiveness的案列，来看看数据是如何从自身衍生出来模式的
 
 === 对该危机的解决方案
 
-
-
 大数据危机的一个解决方案是高性能超计算（HPC）:使之回溯到蛮力（brute force）计算的范畴。我们能够以这样的方式进行我们的选举，将一个侯选人的支持者们聚集到爱荷华州的一块玉米地中，将其他侯选者的支持者们聚集到爱荷华州其他的玉米地中，并通过卫星成像技术统计结果。HPC解决方案异常昂贵，似乎只有当军事跟工业变得复杂时该技术才被需要，尽管传统的“所有数据都是本地的”方法继续动作，但它们失去了它们即简单而又快速的根本特征。一台超级计算机不是一个巨型的无隔断房间，而是由很宽的多维的走廊连接起来的一系列稍大房间；HPC程序员不得不经常考虑数据在缓存、处理器以及后备存储器之间的运行。
-
-
 
 HPC解决方案最重要的可选性方法是大数据工具http://hadoop.apache.org[Hadoop]它有效地采用了相反的方法，Hadoop几乎撤销了所有对数据运动的控制，而不是全部控制计算的所有点及局部数据的错觉。此外，跟以往的HPC解决方案不同，Hadoop运行在商业硬件上，解决广泛的问题域（囊括商业，医药，营销，镜像，日志文件，数学计算）。尽管得到这些能力需要成本。Hadoop 只理解一个有限的词汇表，它以Map/Reduce被人熟知，你只需要知道那些能让hadoop为你服务的词汇。
 
-
-
 让我们来体验一下Map/Reduce，想像一个出版商，他除了俳句外不采用其他所有文学形式:
-
 
 
 [verse, The Map/Reduce Haiku]
