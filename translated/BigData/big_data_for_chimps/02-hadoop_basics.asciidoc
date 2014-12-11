@@ -131,17 +131,17 @@ Everywhereway eythay areway isestway Theyway areway ethay agimay
 hadoop fs -ls .
 ------
 
-点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`). `hadoop fs` 命令需要传入2个参数：一个命令和一个路径, 如同*nix 命令。 除了`-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` 和`-tail` 同样如此操作。现在，让我们査看/data目录：
+点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`)。 `hadoop fs` 命令需要传入2个参数：一个命令和一个路径, 如同*nix 命令。 除了`-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` 和`-tail` 同样如此操作。现在，让我们査看/data目录：
 
 ------
 hadoop fs -ls /data/gold
 ------
 
-你将会看到我们在整本书中使用的一些数据.
+你将会看到我们在整本书中使用的一些数据。
 
 ==== 运行作业 ====
 
-首先, 我们使用命令行在之前使用的那个小文件上进行测试. 该命令并不处理数据而是调用hadoop去处理数据, 因此它的输出将会包含作业处理状态信息.
+首先, 我们使用命令行在之前使用的那个小文件上进行测试。 该命令并不处理数据而是调用hadoop去处理数据, 因此它的输出将会包含作业处理状态信息。
 
 // Make sure to notice how much _longer_ it takes this elephant to squash a flea than it took to run without Hadoop.
 
@@ -229,13 +229,13 @@ packageJobJar: [./examples/ch_01/pig_latin.py] [/usr/lib/hadoop-mapreduce/hadoop
 
 .作业浏览窗口
 ********
-当你的屏幕上开始输出一系列运行状态时, 在你的浏览器窗口中打开链接 http://$CLUSTER_IP:9001/jobbrowser/ . 你会被要求使用chimpy/chimpy 进行登录. 几秒钟后你将会看到作业运行信息.
+当你的屏幕上开始输出一系列运行状态时, 在你的浏览器窗口中打开链接 http://$CLUSTER_IP:9001/jobbrowser/ 。 你会被要求使用chimpy/chimpy 进行登录。 几秒钟后你将会看到作业运行信息。
 
-作业浏览窗口提供了一个自带的操作台用于监视和诊断这些作业. 他是Hue的一部分 - Hadoop 图形用户界面.
+作业浏览窗口提供了一个自带的操作台用于监视和诊断这些作业。 他是Hue的一部分 - Hadoop 图形用户界面。
 
 image:images/01_job_browser_1.png[Hue Job Browser Interface]
 
-你将会看到一个作业列表, the only entry being the job you just executed.  map 和 reduce 列分别表示 mappers 和 reducers 的完成百分比. 点击作业的ID会跳转到该作业的汇总页面. 该页面的左边是作业的汇总信息: 用户, 状态, 指向日志的链接, map 和 reduce 的 数量以及作业执行时间. 你还可以查看作业执行日志, 这将有助于作业问题的调试.
+你将会看到一个你刚刚执行过的作业列表。  map 和 reduce 列分别表示 mappers 和 reducers 的完成百分比。 点击作业的ID会跳转到该作业的汇总页面. 该页面的左边是作业的汇总信息: 用户, 状态, 指向日志的链接, map 和 reduce 的 数量以及作业执行时间。 你还可以查看作业执行日志, 这将有助于作业问题的调试。
 
 image:images/01_job_browser_2.png[Hue Job Browser Interface - Job Page]
 
@@ -247,7 +247,7 @@ image:images/01_job_browser_2.png[Hue Job Browser Interface - Job Page]
 hadoop fs -cat ./translation.out/*
 ------
 
-该命令, 功能同 Unix 中的‘cat’ 命令相同, 标准输出文件的内容, so you can pipe it into any other command line utility. It produces the full contents of the file, which is what you would like for use within scripts but if your file is hundreds of MB large, as HDFS files typically are, dumping its entire contents to your terminal screen is ill appreciated. We typically, instead, use the Unix ‘head’ or 'tail' command to limit its output (in this case, to the last ten lines).
+该命令, 功能同 Unix 中的‘cat’ 命令相同, 标准输出文件的内容, 因此你可以在任何命令行实用工具中实用它。 其功能是输出整个文件的内容, 你可以在脚本中使用它，但是如果你的文件有几百MB, HDFS通常是把整个文件的内容输出到你的屏幕，这种做法并不可取。通常我们的替代方法是 使用类似Unix的 ‘head’ 或 'tail' 命令限制输出 (在本实例里, 输出最后10行)。
 
 ------
 hadoop fs -cat ./translation.out/* | tail -n 20
