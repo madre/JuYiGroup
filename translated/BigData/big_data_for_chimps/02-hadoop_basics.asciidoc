@@ -43,7 +43,7 @@ The fact that each chimpanzee's work is independent of any other's -- no interof
 
 在目录树上的方案包代表业务关系数据库系统。 Nanette是Hadoop的一个主节点，主节点存储的目录树结构（类似卡片目录）和每个文件的数据节点引用（类似图书管理员）。JT是任务追踪的简称，它使每个独立的MapReduce任务进入一个非常连贯的系统并协同工作。让我们从一些尽可能简单的代码入手来阐明Hadoop是如何工作的。
 
-我们也许没有像JT的会多种语言的黑猩猩一样聪明，但即使我们能将一个文本翻译成一种被称作_Igpay Atinlay_的语言。 footnote:[Sharp-eyed readers will note that this language is really called _Pig Latin._ That term has another name in the Hadoop universe, though, so we've chosen to call it Igpay Atinlay -- Pig Latin for "Pig Latin".]. 对于不熟悉Igpay Atinlay语言者，如下两点说明如何 http://en.wikipedia.org/wiki/Pig_latin#Rules[将标准英语翻译成Igpay Atinlay语言]:
+我们也许没有像JT的会多种语言的黑猩猩一样聪明，但即使我们能将一个文本翻译成一种被称作_Igpay Atinlay_的语言。 footnote:[目光敏锐的读者会注意到 本语言 其实 叫做  _Pig Latin._ 在hadoop 世界里 它有另一个术语名称,  因此我们把 Igpay Atinlay -- Pig Latin 叫做 "Pig Latin"。]. 对于不熟悉Igpay Atinlay语言者，如下两点说明如何 http://en.wikipedia.org/wiki/Pig_latin#Rules[将标准英语翻译成Igpay Atinlay语言]:
 
 * 如果一个词是以辅音字母或者辅音发音的字母开头，将它们移到词尾并加上“ay”，如：“happy”就变成了“appy-hay”，“chimp”就变成了”imp-chay”,进而”yes”就变成了“es-yay”。
 * •	如果一个词是以元音开头，仅在词尾加上附加音节“way”即可，如：“another”就变成了“another-way”，“elephant”就变成了“elephant-way”。
