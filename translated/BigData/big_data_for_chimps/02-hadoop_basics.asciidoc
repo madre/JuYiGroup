@@ -235,7 +235,7 @@ packageJobJar: [./examples/ch_01/pig_latin.py] [/usr/lib/hadoop-mapreduce/hadoop
 
 image:images/01_job_browser_1.png[Hue Job Browser Interface]
 
-你将会看到一个作业列表, the only entry being the job you just executed.  map 和 reduce 列分别表示 mappers 和 reducers 的完成百分比. Clicking on the job's id will take you to a page summarizing that job. To the left of the page is a box summarizing the job: user, status, a link to logs, as well as a count of maps and reduces and the duration of the job. 你还可以查看作业执行日志, which is helpful during debugging.
+你将会看到一个作业列表, the only entry being the job you just executed.  map 和 reduce 列分别表示 mappers 和 reducers 的完成百分比. 点击作业的ID会跳转到该作业的汇总页面. 该页面的左边是作业的汇总信息: 用户, 状态, 指向日志的链接, map 和 reduce 的 数量以及作业执行时间. 你还可以查看作业执行日志, 这将有助于作业问题的调试.
 
 image:images/01_job_browser_2.png[Hue Job Browser Interface - Job Page]
 
