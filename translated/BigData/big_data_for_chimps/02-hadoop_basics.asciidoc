@@ -267,5 +267,5 @@ hadoop fs -tail ./translation.out/*
 
 === 结尾
 
-在下一章, 你将会学习到 map/reduce 作业 -- Hadoop 处理模型的强大功能. Let's start by joining JT and Nannette with their next client.
+在下一章, 你将会学习到 map/reduce 作业 -- Hadoop 处理模型的强大功能. 让我们从成为 JT 和 Nannette 的下一个客户开始。
 
