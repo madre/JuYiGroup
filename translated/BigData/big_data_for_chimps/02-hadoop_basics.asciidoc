@@ -1,7 +1,7 @@
 [[hadoop_basics]]
-== Hadoop Basics
+== Hadoop 基础
 
-=== Introduction
+=== 简介
 
 ++++
 <remark>Please make sure the Chimpanzee and Elephant Start a Business big does NOT appear before this Introduction</remark>
@@ -15,7 +15,7 @@ The key to doing so is an intuitive, physical understanding of how data moves ar
 
 Let's kick things off by making friends with the good folks at Elephant and Chimpanzee, Inc. Their story should give you an essential physical understanding for the problems Hadoop addresses and how it solves them.
 
-.Chimpanzee and Elephant Start a Business
+.Chimpanzee and Elephant Start a BusinessCc
 ******
 
 ++++
@@ -26,7 +26,7 @@ A few years back, two friends -- JT, a gruff chimpanzee, and Nanette, a meticulo
 
 The publishing firm’s project was to translate the works of Shakespeare into every language known to man, so JT and Nanette devised the following scheme. Their crew set up a large number of cubicles, each with one elephant-sized desk and several chimp-sized desks, and a command center where JT and Nanette can coordinate the action.
 
-As with any high-scale system, each member of the team has a single responsibility to perform. The task of each chimpanzee is simply to read a set of passages and type out the corresponding text in a new language. JT, their foreman, efficiently assigns passages to chimpanzees, deals with absentee workers and sick days, and reports progress back to the customer. The task of each librarian elephant is to maintain a neat set of scrolls, holding either a passage to translate or some passage's translated result. Nanette serves as chief librarian. She keeps a card catalog listing, for every book, the location and essential characteristics of the various scrolls that maintain its contents. 
+As with any high-scale system, each member of the team has a single responsibility to perform. The task of ǒǒeach chimpanzee is simply to read a set of passages and type out the corresponding text in a new language. JT, their foreman, efficiently assigns passages to chimpanzees, deals with absentee workers and sick days, and reports progress back to the customer. The task of each librarian elephant is to maintain a neat set of scrolls, holding either a passage to translate or some passage's translated result. Nanette serves as chief librarian. She keeps a card catalog listing, for every book, the location and essential characteristics of the various scrolls that maintain its contents. 
 
 When workers clock in for the day, they check with JT, who hands off the day's translation manual and the name of a passage to translate. Throughout the day the chimps radio progress reports in to JT; if their assigned passage is complete, JT will specify the next passage to translate.
 
@@ -34,23 +34,23 @@ If you were to walk by a cubicle mid-workday, you would see a highly-efficient i
 
 The librarians in turn notify Nanette which copies of which translations they hold, which helps Nanette maintain her card catalog. Whenever a customer comes calling for a translated passage, Nanette fetches all three copies and ensures they are consistent. This way, the work of each monkey can be compared to ensure its integrity, and documents can still be retrieved even if a cubicle radio fails.
 
-The fact that each chimpanzee's work is independent of any other's -- no interoffice memos, no meetings, no requests for documents from other departments -- made this the perfect first contract for the C&E crew. JT and Nanette, however, were cooking up a new way to put their million-chimp army to work, one that could radically streamline the processes of any modern paperful office footnote:[Some chimpanzee philosophers have put forth the fanciful conceit of a "paper-less" office, requiring impossibilities like a sea of electrons that do the work of a chimpanzee, and disks of magnetized iron that would serve as scrolls. These ideas are, of course, pure lunacy!]. JT and Nanette would soon have the chance of a lifetime to try it out for a customer in the far north with a big, big problem.
+The fact that each chimpanzee's work is independent of any other's -- no interoffice memos, no meetings, no requests for documents from other departments -- made this the perfect first contract for the C&E crew. JT and Nanette, however, were cooking up a new way to put their million-chimp army to work, one that could radically streamline the processes of any modern paperful office footnote:[一些黑猩猩想像家提出无纸化办公的幻想, requiring impossibilities like a sea of electrons that do the work of a chimpanzee, and disks of magnetized iron that would serve as scrolls. 当然，这些想法是纯粹的愚蠢!]。 JT and Nanette would soon have the chance of a lifetime to try it out for a customer in the far north with a big, big problem.
 ******
 
-=== Map-only Jobs: Process Records Individually ===
+=== Map-only 作业：单独的处理记录 ===
 
-As you'd guess, the way Chimpanzee and Elephant organize their files and workflow corresponds directly with how Hadoop handles data and computation under the hood. We can now use it to walk you through an example in detail.
+正如你所猜测，Chimpanzee 和 Elephant组织文件和工作流程的方式与Hadoop处理数据和后台计算正好对应。接下来我们通过一个详细的例子给你展示。
 
-The bags on trees scheme represents transactional relational database systems. Nanette is the Hadoop http://wiki.apache.org/hadoop/NameNode[NameNode]. The NameNode stores the directory tree structure (card catalog), and references to the data nodes for each file (librarians). JT is the http://wiki.apache.org/hadoop/JobTracker[JobTracker]. He coordinates the work of individual MapReduce tasks into a cohesive whole system. To illustrate how Hadoop works, lets dive into some code with the simplest example possible.
+在目录树上的方案包代表业务关系数据库系统。 Nanette是Hadoop的一个主节点，主节点存储的目录树结构（类似卡片目录）和每个文件的数据节点引用（类似图书管理员）。JT是任务追踪的简称，它使每个独立的MapReduce任务进入一个非常连贯的系统并协同工作。让我们从一些尽可能简单的代码入手来阐明Hadoop是如何工作的。
 
-We may not be as clever as JT's multilingual chimpanzees, but even we can translate text into a language we'll call _Igpay Atinlay_. footnote:[Sharp-eyed readers will note that this language is really called _Pig Latin._ That term has another name in the Hadoop universe, though, so we've chosen to call it Igpay Atinlay -- Pig Latin for "Pig Latin".]. For the unfamiliar, here's how to http://en.wikipedia.org/wiki/Pig_latin#Rules[translate standard English into Igpay Atinlay]:
+我们也许没有像JT的会多种语言的黑猩猩一样聪明，但即使我们能将一个文本翻译成一种被称作_Igpay Atinlay_的语言。 footnote:[目光敏锐的读者会注意到 本语言 其实 叫做  _Pig Latin._ 在hadoop 世界里 它有另一个术语名称,  因此我们把 Igpay Atinlay -- Pig Latin 叫做 "Pig Latin"。]. 对于不熟悉Igpay Atinlay语言者，如下两点说明如何 http://en.wikipedia.org/wiki/Pig_latin#Rules[将标准英语翻译成Igpay Atinlay语言]:
 
-* If the word begins with a consonant-sounding letter or letters, move them to the end of the word adding "ay": "happy" becomes "appy-hay", "chimp" becomes "imp-chay" and "yes" becomes "es-yay".
-* In words that begin with a vowel, just append the syllable "way": "another" becomes "another-way", "elephant" becomes "elephant-way".
+* 如果一个词是以辅音字母或者辅音发音的字母开头，将它们移到词尾并加上“ay”，如：“happy”就变成了“appy-hay”，“chimp”就变成了”imp-chay”,进而”yes”就变成了“es-yay”。
+* •	如果一个词是以元音开头，仅在词尾加上附加音节“way”即可，如：“another”就变成了“another-way”，“elephant”就变成了“elephant-way”。
 
-<<pig_latin_translator>>  is our first Hadoop job, a program that translates plain text files into Igpay Atinlay. This is a Hadoop job stripped to its barest minimum, one that does just enough to each record that you believe it happened but with no distractions. That makes it convenient to learn how to launch a job; how to follow its progress; and where Hadoop reports performance metrics such as run time and amount of data moved.  What's more, the very fact that it's trivial makes it one of the most important examples to run. For comparable input and output size, no regular Hadoop job can out-perform this one in practice, so it's a key reference point to carry in mind.
+<<pig_latin_translator>>  是我们的第一个Hadoop作业，即这个解释器只是把普通的文本文件解释成Igpay Atinlay语言。Hadoop作业只能够记录每一条你认为可以发生的记录，这就是Hadoop作业的最低限能。这使得很容易的知道它是如何发起一项作业；如何跟踪其进展，并通过运行时间、大量的数据迁移来评测Hadoop的性能情况。更重要的事实是，它在平常执行时也使它成为一个最重要的一个实例。通过适当的输入输出，不规则的Hadoop作业还能够进行熟练的超常作业，因此记住这点尤为关键。
 
-We've written this example in Python, a language that has become the lingua franca of data science. You can run it over a text file from the command line -- or run it over petabytes on a cluster (should you for whatever reason have a petabyte of text crying out for pig-latinizing).
+让我们来看一个Python的例子，Python是一种通用的数据科学语言，你可以在命令行里通过运行一个文本文件来执行它，或者在超过拍字节的集群上执行它（无论什么原因产生一个拍字节的文本迫切需要翻译成“猪拉丁语”）。
 
 [[pig_latin_translator]]
 .Igpay Atinlay translator (ch_01/pig_latin.rb)
@@ -95,13 +95,13 @@ for each line,
 end
 ----
 
-It's best to begin developing jobs locally on a subset of data, because they are faster and cheaper to run. To run the Python script locally, enter this into your terminal's command line:
+你最好在本地的一个数据子集上开始开发工作，那是因为他们执行起来更快并且更便宜。在本地执行Python脚本，只需在你的命令行里输入如下指令来执行：
 
 ------
 cat /data/gold/text/gift_of_the_magi.txt|python examples/ch_01/pig_latin.py
 ------
 
-The output should look like this:
+可能的输出结果如下：
 ------
 Theway agimay asway youway owknay ereway iseway enmay onderfullyway iseway enmay owhay oughtbray
 iftsgay otay ethay Babeway inway ethay angermay Theyway inventedway ethay artway ofway ivinggay
@@ -116,32 +116,32 @@ Everywhereway eythay areway isestway Theyway areway ethay agimay
 
 ------
 
-That's what it looks like when run locally. Let's run it on a real Hadoop cluster to see how it works when an elephant is in charge.
+它在本地执行是如上结果，让我们看看在一个真正的Hadoop集群下执行时它是如何运行的。
 
-NOTE: There are even more reasons why it's best to begin developing jobs locally on a subset of data than just faster and cheaper. What's more, though, extracting a meaningful subset of tables also forces you to get to know your data and its relationships. And since all the data is local, you're forced into the good practice of first addressing "what would I like to do with this data" and only then considering "how shall I do so efficiently". Beginners often want to believe the opposite, but experience has taught us that it's nearly always worth the upfront investment to prepare a subset, and not to think about efficiency from the beginning.
+注：在本地的一个数据子集上开展开发工作不仅仅是因为更快和更便宜，还有更多原因。更重要的是，然而提取一个有意义的表的子集同时也迫使你去了解你的数据及其数据间的关系。由于所有的数据在本地，会迫使首先找到好的做法“我将会用这些数据做什么”和进一步考虑“我该如何有效的去处理这些数据”。往往初学者会相信其对立面，但经验告诉我们，为准备一个子集的前期投资总是值得的，而不是从一开始就关注效率问题。
 
-=== Data on the cluster
+=== 集群上的数据
 
-If you've skimmed Hadoop's documentation already, you've probably seen the terms _fully-distributed,_ _pseudo-distributed,_ and _local_ bandied about. Those describe different ways to setup your Hadoop cluster, and they're relevant to how you'll run the examples in this chapter.
-We've setup a virtual Hadoop environment for you using Docker, and you can develop and test Hadoop jobs using your laptop, just like having a real cluster. Your jobs will run in fully-distributed mode, making use of the cluster's filesystem called HDFS (Hadoop Distributed File System).
+如果你之前阅读了Hadoop的官方文档, 那么你可能已经看到过这些广为使用的术语 _fully-distributed(完全分布模式),_ _pseudo-distributed(伪分布模式) 和 _local_（本地模式）。 他们描述了配置Hadoop集群的不同方式, 本章中如何运行这些实例和他们密切相关。
+借助Docker，我们已经为您建立一套虚拟Hadoop环境, 你可以在你的电脑中通过虚拟环境开发和测试Hadoop作业运行情况, 就像在真实集群中操作一样. 你的作业通过使用称为HDFS(Hadoop分布式文件系统)的集群文件系统，运行于完全分布模式状态。
 
-Run the following commands to check out what lies on HDFS:
+运行如下的Hadoop 命令，检查HDFS上有何变化:
 
 ------
 hadoop fs -ls .
 ------
 
-The dot `.` is treated as your HDFS home directory (use it as you would `~` in Unix.). The `hadoop fs` command takes a command and a path, just like the *nix command. In addition to `-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` and `-tail` also work. Now check out /data:
+点号 `.` 表示 HDFS主目录 (如同你在Unix中使用 `~`)。 `hadoop fs` 命令需要传入2个参数：一个命令和一个路径, 如同*nix 命令。 除了`-ls`, `-cp`, `-mv`, `-rm`, `-cat`, `-head` 和`-tail` 同样如此操作。现在，让我们査看/data目录：
 
 ------
 hadoop fs -ls /data/gold
 ------
 
-You'll see some of the data we'll be using throughout the book.
+你将会看到我们在整本书中使用的一些数据。
 
-==== Run the Job ====
+==== 运行作业 ====
 
-First, let's test on the same tiny little file we used at the command-line. This command does not process any data but instead instructs _Hadoop_ to process the data, and so its output will contain information on how the job is progressing.
+首先, 我们使用命令行在之前使用的那个小文件上进行测试。 该命令并不处理数据而是调用hadoop去处理数据, 因此它的输出将会包含作业处理状态信息。
 
 // Make sure to notice how much _longer_ it takes this elephant to squash a flea than it took to run without Hadoop.
 
@@ -149,7 +149,7 @@ First, let's test on the same tiny little file we used at the command-line. This
 hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar -file ./examples/ch_01/pig_latin.py -mapper ./examples/ch_01/pig_latin.py -input /data/gold/text/gift_of_the_magi.txt -output ./translation.out
 ------
 
-You should see something like this:
+你会看到类似如下的输出结果:
 
 ------
 14/11/20 06:03:51 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
@@ -227,45 +227,45 @@ packageJobJar: [./examples/ch_01/pig_latin.py] [/usr/lib/hadoop-mapreduce/hadoop
 14/11/20 06:04:10 INFO streaming.StreamJob: Output directory: ./translation.out
 ------
 
-.The Job Browser
+.作业浏览窗口
 ********
-While the script outputs a bunch of happy robot-ese to your screen, open up the job browser at http://$CLUSTER_IP:9001/jobbrowser/ in your browser window. You'll need to login with chimpy/chimpy. The job should appear on the job browser window within a few seconds.
+当你的屏幕上开始输出一系列运行状态时, 在你的浏览器窗口中打开链接 http://$CLUSTER_IP:9001/jobbrowser/ 。 你会被要求使用chimpy/chimpy 进行登录。 几秒钟后你将会看到作业运行信息。
 
-The job browser offers a built-in console for monitoring and diagnosing jobs. It is part of Hue, or "Hadoop User Experience" - a graphical interface for Hadoop.
+作业浏览窗口提供了一个自带的操作台用于监视和诊断这些作业。 他是Hue的一部分 - Hadoop 图形用户界面。
 
 image:images/01_job_browser_1.png[Hue Job Browser Interface]
 
-You will notice a list of jobs, the only entry being the job you just executed. Columns called map and reduce denote the percentage of completeness for mappers and reducers. Clicking on the job's id will take you to a page summarizing that job. To the left of the page is a box summarizing the job: user, status, a link to logs, as well as a count of maps and reduces and the duration of the job. You can also view the logs of the job, which is helpful during debugging.
+你将会看到一个你刚刚执行过的作业列表。  map 和 reduce 列分别表示 mappers 和 reducers 的完成百分比。 点击作业的ID会跳转到该作业的汇总页面. 该页面的左边是作业的汇总信息: 用户, 状态, 指向日志的链接, map 和 reduce 的 数量以及作业执行时间。 你还可以查看作业执行日志, 这将有助于作业问题的调试。
 
 image:images/01_job_browser_2.png[Hue Job Browser Interface - Job Page]
 
 ******
 
-You can compare the job's output to the local execution we ran earlier by running:
+通过运行如下命令，你可以与之前本地运行输出结果进行对比:
 
 ------
 hadoop fs -cat ./translation.out/*
 ------
 
-That command, like the Unix ‘cat’ command, dumps the contents of a file to standard out, so you can pipe it into any other command line utility. It produces the full contents of the file, which is what you would like for use within scripts but if your file is hundreds of MB large, as HDFS files typically are, dumping its entire contents to your terminal screen is ill appreciated. We typically, instead, use the Unix ‘head’ or 'tail' command to limit its output (in this case, to the last ten lines).
+该命令, 功能同 Unix 中的‘cat’ 命令相同, 标准输出文件的内容, 因此你可以在任何命令行实用工具中实用它。 其功能是输出整个文件的内容, 你可以在脚本中使用它，但是如果你的文件有几百MB, HDFS通常是把整个文件的内容输出到你的屏幕，这种做法并不可取。通常我们的替代方法是 使用类似Unix的 ‘head’ 或 'tail' 命令限制输出 (在本实例里, 输出最后10行)。
 
 ------
 hadoop fs -cat ./translation.out/* | tail -n 20
 ------
 
-Since you wouldn't want to read a whole 10GB file just to see whether the right number of closing braces come at the end, there is also a `hadoop fs -tail` command that dumps the last one kilobyte of a file to the terminal.
+既然你不想读取整个10GB的数据而仅仅想知道最终执行结果的数值是否正确, 可替代方案是使用 `hadoop fs -tail` 命令，它的作用是将文件的最后1KB输出到终端.
 
-Here's what the head and tail of your output should contain:
+以下为你的输出结果中头，尾应该包含的内容:
 
-image:images/01_pig_latin_output_1.png[Pig Latin Job Output]
+image:images/01_pig_latin_output_1.png[Pig Latin 作业输出]
 
-Hadoop has its own 'head' and 'tail' commands:
+Hadoop 也实现了自己的 'head' 'tail' 命令:
 
 ------
 hadoop fs -tail ./translation.out/*
 ------
 
-=== Outro
+=== 结尾
 
-In the next chapter, you'll learn about map/reduce jobs -- the full power of Hadoop's processing paradigm. Let's start by joining JT and Nannette with their next client.
+在下一章, 你将会学习到 map/reduce 作业 -- Hadoop 处理模型的强大功能. 让我们从成为 JT 和 Nannette 的下一个客户开始。
 
