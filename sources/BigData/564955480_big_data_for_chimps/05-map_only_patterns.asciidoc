@@ -1,3 +1,4 @@
+== Hitty 翻译中
 == Analytic Patterns: Map-only Operations
 
 This chapter focuses exclusively on what we'll call 'Map-only operations'.
