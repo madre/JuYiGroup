@@ -1,226 +1,332 @@
-== Insight comes from Data in Context
+== 洞察力从何而来，来源于上下文中的数据
 
-We could start by telling you how awesome and important Big Data is -- that we can now comprehensively measure
-Aspects ,
-That this lets us extract insight to essential but formerly unquantifiable qualities such as "audience engagement", "unexpected event", "..."
-But since you're already reading this paragraph,
-We'll instead
-(Later on there are sections on "how to Explain Big Data to your Boss" and "What is Big Data (besides \'A Really Good Marketing Device')?"
+本文开篇完全可以就大数据的庞大性及重要性展开长篇大论——这一点现已能被综合衡量，同时使我们充分认识到大数据的必要性，可是在诸如“观众参与”、“无法预知事件”，“……”这些先前无法量化的特质面前用这番言论未免太过苍白。不过既然您已经在阅读这篇文章，本文将以全新地视角来讲述大数据（随后是“怎样让你的老板认识大数据”和“什么是大数据（‘一个真正好的营销工具’）？”）
 
-Instead let's talk about robots and humans.
+现在，让我们来谈谈机器人跟人类。
 
-In year x, Kasparov v deep blue.
-Then year y, deep blue wins
-So computers have bested humans. Hang it up and go home.
-The marketing hype is
- Big data lets us
-Unprecedented power. And it's easy to make the mistake
-Of becoming thrall to it -- While we agree that "In God We Trust, All Others Bring Data", It is insufficient to draw on only what can be quantified with sufficient fidelity
+在 x 年，计算机“深蓝”向卡斯帕罗夫发起了挑战。随后在 y 年,“深蓝”战胜了卡斯帕罗夫，计算机战胜了人类，卡斯帕罗夫不无沮丧地放弃回到了家中。这种营销炒作的大数据使我们获得了无法预知的能力，然而在得到这种能力的时我们很容易犯一个错误，我们利用它、依赖它、离不开它、最终，成为它的奴隶——我们赞同“我们只相信上帝，其他人带来数据”——仅仅只有它能被足够的保真度所量化时它才能被加以利用。
 
-The power of the big data tools comes from taking away ability to
+在这次人机大战中，机器人“深蓝”大败加里·卡斯帕罗夫，大数据工具的能力初现端倪
 
-.Garry Kasparov, "The Chess Master and the Computer", 2010
+.加里·卡斯帕罗夫, "国际象棋大师对战计算机", 2010
 ________
-[In 1996] I narrowly defeated the supercomputer Deep Blue in a match. Then, in 1997, IBM redoubled its efforts—and doubled Deep Blue’s processing power—and I lost the rematch in an event that made headlines around the world. The result was met with astonishment and grief by those who took it as a symbol of mankind’s submission before the almighty computer. (“The Brain’s Last Stand” read the Newsweek headline.) Others shrugged their shoulders, surprised that humans could still compete at all against the enormous calculating power that, by 1997, sat on just about every desk in the first world. ... no one understood all the ramifications of having a super-grandmaster on your laptop, especially what this would mean for professional chess.
+在1996年的一场比赛中，我以微弱优势战胜了超级计算机“深蓝”。随后，1997年，IBM加倍投入，使“深蓝”的处理能力翻了一番———由于复赛中的一个失误我丢掉了比赛，全世界争相报导。这样的结果使很多人感到悲痛震惊，他们将其看为是人类向万能电脑俯首称臣的一个信号；（见《新闻周刊》头条：“大脑的最后一站”）。其他人则耸了耸肩,惊讶于人类到1997年还能够与具有无穷计算能力的计算机进行竞争，它们几乎占据了第一世界的所有席位。……无人理解在笔记本上带有一个超级大师所能带来的全部影响，尤其不知道这在职业象棋比赛中到底意味什么。
 
-There have been many unintended consequences, both positive and negative, of the rapid proliferation of powerful chess software. Kids love computers and take to them naturally, so it’s no surprise that the same is true of the combination of chess and computers. With the introduction of super-powerful software it became possible for a youngster to have a top- level opponent at home instead of needing a professional trainer from an early age. Countries with little by way of chess tradition and few available coaches can now produce prodigies. I am in fact coaching one of them this year, nineteen-year-old Magnus Carlsen, from Norway, where relatively little chess is played.
+强大象棋软件快速扩张流行，产生了很多意想不到的结果，正面影响及负面后果皆有之。孩子们喜欢并很自然地接受了计算机，所以勿需惊讶于他们同样接受了计算机与象棋的无缝融合。随着超强软件的引进，年轻人在家就有可能拥有一个顶级的对手，而不是从小就需要一个专业的教练。对于那些只有少数象棋传统以及为数不多教练的国家，现在也能够创造象棋神童了。事实上，我这些年正在训练19岁的马格努斯卡尔森，他是他们中的一员，来自玩象棋相对较少的国家挪威。
 
-The heavy use of computer analysis has pushed the game itself in new directions. The machine doesn’t care about style or patterns or hundreds of years of established theory. It counts up the values of the chess pieces, analyzes a few billion moves, and counts them up again. (A computer translates each piece and each positional factor into a value in order to reduce the game to numbers it can crunch.) It is entirely free of prejudice and doctrine and this has contributed to the development of players who are almost as free of dogma as the machines with which they train. Increasingly, a move isn’t good or bad because it looks that way or because it hasn’t been done that way before. It’s simply good if it works and bad if it doesn’t. Although we still require a strong measure of intuition and logic to play well, humans today are starting to play more like computers.
-
-The availability of millions of games at one’s fingertips in a database is also making the game’s best players younger and younger. Absorbing the thousands of essential patterns and opening moves used to take many years, a process indicative of Malcolm Gladwell’s “10,000 hours to become an expert” theory as expounded in his recent book Outliers. (Gladwell’s earlier book, Blink, rehashed, if more creatively, much of the cognitive psychology material that is re-rehashed in Chess Metaphors.) Today’s teens, and increasingly pre-teens, can accelerate this process by plugging into a digitized archive of chess information and making full use of the superiority of the young mind to retain it all. In the pre-computer era, teenage grandmasters were rarities and almost always destined to play for the world championship. Bobby Fischer’s 1958 record of attaining the grandmaster title at fifteen was broken only in 1991. It has been broken twenty times since then, with the current record holder, Ukrainian Sergey Karjakin, having claimed the highest title at the nearly absurd age of twelve in 2002. Now twenty, Karjakin is among the world’s best, but like most of his modern wunderkind peers he’s no Fischer, who stood out head and shoulders above his peers—and soon enough above the rest of the chess world as well.
-
-In what Rasskin-Gutman explains as Moravec’s Paradox, in chess, as in so many things, what computers are good at is where humans are weak, and vice versa. This gave me an idea for an experiment. What if instead of human versus machine we played as partners?
-
-Having a computer partner also meant never having to worry about making a tactical blunder. The computer could project the consequences of each move we considered, pointing out possible outcomes and countermoves we might otherwise have missed. With that taken care of for us, we could concentrate on strategic planning instead of spending so much time on calculations. Human creativity was even more paramount under these conditions. A month earlier I had defeated the Bulgarian in a match of “regular” rapid chess 4–0. Our advanced chess match ended in a 3–3 draw. My advantage in calculating tactics had been nullified by the machine.
+计算机分析的深度应用将象棋本身推进向新的方向。机器不关注象棋的走法、棋谱或是数百年来已经建立的学说。它计算出每步棋子的值，分析数十亿计的棋路，然后再重新计算（为了将比赛简化为一堆可动作的数字，计算机将每一个棋子及其位置因子转化成一个值）。它完全免于经验主义及偏见，致力于棋手的发展，通过机器在训练过程中使他们免受经验主义的影响。慢慢地，一步棋是好是坏不能因为这棋看起来是那样或是以前从来没有那种下法来衡量。仅仅只要这步棋有效就称之为好棋，反之，无效就是坏棋。尽管我们仍然需要大力权衡直觉跟逻辑推理来下好一盘棋，但现在越来越多的人类开始像计算机一样下棋。
 
 
+在数据库中数百万随手可用的游戏同样使最佳玩家越来越年轻化。消化了数千种重要的棋谱及数年来被广泛使用的棋路后，正好验证了马尔科姆·格拉德威尔的那句话“10 000小时成为一个专家”，如同他的新作《局外人》所阐述的那样（他早前的一本著作，《闪烁》，如果能更具创造性地改编，那么更多认知心理题材将在围棋隐喻文化中不断刷新）。如今的年青人，以及幼童，通过植入象棋信息数字档案室并充分利用优越的年青大脑来记住所有的信息，能够增速棋手养成。在无电脑的时代，年青的大师很稀少，而他们也几乎总是注定要为世界冠军而战。博比·菲舍尔作为1958年记录的保持者，他早在15岁获得了大师称号，然而这个记录仅仅在1991就被打破。随后，该记录被一次次刷新，共有20次。现在世界记录的保持者是乌克兰的谢尔盖卡札金，被称之为最年轻的大师，他在2002年以12岁这个悖理的年纪刷新了该记录。现在他20岁了，作为最佳棋手的一员，然而就像许多当下的神童青年一样，他不是领军者费希尔——费希尔很快足够征服象棋世界的每个角落。
 
-In 2005, the online chess-playing site Playchess.com hosted what it called a “freestyle” chess tournament in which anyone could compete in teams with other players or computers. ... Several groups of strong grandmasters working with several computers at the same time entered the competition. At first, the results seemed predictable. The teams of human plus machine dominated even the strongest computers. The [top chess machines] were no match for a strong human player using a relatively weak laptop. Human strategic guidance combined with the tactical acuity of a computer was overwhelming.
+如同象棋比赛，在很多事情中，计算机所擅长的正是人类所欠缺的，反之亦然，瑞斯卡-古特曼将其解释为莫拉维克悖论。我灵光乍现，想起了一个实验，如果下棋的时候，机器跟人不是对手而是伙伴，会发生什么呢？以此之长，补彼之短，这样的组合是不是就会无往不胜了？
 
-The surprise came at the conclusion of the event. The winner was revealed to be not a grandmaster with a state-of-the-art PC but a pair of amateur American chess players using three computers at the same time. Their skill at manipulating and “coaching” their computers to look very deeply into positions effectively counteracted the superior chess understanding of their grandmaster opponents and the greater computational power of other participants. Weak human + machine + better process was superior to a strong computer alone and, more remarkably, superior to a strong human + machine + inferior process. http://www.nybooks.com/articles/archives/2010/feb/11/the-chess-master-and-the-computer/
+拥有一个计算机小伙伴同样意味着你决不会担心犯战术失误，计算机能预测出走任意一步棋所能带来的影响，指出其能产生的后果及本来可能不被我们采纳的对策。在这样的配合下，我们不需要花费那么多的时间进行计算，从面能够集中精力进行战略规划，人类的创造力在这样的条件下更显得尤为重要。一个月以前，我在一场常规赛中以4-0战胜了一个保加利亚人。在先前比赛中，我们以3-3平局结束比赛，这次之所以能得胜，我的优势在于计算机帮我分担了策略计算的工作。
+
+2005年，在线象棋游戏网站Playchess.com发布了一个被称之为“自由范”的象棋比赛，棋队中的任何棋手都能向其他棋手或是计算机发起挑战。……由大师级棋手组成的几组棋队跟几个计算机搭档，一同进入了比赛。最初似乎能够预见到比赛的结果，由棋手跟计算机组成的棋队压制了纯计算机棋队，甚至于更高性能的计算机棋队，这台顶级象棋计算机与使用性能较低计算机的大师相较量，最终败下阵来。在象棋界，人类对战略的指导力与计算机对战术的敏锐性相结合，绝对可以称霸群雄、横扫千军、战无不胜。
+
+人们惊讶于这样的结果，获胜方不是一位拥有最高技术水平计算机的大师，而是一队同时使用3台计算进行比赛的美国象棋爱好者，他们操纵、“指导”计算机，使之能深度综观全盘，有效地抵制了获败方的较高认知水平。次等棋手 + 机器 + 稍高性能的棋队优于一台单独的高性能计算机，更无需说特等棋手 + 机器+ 次等性能的棋队了。 http://www.nybooks.com/articles/archives/2010/feb/11/the-chess-master-and-the-computer/
 ________
 
-The goal of this book is that you become just such an expert coach. You don't need to be a grandmaster in statistics, have
+本书意在使你成为一个如同此般的专业教练。你不需要成为统计学的泰斗；你不需要成为一个编程专家，我们偏爱于简短精练可读性高的脚本；你不需要在数据库上达到第三形态闪电龙的水准，你只需知道数据怎样运作，如果你能预测执行过程，你能知道什么时候投资，什么时候改进，什么时候有趣的事情将会发生，更重要的是，你将知道得到自己想要的数据要怎样进行评估。（The goal of this book is that you become just such an expert coach. You don't need to be a grandmaster in statistics, have
 What you do need is intuition about how to
 You don't need to be an expert programmer. We favor short, elegant readable scripts
 You don't need to have reached the third dan of dragon-lightning form in database
-
 What you need is intuition about how data moves around
 If you can predict the execution, you can know when to invest in improving it and when something funny is going on
 Strategic execution
 More importantly know how to turn the measurements you have into the data you need
-How to augment
+How to augment）
+
+本书将告诉读者怎样去训练计算机，怎样运用卓越的技术。
+
+我们以 “ 机器人为辅，人类为主 ” 为原则（关于从冰箱得到苏打水的数学，关于在云中运行一台计算机的数学）（We have a principle "Robots are cheap, Humans are important,(Math about getting soda from the fridge, about running a computer in the cloud)
+）
 
 
-This book will show you how to coach
- the computer, how to apply superior process.
+我们以演示Hadoop内在机制作为开篇，精确却又恰恰点到为止地让你理解数据怎样运作。在大数据环境中，数据的行为（而不是CPU）几乎总是占主导地位，同样计算容量所产生的开销也几乎总是约束着计算的性能。
 
-We have a principle "Robots are cheap, Humans are important,
-(Math about getting soda from the fridge, about running a computer in the cloud)
+大数据的一个好处在于其性能的预测原始而又分明 -- ...
+（坏处就是它不可能有坏的时候）
 
-We start by demonstrating the internal mechanics of Hadoop
-Exactly and only deep enough that you can understand how data moves around
-In a Big Data system, motion of data (not CPU) is nearly always the dominant cost of compute.
-Memory capacity is nearly always the fundamental constraint of computation.
+一旦读者对正在发生的事情产生了生理直觉，我们将转移到战术领域。我们参考领先的SQL手册来匹配已定义并经过数十年使用实践的模型（贸易的技术）（We consulted the leading SQL cookbooks to find what patterns of use(And tricks of the trade) decades of practice have defined.）抓着"NoSQL"不放，抛开传统知识不提总不会是一个好的计划。
 
-One nice thing about big data is that the performance estimation is brutally stark -- ...
-(The not-as-nice is that it when it is bad it is impossible)
-
-Once you have a physical intuition of what's happening, we move to tactics.
-We consulted the leading SQL cookbooks to find what patterns of use
-(And tricks of the trade) decades of practice have defined.
-Screw "NoSQL". Throwing out the old lore is always a bad plan.
-
-// four levels: explain, optimize, predict, control (operations research blog)
+// 四个层级：解释，优化，预测，控制（运筹学博客）
 
 
 
-Tracking every path your delivery tricks take
-Fleet improve fuel usage, safety for driver and the rest of us, operating efficiency and costs.
+跟踪你每一次的交货方式使车队提高燃油使用率，既能确保司机跟乘客的安全又提高操作效率，降低成本。
 
 
 
 
 
-// IMPROVEME: put in an interlude that is JT & Nanette meeting. (Told as a flashforward.)
+// 深度阅读: 一个JT＆南妮特会议的插曲 (未来闪影)
 
-Data is worthless. Actually, it's worse than worthless: it requires money and effort to collect, store, transport and organize. Nobody wants data.
+数据是毫无价值的。事实上，它比毫无价值更糟糕：它需要金钱跟精力去采集、存储、传输及组织，没有人想要它。
 
-What's valuable is _insight_ -- summaries, patterns and connections that lead to deeper understanding and better decisions. And insight comes from synthesizing data in context. We can predict air flight delays by placing commercial flight arrival times in context with hourly global weather data (as we do in Chapter (REF)). Take the mountain of events in a large website's log files, and regroup using context defined by the paths users take through the site, and you'll illuminate articles of similar interest (see Chapter (REF)). In Chapter (REF), we'll dismantle the text of every article on Wikipedia, then reassemble the words from each article about a physical place into context groups defined by the topic's location -- and produce insights into human language not otherwise quantifiable.
+有价值的是 _洞察力_ -- 总结、模型及关系将引导我们拥有更深的理解跟更好的决定。同时，洞察力来源于上下文中数据合成。我们能够通过定位商业航班的到达时间及其上下文中以小时计的全球天气数据来预测航班延误（具体算法见本章参考）。捕获某大型网站的日志文件中的事件高峰期，使用由用户浏览网站的路径所定义的上下文对其重组，你将能叙述与之相类似的兴趣的文章（见本章（参考））。在本章（参考），我们将对维基百科中的每一个文本进行拆解，然后重组词汇，将其从每一个实际存在的文章中重组至一个被主题定位所定义一个文本组中 – 将洞察力转化为人类语言，否则无法对其量化。
 
-Within each of those examples are two competing forces that move them out of the domain of traditional data analysis and into the topic of this book: "big data" analytics and simple analytics. Due to the volume of data, it is far too large to comfortably analyze on a single machine; and due to the comprehensiveness of the data, simple methods are able to extract patterns not visible in the small.
+在每一个这样的示例内部都有两个相矛盾的抗力，它们相互作用促进开路事物的发展，使数据脱离传统数据分析的统治进而转入本书的主题：“大数据”分析及简易分析。数据容量的限制，使如此之大的数据量无法方便地在单个机器上进行分析；同样，数据的综合性，在小规模范围内能够抽取样本的简单策略如同沧海一粟，起不到作用。
 
-=== Big Data: Tools to Solve the Crisis of Comprehensive Data
+=== 大数据 : 解决综合数据危机的工具
 
-Let's take an extremely basic analytic operation: counting. To count the votes for a bill in the state legislature, or for what type of pizza to order, we gather the relevant parties into the same room at a fixed time and take a census of opintions. The logistics here are straightforward.
+让我们来做一个超基础的分析作业:计数。在州议会为投票表决一项法案计数，或是为订购各种类型的披萨计数，我们在确定的时间将相关人员聚集到同一个房间，进行一次普查，其投票人流走向简单而又快速。
 
-It is impossible, however, to count votes for the President of the United States this way. No conference hall is big enough to hold 300 million people; if there were, no roads are wide enough to get people to that conference hall; and even still the processing rate would not greatly exceed the rate at which voters come of age or die.
+然而，用这种方法不可能计数美国总统的投票表决。没有大到可容纳300人的会议厅；即使有，也没有足够宽的道路让人们顺畅通行；甚至于选举者的出生率或死亡率能与这持续进行中的选举率相拼。
 
-Once the volume of data required for synthesis exceeds some key limit of available computation -- limited memory, limited network bandwith, limited time to prepare a relevant answer, or such -- you're forced to fundamentally rework how you synthesize insight from data.
+一旦合成所需的数据容量超出了某些可用预算的关键阈值—— 有限的存储空间，有限的网络带宽，有限的时间去准备一个相关反馈，或如此这般 —— 你必须一次又一次地从根本上改变你从数据中提取见解的方法。
 
-We conduct a presidential election by sending people to local polling places, distributed so that the participants to not need to travel far, and sized so that the logistics of voting remain straightforward. At the end of day the vote totals from each polling place are summed and sent to the state Elections Division. The folks in the Elections Division office add the results from each polling place to prepare the final result. This new approach doesn't completely discard the straightforward method (gathering people to the same physical location) that worked so well in the small. Instead, it applies another local method (summing a table of numbers). The orchestration of a gathering stage, an efficient data transfer stage, and a final tabulation stage arrives at a correct result, and the volume of people and data never exceeds what can be efficiently processed.
 
-So our first definition of Big Data is a response to a crisis: "A collection of practical data analysis tools and processes that continue to scale even as the volume of data for justified synthesis exceeds some limit of available computation".
+我们进行了一次总统选举，将人们聚集到每个当地的投票站进行投票。多地域的分布使得投票者不需要走太远就能参与投票，同时选举的规模使得选举人流走向能保持简单而又快速。当这一天结束，我们对每一个投票站的票额进行合计，将其送到州选举部，选举办公室的官员将各投票站的选票计入结果中以形成最终的选举结果。这种新的途径并没有完全抛弃这种简单快速的方法（将人们聚集到同一个物理位置），引申应用了另一种本地策略（数表内求和）。这是一曲将一个数据采集舞台，高效数据传送舞台，达成一个正确结果的最终报表舞台的管弦乐编曲，人和数据的容量决不会超过其可高效处理的数据量。
+
+因此我们是对该危机的回答正是对大数据的第一个定义：“实用数据分析工具及流程的集合，这个集合不断扩张，甚至随着进行正当合成的数据容量超越可用预算的某些阈值而不断增大。”
+
+// 在第六章（参考）中，我们将在大数据生态系统中绘制出各丰富多彩的工具,
+// Hadoop是高水平进行数据批处理普及性选择。
+// 工具可以用来了解你制造机的数据模型以确定这个商品是否有缺陷需要在几个月后返厂，或是患者术后的医药记录模型以确定他们患并发病而入院的可能性。
+
+
+
+=== 大数据：处理错综复杂的数据的工具
+
+我们派人到地方投票点进行总统选举，分散开来以便于参与者不用长途跋涉，定量以便于选举的流程保持流畅。在一天结束之时，各个投票点进行汇总总票数，并送往州选举部门。州选举办公厅的工作人员汇总所有投票点的票数并准备最终票选结果。这种新方法并没有完全摒弃简单有效的办法（聚集人们到同一个实际位置），反而，它运用了另外一个土办法（对某个数字表进行求和）。对数据收集阶段的编配，这是一个有效数据传输阶段，最终生成正确的报表，这种情况下人和数据量永远不会超过那些需要有效处理的量。
+因此我们对大数据最根本的定义是应对危机：“它是实际数据分析工具的集合，即使合理生成的数据量超出了一些可用性的瓶颈，也可以继续规模化地处理”
 
 // In Chapter 6 (REF) we'll map out the riotous diversity of tools in the Big Data ecosystem,
 // Hadoop is the ubiquitous choice for processing batches of data at high
 // Hadoop is the tool to use when you want to understand how patterns in data from your manufacturing devices corresponds to defective merchandise returned months later, or how patterns in patients' postoperative medical records correspond to the likelihood they'll be re-admitted with complications.
+//在第六章（REF）我们会介绍大数据系统中工具的多样性，
+//Hadoop是高速批处理数据的普遍选择
+//Hadoop是当你想搞清楚从生产设备的数据中获取的模式是如何反应出几个月后退回的有缺陷的产品，或者从病人的术后医疗记录中获取的模式是如何反应出引发并发症的可能性
 
-=== Big Data: Algorithms to Capitalize on the Opportunity of Comprehensive Data
+=== 大数据：使错综复杂的数据资本化的算法
 
-The excitement around Big Data is more than you could explain as "like databases, but bigger". Those tools don't just unlock a new region of scalability, they enable transformative new capabilities.
+围绕大数据的兴奋点要超出人们解释的“像数据库，只不过大一些”那样。这些工具不仅是开启一个新的可拓展领域，它们更开启了变化的新能力
 
-The data that's powering this revolution isn't just comprehensive, it's _connected_. When your one-in-a-thousand events manifest in sample of ten thousand records, it's noise. When they manifest in ten million records, tiny coincidences reinforce each other to produce patterns. The website etsy.com (an open marketplace for handcrafted goods) has millions of records showing which handcrafted goods people browse and buy. And thanks to their Facebook app they have access to millions of people who have shown interest in those handcrafted goods. Thanks to Facebook's data, they have as well the overlapping interests of those potential customers: "surfing", "big data", "barbeque". Now work backwards. From each interest, find the customers, and from the customers find the purchases, and from the purchase find the categories. What comes forth are unmistakeable patterns such as "People who like the band Lynrd Skynrd are overwhelmingly more likely to purchase Taxidermy". Etsy can better connect people with the things they love, their sellers can better connect with a their fans, and southern-fried rockers can accessorize their living room with that elk's head they always wanted.
+发动这场变革的数据不仅是广泛的，它们是互相连接的。千分之一的事件在1万个样本中表明的，是杂乱的数据。但当这些事件在千万的样本中所表明的是，细微的巧合相互作用从而生成一个模式。etsy.com网站（一个开放的手工制品市场）有成千上万的数据显示哪些手工制品被人们浏览和购买。并且，归功于他们的脸书应用，他们已经获知对这些手工制品感兴趣的上百万用户信息。归功于脸书的数据，他们同样能获知那些潜在消费者的其他共同兴趣：“冲浪”， “大数据”，“烧烤”。现在往回推论。从每一个兴趣点，找寻消费者，从每个消费者追溯到商品，再从商品找到类别。得到的是不易出错的模式就像“喜欢Lynrd Skynrd乐队的人绝大多数都购买动物标本制作品”。Etsy可以很好的连接人和他们喜欢的事物，销售商可以很好的连接他们的商品粉丝，还有南方摇滚们可以装饰他们一直向往的麋鹿头在他们的卧室里。
 
-Here's what's surprising and important: the algorithms to expose these patterns are not specific to e-commerce, and don't require coming in with guesses about the associations to draw. The work proceeds in three broad steps: (a) provide comprehensive data, identifying its features and connectivity; (b) apply generic methods that use only those features and connectivity (and not a domain-specific model), to expose patterns in the data; (c) interpret those patterns back into the original domain.
+让人惊讶和重要的是：揭露这些模式的算法不是特定于电子商务，也不需要对未来将要制定出的种种关联模式的各种猜想。它有三大步：（a）提供广泛数据，辨明特性和关联；（b）应用泛型方法分析这些特性和关联（并非在某一特定领域模型），以揭露数据中的各种模式；（c）回归原始环境来阐释这些模式
 
-This does _not_ follow the accepted path to truth, namely the Scientific Method. Roughly speaking, the scientific method has you (a) use a simplified model of the universe to make falsifiable predictions; (b) test those predictions in controlled circumstances; (c) use established truths to bound any discrepancies footnote:[plus (d) a secret dose of our sense of the model's elegance]. Under this paradigm, data is non-comprehensive: scientific practice demands you carefully control experimental conditions, and the whole point of the model is to strip out all but the reductionistically necessary parameter. A large part of the analytic machinery acts to account for discrepancies from sampling (too little comprehensiveness) or discrepancies from "extraneous" effects (too much comprehensiveness). If those discrepancies are modest, the model is judged to be valid.
+这并不遵循过去被人们认知的真理，也就是科学方法。大约说来，科学方法可以使你（a）运用特定领域的简单化模型做出可证伪的预测；（b）可控的环境下测试这些预测；（c）用已经存在的真理来界定出任何的差异 脚注：【加上（d）我们感知来分析模型】。在这种范例下，数据不是错综复杂的：科学实践需要人们严禁地控制实验环境，对模型全部的关注点在于简化必要的参数，剩下的被剔除。相当大部分的分析器被用来解释从样本中获取的差异（太少的全面性），或者通过外力效应获取的差异（太全面）。如果这些差异并不大，那么模型将被视为有效的
 
-This new path to truth is what Peter Norvig (Google's Director of Research) calls "http://static.googleusercontent.com/media/research.google.com/en/us/pubs/archive/35179.pdf[The unreasonable effectiveness of data]". You don't have to start with a model and you don't necessarily end up with a model. There's no simplification of the universe down to a smaller explanation you can carry forward. Sure, we can apply domain knowledge and say that the correspondence of Lynrd Skynrd with Taxidermy means the robots have captured the notion of "Southern-ness". But for applying the result in practice, there's no reason to do so. The algorithms have replaced a uselessly complicated thing (the trillions of associations possible from interest to product category) with an _actionably_ complicated thing (a scoring of what categories to probabilistically present based on interest). You haven't confirmed a falsifiable hypothesis. But you can win at the track.
+新的真理是被Peter Norvig（谷歌的调研主管）称作为“http://static.googleusercontent.com/media/research.google.com/en/us/pubs/archive/35179.pdf
+【数据的unreasonable effectiveness】”你不需要开始于模型，也不必结束于模型。这里没有对整个领域进行简化到人们可以推进的细微程度。当然，我们可以应用领域知识说Lynrd Skynrd乐队和剥制术的对应关系意味着机器已经捕捉到南方人的特性。但是为了应用结果到实践中，根本就没有理由要这样做。此算法已经替代了无用的复杂的事物（从产品分类获取到万亿种潜在的关联），取而代之的是可控的复杂的事物（每种类别基于兴趣呈现的概率值）。你还没有印证一个可证伪的假设。但是你可以在追踪的过程中取胜。
+Unreasonaly-Effective Method的提出是科学方法的强有力的对手，这必将在未来几年再学术论坛上引来无数争论。这本书将不会讲太深的高级算法，但是将会不停地用Unreasonable Effectiveness的案列，来看看数据是如何从自身衍生出来模式的
 
-The proposition that the Unreasonaly-Effective Method is a worthwhile rival to the Scientific Method is sure to cause barroom brawls at scientific conferences for years to come. This book will not go deeply into advanced algorithms, but we will repeatedly see examples of Unreasonable Effectiveness, as the data comes forth with patterns of its own.
+=== 对该危机的解决方案
 
-=== The Answer to the Crisis
+大数据危机的一个解决方案是高性能超计算（HPC）:使之回溯到蛮力（brute force）计算的范畴。我们能够以这样的方式进行我们的选举，将一个侯选人的支持者们聚集到爱荷华州的一块玉米地中，将其他侯选者的支持者们聚集到爱荷华州其他的玉米地中，并通过卫星成像技术统计结果。HPC解决方案异常昂贵，似乎只有当军事跟工业变得复杂时该技术才被需要，尽管传统的“所有数据都是本地的”方法继续动作，但它们失去了它们即简单而又快速的根本特征。一台超级计算机不是一个巨型的无隔断房间，而是由很宽的多维的走廊连接起来的一系列稍大房间；HPC程序员不得不经常考虑数据在缓存、处理器以及后备存储器之间的运行。
 
-One solution to the big data crisis is high-performance supercomputing (HPC): push back the limits of computation with brute force. We could conduct our election by gathering supporters of one candidate on a set of cornfields in Iowa, supporters of the other on cornfields in Iowa, and using satellite imaging to tally the result. HPC solutions are exceptionally expensive, require the kind of technology seen only when military and industrial get complex, and though the traditional "all data is local" methods continue to work, they lose their essential straightforward flavor. A supercomputer is not one giant connected room, it's a series of largish rooms connected by very wide multidimensional hallways; HPC programmers have to constantly think about the motion of data among caches, processors, and backing store.
+HPC解决方案最重要的可选性方法是大数据工具http://hadoop.apache.org[Hadoop]它有效地采用了相反的方法，Hadoop几乎撤销了所有对数据运动的控制，而不是全部控制计算的所有点及局部数据的错觉。此外，跟以往的HPC解决方案不同，Hadoop运行在商业硬件上，解决广泛的问题域（囊括商业，医药，营销，镜像，日志文件，数学计算）。尽管得到这些能力需要成本。Hadoop 只理解一个有限的词汇表，它以Map/Reduce被人熟知，你只需要知道那些能让hadoop为你服务的词汇。
 
-The most important alternative to the HPC approach is the big data tool http://hadoop.apache.org[Hadoop]
-which effectively takes the opposite approach. Instead of full control over all aspects of computation and the illusion of data locality, Hadoop revokes almost all control over the motion of data.  Furthermore, unlike the HPC solutions of yore, Hadoop runs on commodity hardware and addresses a wide range of problem domains (finance, medicine, marketing; images, logfiles, mathmatical computation). This power comes at a cost, though. Hadoop understands only a limited vocabulary known as Map/Reduce, and you'll need to learn that vocabulary if Hadoop is to do any work for you.
+让我们来体验一下Map/Reduce，想像一个出版商，他除了俳句外不采用其他所有文学形式:
 
-To get a taste of Map/Reduce, imagine a publisher that banned all literary forms except the haiku:
 
 [verse, The Map/Reduce Haiku]
+
 ____________________________________________________________________
+
 data flutters by
+
     elephants make sturdy piles
+
   context yields insight
+
 ____________________________________________________________________
 
-Our Map/Reduce haiku illustrates Hadoop's template:
 
-1. The Mapper portion of your script processes records, attaching a label to each.
-2. Hadoop assembles those records into context groups according to their label.
-3. The Reducer portion of your script processes those context groups and writes them to a data store or external system.
 
-While it would be unworkable to have every novel, critical essay, or sonnet be composed of haikus, map/reduce is surprisingly more powerful. From this single primitive, we can construct the familiar relational operations (such as GROUPs and ROLLUPs) of traditional databases, many machine-learning algorithms, matrix and graph transformations and the rest of the advanced data analytics toolkit.
+我们的Map/Reduce俳句说明了Hadoop的模板:
 
-In the coming chapters, we'll walk you through Map/Reduce in its pure form.  We recognize that raw Map/Reduce can be intimidating and inefficient to develop, so we'll also spend a fair amount of time on Map/Reduce abstractions such as Wukong and Pig.
 
-Wukong is a thin layer atop Hadoop using the Ruby programming language. It's the most easily-readable way for us to demonstrate the patterns of data analysis, and you will be able to lift its content into the programming language of your choice footnote:[In the spirit of this book's open-source license, if an eager reader submits a "translation" of the example programs into the programming language of their choice we would love to fold it into in the example code repository and acknowledge the contribution in future printings.]. It's also a powerful tool you won't grow out of.
 
-The high-level Pig programming language has you describe the kind of full-table transformations familiar to database programmers (selecting filtered data, groups and aggregations, joining records from multiple tables). Pig carries out those transformations using efficient map/reduce scripts in Hadoop, based on optimized algorithms you'd otherwise have to reimplement or do without. To hit the sweet spot of "common things are simple, complex things remain possible", you can extend Pig with User-Defined Functions (UDFs), covered in chapter (REF).
+1. 脚本的Mapper部分处理记录，给每个记录附加一个标签。
 
-This book's code will be roughly 30% Wukong, 60% Pig, and 10% using Java to extend Pig.
+2. Hadoop根据标签将这些记录组合为文本组。
 
-Let's take a quick look at some code to compare the two tools.
+3. 脚本的Reducer部分处理这些文本组，将其写入到一个数据仓库或是外部系统中。
 
-First, here's a Wukong script.  Don't worry about understanding it in full; just try to get a feel for the flow.
+
+
+虽说它不能对所有的小说，批判文章，或是由俳句组成的十四行诗生效，但map/reduce体现出令人惊讶的能力。从这最基本点出发，我们能够构建传统数据库中熟悉的关系运算（例如GROUP和ROLLUP ），许多机器学习算法，图和矩阵的转换及其他先进的数据分析工具包。
+
+
+
+在下一章，我们将在Map/Reduce的纯粹形式中漫游。我们认识到用原始的Map/Reduce来开发是吓人跟低效的，因此我们同样将花费大量时间了解Map/Reduce抽象例如Wukong跟Pig。
+
+
+
+Wukong是在Hadoop上使用Ruby编程语言的薄层抽象。它是演示数据分析模式最简单可读的方法，你将能够将它内容升华为你选择的编程语言 footnote:[本书的开源许可证精神中，如果一个求知欲很强的读者提交了用自己选择的编程语言翻译的示例程序的一个翻译，我们将很高兴将它收纳入示例代码知识库中，并在未来的出版物中对此表示感谢]. 它同样是你用了就会被牢牢抓住而不会抛弃的强大工具。
+
+
+
+高层次的Pig编程语言有跟数据库程序员很熟悉的你所描述的这种全表转换（从多个表中查询过滤的数据，分组、聚合、联接记录）。
+
+(这以以最佳的算法为基础，这算法你可以实现当然不用也行)，在Hadoop中Pig使用有效的map/reduce脚本执行这些转换。为了击中 “常见的事物是简单的，复杂的事物是有可能的”的“最佳听音位置”，你可以使用用户定义函数拓展Pid，详见参考章。
+
+
+
+本书的代码大约使用30%的Wukong，60%的Pig,以及10%的Java来拓展Pig。
+
+
+
+让我们快速地浏览若干代码来比较这两个工具。
+
+
+
+首先，让我们来看一段Wukong脚本。
+
+
+
+不用担心不能全部读懂它，你只需要试着跟随脚本流来感受感受Wukong脚本。
+
+
 
     # CODE validate script, column number, file naming
-    cat ufo_sightings.tsv		      | \
-      egrep "\w+\tUnited States of America\t" | \
-      cut -f 11				      | \
-      sort				      | \
+
+    cat ufo_sightings.tsv		      | 
+
+
+
+      egrep "w+	United States of America	" | 
+
+
+
+      cut -f 11				      | 
+
+
+
+      sort				      | 
+
+
+
       uniq -c > /tmp/state_sightings_ct_sh.tsv
 
+
+
     SELECT COUNT(*), `state`
+
       FROM `ufo_sightings`.sightings ufos
+
       WHERE (`country` = 'United States of America') AND (`state` != '')
+
       GROUP BY `ufos`.`state`
+
       INTO OUTFILE '/tmp/state_sightings_ct_sql.tsv';
 
+
+
     outfile = File.open('/tmp/state_sightings_ct_rb.tsv', "w");
+
     File.open('ufo_sightings.tsv').
-      select{|line| line =~ /\w+\tUnited States of America\t/ }.
-      map{|line| line.split("\t")[10] }.
+
+      select{|line| line =~ /w+	United States of America	/ }.
+
+      map{|line| line.split("	")[10] }.
+
       sort.chunk(&:to_s).
+
       map{|key,grp| [grp.count, key] }.
-      each{|ct,key| outfile << [ct, key].join("\t") << "\n" }
+
+      each{|ct,key| outfile << [ct, key].join("	") << "
+
+" }
+
     outfile.close
 
-We simply _load_ a table, _project_ one field from its contents, _sort_ the values (and in so doing, group each state name's occurrences in a contiguous run), _aggregate_ each group into value and count, and _store_ them into an output file.
+
+
+我们简单地 _加载_ 一张表 ,从它的内容中 _映射_ 一个域,对值 _排序_  (在做些的过程中，在持续的流动中对每一州名字的出现进行分组),将每个组 _聚合_ 成值和总个数, 并将其 _存储_ 到一个外部文件中。
+
+
 
 ----
+
     mapper(:tsv) do |_,_,_,_,_,_,_,_,_,state,country,*_|
+
       yield state if country = "United States of America"
+
     end
+
+
 
     reducer do |state, grp|
+
       yield [state, grp.count]
+
     end
-----
-
-Here's a similar operation using Pig:
 
 ----
+
+
+
+现在，让我们来看使用Pig脚本的相似操作:
+
+
+
+----
+
     sightings          = load_sightings();
+
     sightings_us       = FILTER sightings BY (country == 'United States of America') AND (state != '');
+
     states             = FOREACH sightings_us GENERATE state;
+
     state_sightings_ct = FOREACH (GROUP states BY state)
+
       GENERATE COUNT_STAR(states), group;
+
     STORE state_sightings_ct INTO '$out_dir/state_sightings_ct_pig';
+
 ----
 
-=== The triad: batch, stream, scale
+=== 三剑客: 批量, 流式, 缩放
+早期，我们把洞察力定义为更深层的认识和更好的决策。
+Hadoop处理任意规模数据的能力，加上我们提高企业方方面面的综合仪器实力，
+代表着在揭露模式上有了根本好转，也说明了人力在模式开发上能达到的范围。
 
-Earlier, we defined insight as deeper understanding and better decisions. Hadoop's ability to process data of arbitrary scale, combined with our increasing ability to comprehensively instrument every aspect of an enterprise, represent a fundamental improvement in how we expose patterns and the range of human endeavors available for pattern mining.
+但当Hadoop组织的科研成果开始取得成功时，发生了一件有趣的事情：
+研发人员意识到，他们不是只想对模式有更深的理解，
+他们希望对这些模式采取行动并且快速作出决定。
+工厂老板想要停止生产线，当信号预测随后会出现缺陷时；
+医院会希望有社工跟进，当病人不喜欢吃手术后药物时。
+必须要及时，因此一个显着的新功能已经进入大数据工具集的核心：流分析（趋势分析）。
 
-But a funny thing happens as an organization's Hadoop investigations start to pay off: they realize they don't just want a deeper understanding of the patterns, they want to act on those patterns and make prompt decisions. The factory owner will want to stop the manufacturing line when signals predict later defects; the hospital will want to have a social worker follow up with patients unlikely to fill their postoperative medications. Just in time, a remarkable new capability has entered the core Big Data toolset: Streaming Analytics.
+流分析获取你_相关的快速洞察分析_，交给Hadoop做深层的全局洞察分析。
+Storm+Trident（完全领先的工具集）能够处理低延迟和异常产出的数据；
+它可以在Java、Ruby和更多环境下执行复杂的处理;
+它可以支持远程APIs或者高并发数据库。
 
-Streaming Analytics gets you _fast relevant insight_ to go with Hadoop's _deep global insight_. Storm+Trident (the clear frontrunner toolkit) can process data with low latency and exceptional throughput (we've benchmarked it at half a million events per second); it can perform complex processing in Java, Ruby and more; it can hit remote APIs or databases with high concurrency.
 
 // It's an analytic platform that should be regarded as an essential counterpart to Hadoop and scalable data stores.
 // On way to think of Trident is as a tool to do your query on the way _in_ to the database. Rather than insisting every application use the same database and same data model,
 
-This triad -- Batch Analytics, Stream Analytics, and Scalable Datastores -- are the three legs of the Big Data toolset. Together they let you analyze data at terabytes and petabytes, data at milliseconds, and data from ponderously many sources.
+三剑客 -- 批量分析、流分析、可伸缩的数据存储 --
+是大数据工具集的三个支柱。
+他们在一起，能够让你在毫秒时间内分析 terabytes和petabytes
+的海量数据，当然也包括数据源杂乱分布在各处时。
 
-=== Grouping and Sorting: Analyzing UFO Sightings with Pig
 
-While those embarassingly parallel, Map-only jobs are useful, Hadoop also shines when it comes to filtering, grouping, and counting items in a dataset. We can apply these techniques to build a travel guide of UFO sightings across the continental US.
 
-Whereas our last example used the wukong framework, this time around we'll use another Hadoop abstraction, called Pig. footnote:[http://pig.apache.org]  Pig's claim to fame is that it gives you full Hadoop power, using a syntax that lets you think in terms of data flow instead of pure Map and Reduce operations.
+=== 分组和排序: 用Pig来分析目击UFO
 
-The example data included with the book includes a data set from the  http://www.infochimps.com/datasets/60000-documented-ufo-sightings-with-text-descriptions-and-metada[National UFO Reporting Center], containing more than 60,000 documented UFO sightings footnote:[For our purposes, although sixty thousand records are too small to justify Hadoop on their own, it's the perfect size to learn with.]. Now it's sad to say, but many of the sighting reports are likely to be bogus, and we'd like to eliminate them. How will we define bogus? As a first guess, let's reject descriptions that are fewer than 12 characters (too short), or contain the word 'lol' (by an internet troll).
+虽然这些事件令人尴尬的相似，只有采用映射任务(map-only jobs)才有作用，
+但Hadoop在涉及到数据集的过滤、分组、统计条目依然表现出众。
+我们可以应用这些技术来构建整个美国大陆UFO目击旅行指南。
+
+因为上个示例我们使用了wukong框架，
+所以这次我们将使用另外一个叫 Pig 的Hadoop抽象工具。footnote:[http://pig.apache.org]
+Pig最声名鹊起的是它给你完整Hadoop能力，
+并且使用一个能让你关注数据关系的语法来代替原生的映射和分解操作。
+
+示例数据，包括本书附带的数据集都来自 http://www.infochimps.com/datasets/60000-documented-ufo-sightings-with-text-descriptions-and-metada[美国国家飞碟报告中心]，
+包含了超过60,000个UFO目击事件记录。footnote:[对于我们而言，
+尽管六万记录太小不足以证明Hadoop拥有的能力，
+但这算是一个学习的完美大小了。] 现在不得不痛心地说，许多目击报告都可能是假的，我们需要锡除它们。
+我们将如何界定假？作为第一个猜测，让我们拒绝说明是少于12个字符（太短），
+或包含词语"lol"（网络巨魔，煽动性信息）。
+
 
 ----
 sightings     = load_sightings();
@@ -229,7 +335,9 @@ sig_sightings = FILTER sightings BY
   ((SIZE(description) >= 12) AND NOT (description MATCHES '(^|.*\W)lol(\W.*|$)'));
 ----
 
-A key activity in a Big Data exploration is summarizing big datasets into a comprehensible smaller ones. Each sighting has a field giving the shape of the flying object: cigar, disk, etc. This script will tell us how many sightings there are for each craft type:
+在大数据探索中一个关键性的行为是总结较大的数据集拆分成可理解的较小数据集。
+每个观察集都有一个字段用来给出飞行物体的形状：雪茄、圆盘等等。
+下面这个脚本将会告诉我们每个大空船类型有多少次目击：
 
 ----
 sightings = load_sightings();
@@ -238,7 +346,9 @@ craft_cts       = FOREACH cf_sightings GENERATE COUNT_STAR(sightings)
 STORE craft_cts INTO '$out_dir/craft_cts';
 ----
 
-We can make a little travel guide for the sightings by amending each sighting with the Wikipedia article about its place. The JOIN operator matches records from different tables based on a common key:
+我们可以通过修改维基百科上每次目击的文章，制作一些关于发生地点的小旅行指南。
+使用联接运算符基于公共密钥的从不同表匹配记录：
+
 
 ----
 DEFINE Wikipedify  pigsy.text.Wikipedify;
@@ -248,31 +358,51 @@ articled_sightings = JOIN
   USING replicated;
 ----
 
-Here's the part that was easy: searching through 4+ million articles to find matches. Here's the part that was hard: _preparing_ that common key. Pig doesn't have that capability built in, but it does let you extend its language with User-Defined Functions (UDFs). We have enabled such a UDF -- a function to prepare a string in Wikipedia's article id format -- using the `DEFINE` statement. On the fourth line, we combine the city and state into a single value and apply our `Wikipedify` function, giving a common basis for matching records. Here's the part that is clever: knowing when to attach `USING replicated`, and which order to place `articles` and `sightings` in the statement. The correct choice can mean a multiple times speedup in how fast this query executes. This book will equip you to trust the framework for the easy part, push past the hard part, and know when and why to attach the clever part.
+其中相对简单的部分：从超过4百万的文章中搜索找到匹配项。
+其中相对复杂的部分：准备那个公共密钥。
+Pig没有相关的内置功能，但它允许你使用用户定义的函数（User-Defined Functions, UDFs）扩展它的语言。
+我们已经启用了这样的UDF——一个函数来准备维基百科的文章编号格式的字符
+串——使用` DEFINE`声明。
+在第四行，我们合并城市和国家为一个单值，并且执行我们
+的` Wikipedify`函数，给出一个匹配记录的通用基础。
+其中相对需要技巧的部分：知道什么时候附加 `USING replicated` 声明，
+知道在声明中放`articles` 和 `sightings` 的顺序。
+正确的选择可能意味执行此查询的速率会有几倍的加速。
+这本书将会让你任赖框架去处理简单的部分，加速通过复杂的部分，
+并且知道什么时候又因为什么去使用那些需要技巧的部分。
+
 
 ----
 TODO: sample output
 ----
 
-This travel guide is a bit of a gimmick so far, but hey, we're only at the end of the first chapter. We can come up with all sorts of ways to improve it. For instance, a proper guide would hold not just the one article about the general location, but a set of nearby places of interest. Later in the book we'll show you how to do a nearby-ness query (in the Geodata chapter (REF)), which is fiendishly hard until you know how. You'll immediately find that an undifferentiated listing of points of interest is almost worse than only listing one. Later in the book, we'll show you how to attach a notion of "prominence" (in the event log chapter (REF)).
+这个旅行指南到目前为止确实有点仅像一个噱头，不过你知道的，
+我们目前仅仅在第一章的结尾处。我们可以想出各种方法来改善它。
+举例来说，一个适当的引导将不只是在关于大体位置的一篇文章，
+而是一系列附近的有趣地方。在这本书的后续部分，我们会告诉你如何做一个
+附近的周边查询（在地理数据章节（REF）），
+在你知道怎么做之前，这确实是极其困难。
+你会立刻发现，找一个未分化的兴趣点列表，几乎比只列一个兴趣更糟糕。
+在这本书的后续部分中，我们也将向你展示如何附加一个“突出”的
+概念（在事件日志中章（REF））。
 
-To get us started, we're going to meet Chimpanzee & Elephant, some new friends whose adventures seem to curiously correspond to ours...
+让我们一起开始，我们将遇到 猩猩 和 大象，
+这些新朋友的冒险看起来正奇怪地迎向我们……
 
-=== Applications
+
+=== 应用范围
 
 
-* E-commerce
-* Biotech
-* Manufacturing defects
-* Security
-* Reccommenders
-* Finance
-* Intelligence
+* 电子商务
+* 生物技术
+* 制造业次品
+* 安全
+* 推荐
+* 财政
+* 情报
 
-* Recommender
-  -
-* Defect patterns (security breach, manufacturing defect, insider security,
-  - anomaly detection
-  - causal analysis
-* Prediction
-  - patient likely to get sepsis
+* 缺陷模式 (安全漏洞, 制造业次品, 内部安全,
+  - 异常检测
+  - 因果分析
+* 预言
+  - 病人患败血症的可能性
