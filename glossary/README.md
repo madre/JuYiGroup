@@ -33,11 +33,6 @@
 
 * trivially parallelizable
 
-> 译义：常规并行化
+> 译义：常规并行化  
 > 语境：~~
-
-* one-liner
-
-> 译义：
-> 语境：Loading the table is now a one-liner 
 
