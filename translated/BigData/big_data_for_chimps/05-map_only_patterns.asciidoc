@@ -1,0 +1,904 @@
+== 分析模式: Map-only 运算
+
+本章我们将通篇重点讲述所谓的 'Map-only 操作'。如同C&E公司第一份工作中猩猩译员们所负责的业务那样，一个Map-only操作各自处理自己的记录。该属性使得这些操作常规并行化trivially parallelizable: 他们不需要减少自己的执行周期来承担别的工作。
+本章我们将通篇重点讲述所谓的 'Map-only 操作'。如同C&E公司第一份工作中猩猩译员们所负责的业务那样，一个Map-only操作各自处理自己的记录。该属性使得这些操作常规并行化trivially parallelizable: 他们不需要减少自己的执行周期来承担别的工作。
+
+当一个脚本仅仅只有Map-only操作时。这些Map-only操作就生成了一个Mapper-only作业，这个作业执行并行组合的流水线周期。当这些Map-only操作与structural操作（下章将讲述）结合到一起，这就与mapper或reducer阶段产生了关联（map-only发生于structural前为mapper,于其后则为reducer）。
+
+首先我们列出所有的map-only操作并将他们归到一起，这有两个原因。一是他们相当基础，如果没有通过里边的过滤 `FILTER`或循环`FOREACH`操作很难大批量地处理数据；二是归因这些操作对性能影响的方式大致相同。由于这些操作是常规并行化的,他们高效缩放，与此同时，计算产生的开销几乎不会影响吞吐量。当流水作业时，他们的性能开销可概述为“小孩子随意享用大人的购买餐”。由于任一材料数据集规模不一，很少将预备的或随后的处理开销与减少自己执行周期所产生的开销相比较。最后，由于这些操作独立处理记录，对内存的影响微乎其微，因此，请学会将他们作为一个整体一起考虑。
+
+=== 排除数据
+
+模式的第一个环节聚集于如何收缩你的数据集规模，这听起来好像与初学者一直所认为的观点违背，即：所有“大数据”的要点难道不是我们要立刻开始处理所有的数据集么？最终我们也将以整个人中，而不是某个样本空间为基础开发模式，因此，为什么我们要缩小数据的规模呢？
+
+主要原因有：我们只关注记录的一个子集：只有网页需要外部引用，只有安全事件有高威胁级别，只有少量超过100万美元的帐户。甚至当你处理一个数据集中的所有记录时，你也许只对跟你研究相关的一个字段的子集感兴趣。考虑到内存及计算效率兼顾计算的正常运转，你帮了自己一个忙，立刻对一个工作集进行筛选，使之只保留与你手头工作相关的记录和字段。
+ footnote:[这肯定会简化调试。同样奏响Q的副歌， _了解你的数据_. 如果你在处理一个数据集时你不准备用到多余的字段或是记录，你能肯定他们不会莫名其妙地爬到你的模型里边去么？在这里，最坏的情况是什么被称为一个特征泄漏，在你目标中，变向风在受训数据中吹来吹去（在本质上：想象一下，只要你是第一个提供今天的高温的人，就可以说你能预测今天的高温度)。当你将一个模式应用到现实世界中时，一个特征泄漏会给你一个惊喜，一个让你痛苦的惊喜。] 而且，你也许会希望在一个持续作业上发布代码之前，在一个小小样本上测试一下。 footnote:[这是通常是开发的一个好习惯，尤其是如果你是那个在离开办公室、睡觉、登机长途飞行前才开始工作的那个人。]最后,当检验数据集中的每个元素的计算开销太过昂贵时，你也许只想取一个随机样本来抽查一个数据集。
+
+课程的目标并不是 _排除_ 数据，而是 _选择性_ 地挑选数据，同时我们将向你介绍多种技术来完成数据的选择。
+
+
+=== 选择满足一个条件的记录: `FILTER`和他的小伙伴们
+
+排除（选择）数据的第一步是过滤掉不匹配特定标准的记录。Pig的 `FILTER` 声明可完成这个操作。它并不是消除数据 -- Hadoop中的所有数据，Pig不可改变它 -- 所有的Pig运算更像是创建了一个新的表，这个表从输入中删掉了特定的记录。
+
+在计的棒球比赛可追溯到1871年(!)，但发展了数十年才有了现代棒球比赛形式的稚形。可以说我们只对1900后的赛季感兴趣。在Pig中，我们用 `FILTER` 运算footnote:[在这个以及以后的脚本中，除非有必要使用，我们将省略掉 `LOAD`，`STORE` 及其他的这样的声明。全部可执行的代码请参见代码(REF)的示例]:
+
+------
+modern_stats = FILTER bats BY (year_id >= 1900);
+------
+
+目前你所期望看到的比赛被条件范围所限定：`==`（双等于）表示等式，`!=` 表示非，`>`, `>=`, `<`, `<=` 不等式，`IN` 指列表中是否存在与之匹配的记录； `MATCHES` 字符串模式匹配。（最后两种表达在一个式子中可以执行多匹配）。
+
+==== 选择满足多条件的记录
+
+在一次数据搜索中，通常来说用稀疏数据来排除主题是很重要，要么消除小数据样本的伪数，要么由于他们不在本次感兴趣的关注点之内。在本次案例中，我们通常想要将分析约束在常规选手之内 -- 那些在一个赛季中在较受关注的比赛时间内上场的棒球员 -- 同时允许损伤或情景置换。自在一个赛季的154到162场比赛中，大联盟球员平均击球4次以上后（该击球数在1960年有所增加），我们可以得到450个样板表现（几乎占了最大数目的2/3）来作为我们的阈值，450PA这个数字 footnote:[绝非偶然，450PA这个数字接近于“合格”赛季的阈值-每个球队需得到3.1样板表现才能获得季赛参与奖]。
+
+在Pig脚本中，你同样能用`AND`, `OR`, `NOT`来组合条件声明，下边的选择语句让我们称之为“合格的现代赛季”：常规选手，在新时代比赛竞争，隶属于两大现代联盟中的任意一个。
+
+------
+modsig_stats = FILTER bats BY
+  (PA >= 450) AND (year_id >= 1900) AND ((lg_id == 'AL') OR (lg_id == 'NL'));
+------
+
+==== 用空（ `null`）值来选择或排除记录
+
+`people` 表是另外一个我们将要处理的表。它描述了棒球选手们个体相关的关键统计资料：姓名，出生日期、地点，死亡日期、地点，棒球职业生涯开始时间跟结束时间；身高、体重等等。这些数据非常全面，但在某些情况下某些字段会存在空（`null`）值。在很多情况下空值被实际使用：
+
+* _丢失/未知值_ -- 此情况适于小部分早期球员的出生地点和出生日期
+* _无可用值_ -- 仍活着的棒员队员拥有`null` 的死亡日期跟死亡地点
+* _缺陷值_ -- 如果一个错误的界线创造了一个不可解析的单元（如将 `'Bob'`写入数据类型为整形的一个字段），Pig将在日志中写入一个警告，同时将`null`值写入其中。
+* _非法值_ -- 被零除或类似的错误操作结果用空值（同时不报错，不警告，不日志声明）
+* _"其他"_ -- 人们通常使用空（`null`）值代表“它很复杂，但也许其他的字段存储着它的细节信息”.
+
+使用`FILTER`声明我们能够排除那些出生日期及地点未知的棒球队员:
+
+------
+borned = FILTER people BY (birth_year IS NOT NULL) AND (birth_place IS NOT NULL);
+------
+
+对于有SQL背景的人来说，它对Pig对空（`null`）值的处理相当熟悉。其他人，同样幸运，在不给出操作提示或与 `null` 进行比较（这意味着其结果既不假`false` 也不真 `true`）的时候空值通常会消失，因此`null`不小于5.0，也不大于5.0，同样不等于5.0。一个空值不等于`null`，也非_不等于_`null`。可想而知程序员要跟踪所有的空值是多么难了。在Pig操作手册中所有这些规则的复杂的集合都有很详细的说明，因此在这儿我们将不再深入 -- 看大量的示例是我们发现你所需要的最好的学习方式，我们努力提供了大量丰富的示例供大家学习。
+
+===== 模式使用
+
+在我们讲完任一种模式或模式组后，我们会将如下所示的块呈现在读者面前。由于不是什么有趣的事情要说，故不是每一个字段每次都会出现。
+
+* _应用场景_  -- (_商业或编程环境。_) 任何地点。就像是你照相机的光圈，成像的开始跟结束时你都用它来调节光线。
+* _规范代码_	 -- ( _我们只提供足够让你记住它是如何拼写的代码段_) `somerecords = FILTER myrecords BY (criteria AND criteria ...);`
+* _SQL用户，你好_     -- (_相关SQL命令的一个草图，有SQL经验背景的人的重要注意事项_) `SELECT bat_season.* FROM bat_season WHERE year_id >= 1900;`
+* _重要事项_	 -- (_使用的注意事项。你不理解/不能通过本书第一时间买进但之后你可能会理解的事项。_)
+  - 早过滤，常过滤。将一个大的数据集变小是你所能做的最好的事情。
+  - SQL用户请注意: 请使用`==`, `!=` -- 而不是 `=` 或其他。
+  - 程序员请注意: 请使用`AND`, `OR` -- 而不是 `&&`, `||`。
+* _计数输出_	 -- (_输出多少记录: 很少, 一些, 更多, 爆增？_) 从0到100%的输入记录计数。计数输出的数据规模将相应减少。
+* _记录_		 -- (_进行这项操作的那些相似记录的草图_) 相同的输入
+* _数据流_		 -- (_该操作生成Hadoop作业。本章，所有的流水线跟这个类似，下章将会不同_) Map-Only: 数据流构成于上述map 或 reduce的结束阶段，如果它单独存在，就成为一个 map-only 作业。
+* _供你练习_    -- (_如果你选择，请发扬这样一种理念。不要去寻找答案部分 --  我们没有提供任何答案。很多情况下你首先会去寻找答案_)，与`null`们和条件操作符一起玩耍，直到你对它的怪癖（特殊用法）感觉良好。
+* _另请参阅_             -- (_除了本书此章节中的模式外，其他哪些哪些主题能够应用此模式？有时在本书的另外一章中，有时是其他地方的一个指针_) 不同的运算，有些是集合Set运算，有些连接Joins运算同样用来根据一些标准来排除记录。请特别注意半连接和反连接 the Semi-Join and Anti-Join (REF),它们不靠一张大的关键字列表来选择或是排除匹配的记录。
+
+
+==== 通过匹配正则表达式来筛选记录(`MATCHES`)
+
+一个 `MATCHES` 表达式采用正则表达式模式来匹配字符串值.正则表达式以纯 `chararray` 字符串来给出;像Python/Ruby/Perl/etc-ists所希望的那样，它没有特殊的语法。参见重要明细及参考的工具栏（REF），它将帮助你掌握该重要的工具。
+
+该运算使用了一个正则表达式来筛选其名字跟你任意一个作者的名字相似的棒球队员:
+
+------
+-- Name contains a Q; is `Flip` or anything in the Philip/Phillip/... family. (?i) means be case-insensitive:
+namesakes = FILTER people BY (nameFirst MATCHES '(?i).*(q|flip|phil+ip).*');
+------
+
+人们很容易忘记人的名字中包含空格，点，破折号，撇号，以小写字母或以撇号开头，带有重音或是其他非拉丁字符 footnote:[示例的一般性原则这如果你认为涉及到人有关的分析很简单，那就大错特错了]. 因此作为 `MATCHES`的一个不那么傻的示例，本代码段抽取了所有不以大写字母、不以非词或不以非空格开头的名字:
+
+------
+funnychars = FILTER people BY (nameFirst MATCHES '^([^A-Z]|.*[^ws]).*');
+------
+
+你可以: 非常明确的说明，这些只是Java的正则表达式，并指出·可可。
+你可以TODO: 也许你可以将下边的文本重组为“怎么将一个sane 正则表达式转换为一个Pig/Java正则表达式”。
+
+有很多非词或非空格开头的名字，但没有人的名字以小写字母开头。然而在本书早期的拟稿中该查询通过"nameFirst" 值查询到了一个记录 -- 源文件的头行污染了这个表。本书现在修正了这个错误，像这样理智的检查永远不会过时，尤其是在大数据中。当你有数十亿的记录时，百万分之一的异常会出现数千次。
+
+.关于字符串匹配的重要事项
+******
+正则表达式无比强大，我们希望所有的读者对其有基础的认识。比从http://regexp.info[regexp.info]网站上掌握它，再没有其他更好的方式了。在本书的结尾（REF）我们提供了一个简要的备忘录。对于Pig，尤其有必要对其作出必要的澄清:
+
+* 在Pig中用于MATCHES运算的正则表达式以纯字符串出现。用一个反斜杠为字符串的字面意思服务，当送给正则表达式引擎时它不出现在字符串中。通过缩写 `[^ws]` (非词 非空格单词)，我们需要使用两个反斜杠。
+
+* 是的，在一个目标字符串中匹配一个反斜杠符号需要使用四个反斜杠: ``!
+* 字符串中匹配中可供选择的选项。例如`(?i)` 指做不区分大小写(如同上面所做的那样)匹配时使用， `(?m)` 用来多行匹配等等 -- 参见参考资料。
+
+* Pig正则表达式在字符串的开冻跟结尾隐式加上了固定的字符，相当于在开头加上了 `^` ，在结尾加上了 `$` 。（这与Java类似但与很多其他的语言不同。），像我们上面所做的，在两个结尾处使用`.*` ，恢复传统的“贪婪”的行为。当写正则表达式时明确地写上 `^` or `$` 这对可读性来说个好习惯。
+
+
+* `MATCHES`是一个表达式，就像 `AND` 或 `==` -- 你写下 `str MATCHES regexp`。另一个你将接触的正则表达式机制是函数 -- you write `REGEX_EXTRACT(str, regexp, 1)`。当完成本书的课程时，你将忘记我们告诉过你。
+* 正则表达式结果产出包括: Peek-A-Boo Veach, Quincy Trouppe, and Flip Lafferty。
+* 从记录中你被允许使正则表达式成为一个值，尽管Pig正则表达式能以一个很好的加速比预编译常数正则表达式。
+* Pig不能提供一个与SQL `%` 完全相等的表达式做简易匹配。点星 (`.*`)粗略等价于SQL `%`（零个或多个任意字符），点粗略等价于SQL `_`（单字符）；方括号（例如 `[a-z]`）粗略等价于SQL的一个字符范围。
+* 字符串等式区分大小写: `'Peek-A-Boo'` 不等于 `'peek-a-boo'`  。对于不区分大小写的字符串匹配，可调用 `EqualsIgnoreCase` 函数：`EqualsIgnoreCase('Peek-A-Boo', 'peek-a-boo')` 为真。这只是调用Java的 `String.equalsIgnoreCase()` 方法，其不支持正则表达式。
+******
+
+NOTE: 遗憾的是，虽然大家都知道获得诺贝尔的物理学家无论是 Gerard 't Hooft, Louis-Victor Pierre Raymond de Broglie, 还是 Tomonaga Shin'ichirō没有参加或尝试加入职棒大联盟。可当处理名字的时候，他们的名字经常被作为反例被记住。 Prof de Broglie的全名占38个字符，有一个姓以小写字母开头，不能按常规方式进行切割。"Tomonaga" 是名字的姓，尽管它放在名字的最前面。你会看到 Tomonaga教授的名字给出了各种各样的写法像"Tomonaga Shin'ichirō", "Sin-Itiro Tomonaga",或"朝永 振一郎"，在不同的上下文中他们任一个都可能是正确的，当然随之其他就是错误的。't Hooft教授的姓以一个撇号一个小写字母开头，并含有一个空格。我们建议你最好在你的工作间放置一个古玩架子来收集诸如此类的反例，本书将会向读者分享一些这样例子。
+
+===== 模式使用
+
+* _应用场景__  -- 无论在哪儿你都需要用字符串字段来筛选记录。
+选择对小表，寻找缺陷记录。匹配复合键的一个分段 -- 你能明白 `games` 表上执行`game_id MATCHES '...(19|20).*'` 这条语句能做什么么？
+* _规范代码_	 -- `FILTER recs BY (str MATCHES '.*pattern.*')`, 当然, 而且要加上 `FOREACH recs GENERATE (str MATCHES '.*(kitty|cat|meow).*' ? 'cat' : 'notcat') AS catness`.
+* _SQL用户，你好_     -- 与 `LIKE` 类似但比它更强大。详见转换指南中的侧边栏sidebar (ref) 。
+* _重要事项_	 --
+  - 更主要的是，他们都异常强大，尽管现在他们看起来很神秘，但事实上他们要比想象中更容易。
+  - 与Pig提供的大多数其他字符串条件函数相比，你最好把学习正则表达式当成一个额外的事来区别对待。
+  - ... 其他需要我们知道的重要事项，我们将其放在了侧边栏中（REF）。
+* _记录_		 --你可以在一个筛选子句中使用它，同样在任何地方的表达式中使用也是被允许的，就像前一代码中一样。
+* _数据流_		 -- Map-Only: 构成于map 或 reduce的结束阶段，如果它单独存在，就成为一个 map-only 作业。
+* _供你练习_    -- 遵循 http://regexp.info/tutorial.html[regexp.info 教程], 但 _看到 Grouping & Capturing那一部分就足够了_. 剩下的部分最好是当你发现你需要他时再行查阅。
+* _另请参阅_             -- Pig `REGEX_EXTRACT` 及 http://pig.apache.org/docs/r0.12.0/func.html#replace[`REPLACE`] 函数。 详细的Java的 http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html#sum[正则表达式] 文档在它的pecadilloes中 (请不要看成是对正则表达式的培训)。
+
+
+==== 在一个固定查找表中匹配值来筛选记录
+
+如果你打算通过匹配小型静态列表值来进行过滤，Pig提供了方便的 `IN` 表达式：如果其值等于（区分大小写）列表中的任意一个值，返回真。这筛选出了每年被东部棒球区现今球队使用的体育馆:
+
+------
+al_east_parks = FILTER park_team_years BY
+  team_id IN ('BAL', 'BOS', 'CLE', 'DET', 'ML4', 'NYA', 'TBA', 'TOR', 'WS2');
+------
+
+有时使用一个正则表达式来代替它是一个正确的选择。显然，`bubba MATCHES 'shrimp (kabobs|creole|gumbo|soup|stew|salad|and potatoes|burger|sandwich)' OR bubba MATCHES '(pineapple|lemon|coconut|pepper|pan.fried|deep.fried|stir.fried) shrimp'` 语句的可读性比 `bubba IN ('shrimp kabobs', 'shrimp creole', 'shrimp gumbo', ...)`语句要高。
+
+当供匹配的列表变得有点大,将其读到一个组成员数据结构中不失为一个明智的选择 footnote:[如Ruby，一个动态语言, 比起分析数据文件，它往往可以更快和更清洁的格式化表到语言本身。加载出表格数据就是一个笑话（特别是需要查询表格时），比起翻译Rubyy语言，没有什么能比Ruby翻译器译得更快了。],但最终大数据集以数据文件形式
+存在。
+
+通常情况下使用连接来处理埠，我们在下一章节"在另外的表进行匹配来筛选记录（半连接）"下（REF）中对此作出说明。尤其要注意，在使用专业合并联接和哈希映射（复制）连接时，最终，你也许会发现你得到了一张超级大的表，然后表中只有一丁丁的元素能被匹配上。在这种情况下，使用布隆过滤比较合适，我们将在统计学章节对布隆过滤做更多的讲解，在一个大的文档集中使用布隆过滤器匹配一张一个大的地名列表来筛选每一个地名。
+
+// 扩展: 添加事件声明
+
+===== 模式使用
+
+* _应用场景_  -- 从网络日志中选择或排除文件类型或IP地址。其关键是模型记录下了你通过数据流的路径，你正在研究的股票符号。与“同时总结一个集群的多子集” (REF)一起，枚举成员队列。 (`(state IN ('CA', 'WA', 'OR') ? 1 : 0) AS  is_western, ...`).
+* _规范代码_	 -- `foo IN ('this', 'that', 'the_other')`, 或任何由该语句产生的变种形式。
+* _SQL用户，你好_     -- 这远不如SQL的 `IN` 表达式那样强大， 更重要的是，你不能够提供另外一张表作为列表使用。
+* _重要事项_	 -- 使用正则表达式来代替它是一个正确的选择。
+* _计数输出_	 --即不同的值的数目，有很多记录是其键值的基数，其数据规模将大大减少。
+* _数据流_		 -- Map-Only: 构成于map 或 reduce的结束阶段，如果它单独存在，就成为一个 map-only 作业。
+
+=== 投影只通过列名选择字段
+
+当基于表达式用一个 `FILTER` 选择 _行row_ 时，Pig的 `FOREACH` 通过列名来选择特定的 _字段_ 。我们将这个简单的操作称之为"投影"。
+
+我们尽量使用 _project_ 使选择的列更加精准，以任何方式用 _select_ 选择行，用 _filter_ 意味着我们要选择满足特定条件表达式的行。
+
+我们使用的表有着超级丰富的统计数据，但我们只需要一点点来做相当复杂的 搜寻。gamelogs表有90多列，使用一个FOREACH循环只抽取球队及最终的分数:
+
+------
+game_scores = FOREACH games GENERATE
+  away_team_id, home_team_id, home_runs_ct, away_runs_ct;
+------
+
+==== 使用FOREACH来选择、重命名及重排序字段
+
+不局限于简单地限定列数，你同样能够在投影中重命名、重排序列。每一个表记录有 _两个_ 比赛结果，一个为主队一个为客队。纯粹从每个团队的视角出发，我们可以在一个表数据列表结果中的同一列中列出该队作为主客队所有分数： 
+
+------
+games_a = FOREACH games GENERATE
+  year_id, home_team_id AS team,
+  home_runs_ct AS runs_for, away_runs_ct AS runs_against, 1 AS is_home:int;
+
+games_b = FOREACH games GENERATE
+  away_team_id AS team,     year_id,
+  away_runs_ct AS runs_for, home_runs_ct AS runs_against, 0 AS is_home:int;
+
+team_scores = UNION games_a, games_b;
+
+DESCRIBE team_scores;
+--   team_scores: {team: chararray,year_id: int,runs_for: int,runs_against: int,is_home: int}
+------
+
+第一个投影将 `home_team_id` 到团队槽中, 并重命名为 `team`; 保留 `year_id` 字段不变; 把主客队八分数分别归档到 `runs_for` 及 `runs_against` 字段下。 最后，我们设置一个代表主队的标识字段 并定义其字段名跟类型。第二步我们为客队生成一个相应的表，然后用 `UNION` 运算符（我们将用几页地篇幅对此进行介绍）将两个表堆叠到一起。所有的表都以相同的模式显示，虽然他们的值来自源表的不同列。
+
+
+===== 模式使用
+
+* _应用场景_  -- 几乎任何地点。如果 `FILTER` 是我们的相机的光圈, 这是变焦镜头。
+* _规范代码_	 -- `FOREACH recs GENERATE only, some, columns;`
+* _重要事项_	 -- 正如你所看到的,我们花了很多心思视觉对准到代码片段中的子表达式。这并不是因为我们已经打扫好了房间让学生住进来 --  这是我们写的代码，我们战友希望我们像这样写代码。
+* _计数输出_	 -- 完全与输入保持一致。
+* _记录_		 -- 无论你将他们定义成什么。
+* _数据流_		 -- Map-Only: 构成于map 或 reduce的结束阶段，如果它单独存在，就成为一个 map-only 作业.
+* _另请参阅_             -- "用复杂的类型拼合语句Assembling Literals with Complex Type" (REF)
+
+==== 抽取记录的随机样本
+
+另一个常见的运算是抽取一个 _均匀uniform_ 的样本 -- 
+Another common operation is to extract a _uniform_ sample -- 每个记录被选的概率相等。例如，你可以在整个数据集中运行前用它来测试新代码(可能会由于大量误处理的记录而导致一个连续作业失败)。通过调用 `SAMPLE` 运算符, 你请求Pig随机排除掉一些记录。
+
+以下的Pig代码从我们的棒球数据集中返回的一个10%的随机选择记录(即, 1/10 = 0.10):
+
+------
+some_seasons_samp = SAMPLE bat_seasons 0.10;
+------
+
+ `SAMPLE` 通过生成一个随机数来选择记录进行运算，这意味着任意一个运行使用 `SAMPLE` 运算符的脚本都会生成一个不同的记录集，有时他是你想要的，或至少，你不会太介意。在其他情况下，你想要一次抓取一个均匀样本，然后重复对这些 _相同_ 记录进行操作。(假定这样一个示例，对一个数据集进行现场检查的新代码：你需要对同一个样本运行你的代码来确保你的工作如预期的变化。)
+
+有经验的软件开发员将使用一个 "seeding" 函数 -- 例如R的 `set.seed()` 或 Python的 `random.seed()` --  使记录的随机性就差那么一点点。在这个时候，  Pig没有等效的函数。更糟的是， Even worse,这是不一致的 _在任务中_ -- 如果一个机器上的一个map任务失败了, 重试将尝试生成不成的数据推送给reducers。这个不常归因的问题，但对于任何想要回馈给Pig项目的人来说, 这是一个需要解决的简单高价值问题。
+
+===== Pattern in Use
+
+* _Where You'll Use It_  -- At the start of the exploration, to cut down on data size. In many machine learning algorithms. Don't use it for simulations -- you need to be taking aggressive charge of the sampling algorithm.
+* _Important to Know_
+  - A consistent sample is a much better practice, though we admit that can be more of a hassle. But records that dance around mean you can't Know Thy Data as you should.
+  - The DataFu package has UDFs for sampling with replacement and other advanced features.
+* _Output Count_	 -- Determined by the sampling fraction. As a rule of thumb, variances of things are square-root-ish; expect the size of a 10% sample to be in the 7%-13% range.
+* _Records_		 -- Identical to the input
+* _Data Flow_		 -- Map-Only: it's composed onto the end of the preceding map or reduce, and if it stands alone becomes a map-only job.
+* _Exercises for You_    -- Modify Pig's SAMPLE function to accept a seed parameter, and submit that patch back to the open-source project. This is a bit harder to do than it seems: sampling is key to efficient sorting and so the code to sample data is intertwingled with a lot of core functionality.
+
+==== Extracting a Consistent Sample of Records by Key
+
+A good way to stabilize the sample from run to run is to use a 'consistent hash digest'. A hash digest function creates a fixed-length fingerprint of a string whose output is otherwise unpredictable from the input and uniformly distributed -- that is, you can't tell which string the function will produce except by computing the digest, and every string is equally likely. For example, the hash function might give the hexadecimal-string digest `3ce3e909` for 'Chimpanzee' but `07a05f9c` for 'Chimp'. Since all hexadecimal strings have effectively equal likelihood, one-sixteenth of them will start with a zero, and so this filter would reject `Chimpanzee` but select `Chimp`.
+
+Unfortunately, Pig doesn't have a good built-in hash digest function! Do we have to give up all hope? You'll find the answer later in the chapter (REF) footnote:[Spoiler alert: No, you don't have to give up all hope when Pig lacks a built-in function you require.], but for now instead of using a good built-in hash digest function let's use a terrible hash digest function. A bit under 10% of player_ids start with the letter 's', and any coupling between a player's name and performance would be far more subtle than we need to worry about. So the following simple snippet gives a 10% sample of batting seasons whose behavior should reasonably match that of the whole:
+
+------
+some_seasons  = FILTER bat_seasons BY (SUBSTRING(player_id, 0, 1) == 's');
+------
+
+We called this a terrible hash function, but it does fit the bill. When applied to an arbitrary serial identifier it's not terrible at all -- the Twitter firehose provides a 1% service tier which returns only tweets from users whose numeric ID ends in '00', and a 10% tier with user IDs ending in `0`. We'll return to the subject with a proper hash digest function later on in the chapter, once you're brimming with even more smartitude than you are right now. We'll also have a lot more to say about sampling in the Statistics chapter (REF).
+
+// I don't want to have to explain this, so I'm omitting unless you think I must include: "Make sure you're matching against the end (least significant) digits ... (Explanation why)"
+
+
+* _Where You'll Use It_  -- At the start of the exploration,
+* _Important to Know_
+  - If you'll be spending a bunch of time with a data set, using any kind of random sample to prepare your development sample might be a stupid idea. You'll notice that Red Sox players show up a lot of times in our examples -- that's because our development samples are "seasons by Red Sox players" and "seasons from 2000-2010", which lets us make good friends with the data.
+* _Output Count_	 -- Determined by the sampling fraction. As a rule of thumb, variances of things are square-root-ish; expect the size of a 10% sample to be in the 7%-13% range.
+* _Records_		 -- Identical to the input
+* _Data Flow_		 -- Map-Only: it's composed onto the end of the preceding map or reduce, and if it stands alone becomes a map-only job.
+
+==== Sampling Carelessly by Only Loading Some `part-` Files
+
+Sometimes you just want to knock down the data size while developing your script, and don't much care about the exact population. If you find a prior stage has left you with 20 files `part-r-00000` through `part-r-00019`, specifying `part-r-0000[01]` (the first two out of twenty files) as the input to the next stage is a hamfisted but effective way to get a 10% sample. You can cheat even harder by adjusting the parallelism of the preceding stage to get you the file granularity you need. As long as you're mindful that some operations leave the reducer with a biased selection of records, toggling back and forth between say `my_data/part-r-0000[01]` (two files) and `my_data/` (all files in that directory) can really speed up development.
+
+==== Selecting a Fixed Number of Records with `LIMIT`
+
+A much blunter way to create a smaller dataset is to take some fixed number 'K' of records. Pig offers the `LIMIT` operator for this purpose. To select 25 records from our `bat_seasons` data, you would run:
+
+------
+some_players = LIMIT player_year_stats 25;
+------
+
+This is somewhat similar to running the `head` command in Unix-like operating systems, or using the `LIMIT` clause in a SQL `SELECT` statement.
+However, unless you have explicitly imparted some order to the table (probably by sorting it with `ORDER`, which we'll cover later (REF)), Pig gives you _no guarantee over which records it selects_. In the big data regime, where your data is striped across many machines, there's no intrinsic notion of a record order. Changes in the number of mappers or reducers, in the data, or in the cluster may change which records are selected. In practice, you'll find that it takes the first 'K' records of the first-listed file (and so, as opposed to `SAMPLE`, generally gives the same outcome run-to-run), but it's irresponsible to rely on that.
+
+When you have a very large dataset, as long as you really just need any small piece of it, you can apply the previous trick as well and just specify a single input file.  Invoking `LIMIT` on one file will prevent a lot of trivial map tasks from running.
+
+==== Other Data Elimination Patterns
+
+There are two tools we'll meet in the next chapter that can be viewed as data elimination patterns as well. The `DISTINCT` and related operations are used to identify duplicated or unique records. Doing so requires putting each record in context with its possible duplicates -- meaning they are not pure pipeline operations like the others here. Above, we gave you a few special cases of selecting records against a list of values. We'll see the general case -- selecting records having or lacking a match in another table, also known as semi-join and anti-join -- when we meet all the flavors of the `JOIN` operation in the next chapter.
+
+=== Transforming Records
+
+Besides getting rid of old records, the second-most exciting thing to do with a big data set is to rip through them manufacturing new records footnote:[Although you might re-rank things when we show you how to misuse Hadoop to stress-test a webserver with millions of concurrent requests per minute (REF)]. We've been quietly sneaking `FOREACH` into snippets, but it's time to make its proper acquaintance
+
+==== Transform Records Individually using `FOREACH`
+
+The `FOREACH` lets you develop simple transformations based on each record. It's the most versatile Pig operation and the one you'll spend the most time using.
+
+To start with a basic example, this `FOREACH` statement combines the fields giving the city, state and country of birth for each player into the familiar comma-space separated combined form (`Austin, TX, USA`) footnote:[The country field uses some ad-hoc mixture of full name and arbitrary abbreviations.  In practice, we would have converted the country fields to use ISO two-letter abbreviations -- and that's just what we'll do in a later section (REF)].
+
+------
+birthplaces = FOREACH people GENERATE
+    player_id,
+    CONCAT(birth_city, ', ', birth_state, ', ', birth_country) AS birth_loc
+    ;
+------
+
+The syntax should be largely self-explanatory: this runs through the people table, and outputs a table with two columns, the player ID and our synthesized string. In the output you'll see that when `CONCAT` encounters records with `null` values, it returned `null` as well without an error.
+
+For the benefit of SQL aficionados, here's an equivalent SQL query:
+
+------
+SELECT
+    player_id,
+    CONCAT(birth_city, ', ', birth_state, ', ', birth_country) AS birth_loc
+  FROM people;
+------
+
+You'll recall we took some care when loading the data to describe the table's schema, and Pig makes it easy to ensure that the data continues to be typed. Run `DESCRIBE birthplaces;` to return the schema:
+
+------
+birthplaces: {player_id: chararray,birth_loc: chararray}
+------
+
+Since `player_id` carries through unchanged, its name and type convey to the new schema. Pig  figures out that the result of `CONCAT` is a `chararray`, but it's up to us to award it with a new name (`birth_loc`).
+
+A `FOREACH` won't cause a new Hadoop job stage: it's chained onto the end of the preceding operation (and when it's on its own, like this one, there's just a single a mapper-only job). It always produces exactly the same count of output records as input records, although as you've seen it can change the number of columns.
+
+==== A nested `FOREACH` Allows Intermediate Expressions
+
+Earlier we promised you a storyline in the form of an extended exploration of player performance. We've now gathered enough tactical prowess to set out footnote:[We also warned you we'd wander away from it frequently -- the bulk of it sits in the next chapter.].
+
+The stats in the `bat_seasons` table are all "counting stats" -- total numbers of hits, of games, and so forth -- and certainly from the team's perspective the more hits the more better. But for comparing players, the counting stats don't distinguish between the player who eared 70 hits in a mere 200 trips to the plate before a season-ending injury, and the player who squandered 400 of his team's plate appearances getting to a similar total  footnote:[Here's to you, 1970 Rod Carew and 1979 Mario Mendoza]. We should also form "rate stats", normalizing those figures against plate appearances. The following simple metrics do quite a reasonable job of characterizing players' performance:
+
+* 'On-base percentage' (`OBP`) indicates how well the player meets offensive goal #1: get on base, thus becoming a potential run and _not_ consuming a precious out. It is given as the fraction of plate appearances that are successful: (`(H + BB + HBP) / PA`) footnote:[Although known as percentages, OBP and SLG are always given as fractions to 3 decimal places. For OBP, we're also using a slightly modified formula to reduce the number of stats to learn. It gives nearly identical results but you will notice small discrepancies with official figures]. An `OBP` over 0.400 is very good (better than 95% of significant seasons).
+
+* 'Slugging Percentage' (`SLG`) indicates how well the player meets offensive goal #2: advance the runners on base, thus converting potential runs into points towards victory. It is given by the total bases gained in hitting (one for a single, two for a double, etc) divided by the number of at bats: (`TB / AB`, where `TB := (H + h2B + 2*h3B + 3*HR)`). An `SLG` over 0.500 is very good.
+
+* 'On-base-plus-slugging' (`OPS`) combines on-base and slugging percentages to give a simple and useful estimate of overall offensive contribution. It's found by simply adding the figures: (`OBP + SLG`). Anything above 0.900 is very good.
+
+Doing this with the simple form of `FOREACH` we've been using would be annoying and hard to read -- for one thing, the expressions for OBP and SLG would have to be repeated in the expression for OPS, since the full statement is evaluated together. Pig provides a fancier form of `FOREACH` (a 'nested' `FOREACH`) that allows intermediate expressions:
+
+------
+bat_seasons = FILTER bat_seasons BY PA > 0 AND AB > 0;
+core_stats  = FOREACH bat_seasons {
+  TB   = h1B + 2*h2B + 3*h3B + 4*HR;
+  OBP  = 1.0f*(H + BB + HBP) / PA;
+  SLG  = 1.0f*TB / AB;
+  OPS  = SLG + OBP;
+  GENERATE
+    player_id, name_first, name_last,   --  $0- $2
+    year_id,   team_id,   lg_id,        --  $3- $5
+    age,  G,   PA,  AB,   HBP, SH,  BB, --  $6-$12
+    H,    h1B, h2B, h3B,  HR,  R,  RBI, -- $13-$19
+    SLG, OBP, OPS;                      -- $20-$22
+};
+------
+
+This alternative `{` curly braces form of `FOREACH` lets you describe its transformations in smaller pieces, rather than smushing everything into the single `GENERATE` clause. New identifiers within the curly braces (such as `player`) only have meaning within those braces, but they do inform the schema.
+
+You'll notice that we multiplied by `1.0` while calculating `OBP` and `SLG`. If all the operands were integers, Pig would use integer arithmetic; instead of fractions between 0 and 1, the result would always be integer 0. Multiplying by the floating-point value 1.0 forces Pig to use floating-point math, preserving the fraction. Using a typecast -- `SLG = (float)TB / AB` -- as described below is arguably more efficient but inarguably uglier. The above is what we'd write in practice.
+
+By the way, the filter above is sneakily doing two things. It obviously eliminates records where `PA` is equal to zero, but it also eliminates records where `PA` is `null`. (See the section "Selecting or Rejecting Records with `null` Values" (REF) above for details.)
+
+// TODO-reviewer: In practice what I would write is what is above, using `1.0f` to get a float value. I want to talk about the integer arithmetic but not have to call this nitty little detail out; it's clarified three paragraphs later. Do we (a) write `1.0f` and sneak it by, describing it below (the way it is now); (b) write `1.0` and then fix it up below, or (c) write `1.0f` and call it out?
+
+In addition to applying arithmetic expressions and functions, there are a set of _operations_ (`ORDER`, `DISTINCT`, `FOREACH`, `FILTER`, `LIMIT`) you can apply to bags within a nested FOREACH. We'll wait until the section on grouping operations to introduce their nested-foreach ("inner bag") forms.
+
+==== Formatting a String According to a Template
+
+The `SPRINTF` function is a great tool for assembling a string for humans to look at. It uses the printf-style templating convention common to C and many other languages to assemble strings with consistent padding and spacing. It's best learned by seeing it in action:
+
+------
+formatted = FOREACH bat_seasons GENERATE
+  SPRINTF('%4d	%-9s %-19s	OBP %5.3f / %-3s %-3s	%4$012.3e',
+    year_id,  player_id,
+    CONCAT(name_first, ' ', name_last),
+    1.0f*(H + BB + HBP) / PA,
+    (year_id >= 1900 ? '.'   : 'pre'),
+    (PA >= 450       ? 'sig' : '.')
+  ) AS OBP_summary:chararray;
+------
+
+So you can follow along, here are some scattered lines from the results:
+
+------
+1954    aaronha01 Hank Aaron            OBP 0.318 / .   sig     0003.183e-01
+1897    ansonca01 Cap Anson             OBP 0.372 / pre sig     0003.722e-01
+1970    carewro01 Rod Carew             OBP 0.407 / .   .       0004.069e-01
+1987    gwynnto01 Tony Gwynn            OBP 0.446 / .   sig     0004.456e-01
+2007    pedrodu01 Dustin Pedroia        OBP 0.377 / .   sig     0003.769e-01
+1995    vanlawi01 William Van Landingham        OBP 0.149 / .   .       0001.489e-01
+1941    willite01 Ted Williams          OBP 0.553 / .   sig     0005.528e-01
+------
+
+The parts of the template are as follows:
+
+* `%4d`: render an integer, right-aligned, in a four character slot. All the `year_id` values have exactly four characters, but if Pliny the Elder's rookie season from 43 AD showed up in our dataset, it would be padded with two spaces: `  43`. Writing `%04d` (i.e. with a zero after the percent) causes zero-padding: `0043`.
+* `	` (backslash-t): renders a literal tab character. This is done by Pig, not in the `SPRINTF` function.
+* `%-9s`: a nine-character string. Like the next field, it ...
+* `%-20s`: has a minus sign, making it left-aligned. You usually want this for strings.
+  - We prepared the name with a separate `CONCAT` statement and gave it a single string slot in the template, rather than using say `%-8s %-11s`. In our formulation, the first and last name are separated by only one space and share the same 20-character slot. Try modifying the script to see what happens with the alternative.
+  - Any value shorter than its slot width is padded to fit, either with spaces (as seen here) or with zeros (as seen in the last field. A value longer than the slot width is not truncated -- it is printed at full length, shifting everything after it on the line out of place. When we chose the 19-character width, we didn't count on William Van Landingham's corpulent cognomen contravening character caps, correspondingly corrupting columnar comparisons. Still, that only messes up Mr. Van Landingham's line -- subsequent lines are unaffected.
+* `OBP`: Any literal text you care to enter just carries through. In case you're wondering, you can render a literal percent sign by writing `%%`.
+* `%5.3f`: for floating point numbers, you supply two widths. The first is the width of the full slot, including the sign, the integer part, the decimal point, and the fractional part. The second number gives the width of the fractional part. A lot of scripts that use arithmetic to format a number to three decimal places (as in the prior section) should be using `SPRINTF` instead.
+* `%-3s %-3s`: strings indicating whether the season is pre-modern (<= 1900) and whether it is significant (>= 450 PA). We could have used true/false, but doing it as we did here -- one value tiny, the other with visual weight -- makes it much easier to scan the data.
+  - By inserting the `/` delimiter and using different phrases for each indicator, it's easy to grep for matching lines later -- `grep -e '/.*sig'` -- without picking up lines having `'sig'` in the player id.
+* `%4$09.3e`: Two things to see here:
+  - Each of the preceding has pulled its value from the next argument in sequence. Here, the `4$` part of the specifier uses the value of the fourth non-template argument (the OBP) instead.
+  - The remaining `012.3e` part of the specifier says to use scienfific notation, with three decimal places and twelve total characters. Since the strings don't reach full width, their decimal parts are padded with zeroes. When you're calculating the width of a scientific notation field, don't forget to include the _two_ sign characters: one for the number and one for the exponent
+
+We won't go any further into the details, as the `SPRINTF` function is well documented (REF) and examples of printf-style templating abound on the web. But this is a useful and versatile tool, and if you're able to mimic the elements used above you understand its essentials.
+
+==== Assembling Literals with  Complex Types
+
+Another reason you may need the nested form of `FOREACH` is to assemble a complex literal. If we wanted to draw key events in a player's history -- birth, death, start and end of career -- on a timeline, or wanted to place the location of their birth and death on a map, it would make sense to prepare generic baskets of events and location records. We will solve this problem in a few different ways to demonstrate assembling complex types from simple fields.
+
+===== Parsing a Date
+
+.Assembling Complex Types
+------
+date_converted = FOREACH people {
+  beg_dt   = ToDate(CONCAT(beg_date, 'T00:00:00.000Z'));
+  end_dt   = ToDate(end_date, 'yyyy-MM-dd', '+0000');
+  birth_dt = ToDate(SPRINTF('%s-%s-%sT00:00:00Z', birth_year, Coalesce(birth_month,1), Coalesce(birth_day,1)));
+  death_dt = ToDate(SPRINTF('%s-%s-%sT00:00:00Z', death_year, Coalesce(death_month,1), Coalesce(death_day,1)));
+
+  GENERATE player_id, birth_dt, death_dt, beg_dt, end_dt, name_first, name_last;
+};
+------
+
+One oddity of the people table's structure as it arrived to us is that the birth/death dates are given with separate fields, while the beginning/end of career dates are given as ISO date strings. We left that alone because this kind of inconsistency is the reality of data sets in practice -- in fact, this is about as mild a case as you'll find. So one thing we'll have to do is pick a uniform date representation and go forward with it.
+
+You may have heard the saying "The two hardest things in Computer Science are cache coherency and naming things". Our nominations for the two most horrible things in Computer Science are time zones and character encoding footnote:[Many people add "...and off-by-one errors" to the hardest-things list. If we are allowed to re-use the same joke, the two most horrible things in Computer Science are #1 Time Zones, #2 Character Enco, #2 Threads.ding.] Elsewhere you'll hear ". Our rule for Time Zones is "put it in UTC _immediately_ and never speak of it again footnote:[You can guess our rule for character encoding: "put it in UTF-8 _immediately_ and never speak of it again]. A final step in rendering data for an end-user interface may convert to local time, but at no point in data analysis should you tolerate anything but UTC. We're only working with dates right here, but we'll repeat that rule every chance we have in the book.
+
+There are two and a half defensible ways to represent a date or time:
+
+* As an **https://en.wikipedia.org/wiki/ISO_8601[ISO 8601 Date/Time] string in the UTC time zone**. It sounds scary when we say "ISO 8601", but it's self-explanatory and you see all over the place: `'2007-08-09T10:11:12Z'` is an example of a time, and `'2007-08-09'` is an example of a date. It's compact enough to not worry about, there's little chance of it arriving in that format by accident, everything everywhere can parse it, and you can do ad-hoc manipulation of it using string functions (eg `(int)SUBSTRING(end_date,0,4)` to extract a year). Use this format only if you are representing instants that come after the 1700s, only need seconds-level precision, and where human readability is more important than compactness (which we encourage).
+* As an **integer number of epoch milliseconds in the UTC time zone**, which is to say as the number of elapsed milliseconds since midnight January 1st, 1970 UTC. (You may see this referred to as 'UNIX time'.) It allows you to easily calculate durations, and is nearly universal as well. Its value fits nicely in an unsigned 64-bit `long`. We believe using fractional epoch time -- e.g. 1186654272892.657 to mean 657 microseconds into the given second -- is carrying the joke too far. If you care about micro- or nano-seconds, then you need to care about floating point error, and the leading part of the number consumes too much of your precision. Use this format only if you are representing instants that come after the start of the epoch; only need millisecond precision; and don't care about leap seconds.
+* A **domain representation chosen judiciously by an expert**. If neither of the above two representations will work for you then sorry: you need to get serious. Astronomers and anyone else working at century scale will likely use some form of https://en.wikipedia.org/wiki/Julian_date[Julian Date]; those working at nanosecond scale should look at https://en.wikipedia.org/wiki/International_Atomic_Time[TAI]; there are dozens of others. You'll probably have to learn things about leap seconds or sidereal times or the fluid space-time discontinuum that is the map of Time Zones, and you will wish you didn't have to. We're not going to deal with this category as it's far, far beyond the scope of the book.
+
+In general we will leave times in their primitive data type (`long` for epoch milliseconds, `chararray` for ISO strings) until we need them to be proper `datetime` data structures. The lines above show a couple ways to create `datetime` values; here's the fuller catalog.
+
+Epoch milliseconds are easily converted by calling `ToDate(my_epoch_millis)`. For an ISO format string with date, time and time zone, pass it as a single `chararray` string argument: `ToDate(beg_date)`. If its lacks the time-of-day or time zone part, you must fill it out first: `ToDate(CONCAT(beg_date, 'T00:00:00.000Z'))`. If the string has a non-standard format, supply two additional arguments: a template according to Java's http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html[SimpleDateFormat], and unless the input has a timezone, the UTC time zone string '+0000'. For example, `ToDate(end_date, 'yyyy-MM-dd', '+0000')` demonstrates anoter way to parse an ISO date string: viable, but more expensive than the one-arg version.
+
+For composite year-month-day-etc fields, create an ISO-formatted string and pass it to `ToDate`. Here's the snippet we used, in slow motion this time:
+
+------
+ToDate(
+  SPRINTF('%s-%s-%sT00:00:00Z',		     -- ISO format template
+    birth_year,				     -- if year is NULL, value will be null
+    (birth_month IS NULL ? 1 : birth_month), -- but coerce null month or day to 1
+    (birth_day IS NULL ? 1 : birth_day)
+  ));
+------
+
+NOTE: Apart from subtracting one epoch milliseconds from another to get a duration in milliseconds, you must _never do any date/time manipulation except through a best-in-class date library_. You can't calculate the difference of one year by adding one to the year field (which brought down Microsoft's http://azure.microsoft.com/blog/2012/03/09/summary-of-windows-azure-service-disruption-on-feb-29th-2012/[cloud storage product] on the leap day of February 29th, 2012), and you can't assume that the time difference from one minute to the next is 60 seconds (which http://blog.cloudera.com/blog/2012/07/watching-the-clock-clouderas-response-to-leap-second-troubles/[brought down HBase servers worldwide] when the leap second of `2012-06-30T23:59:60Z` -- note the `:60` -- occurred). This is no joke -- companies go out of business because of mistakes like these.
+
+===== Assembling a Bag
+
+.Assembling Complex Types
+------
+graphable = FOREACH people {
+  birth_month = Coalesce(birth_month, 1); birth_day = Coalesce(birth_day, 1);
+  death_month = Coalesce(death_month, 1); death_day = Coalesce(death_day, 1);
+  beg_dt   = ToDate(beg_date);
+  end_dt   = ToDate('yyyy-MM-dd', end_date);
+  birth_dt = ToDate(SPRINTF('%s-%s-%s', birth_year, birth_month, birth_day));
+  death_dt = ToDate(SPRINTF('%s-%s-%s', death_year, death_month, death_day));
+  --
+  occasions = {
+      ('birth', birth_year, birth_month, birth_day),
+      ('death', death_year, death_month, death_day),
+      ('debut', (int)SUBSTRING(beg_date,0,4), (int)SUBSTRING(beg_date,5,7), (int)SUBSTRING(beg_date,8,10)),
+      ('lastg', (int)SUBSTRING(end_date,0,4), (int)SUBSTRING(end_date,5,7), (int)SUBSTRING(end_date,8,10))
+    };
+  --
+  places = (
+    (birth_dt, birth_city, birth_state, birth_country),
+    (birth_dt, death_city, death_state, death_country),
+    (beg_dt,   null,       null,        null),
+    (end_dt));
+
+  GENERATE
+    player_id,
+    occasions AS occasions:bag{t:(occasion:chararray, year:int, month:int, day:int)},
+    places    AS places:tuple( birth:tuple(city, state, country),
+                               death:tuple(city, state, country) )
+    ;
+};
+------
+
+
+The `occasions` intermediate alias is a bag of event tuples holding a chararray and three ints. Bags are disordered (unless you have transiently applied an explicit sorted), and so we've prefixed each event with a slug naming the occasion.
+
+You can do this inline (non-nested `FOREACH`) but we wouldn't. If you find yourself with the error `Error during parsing. Encountered " "as" "AS "" at line X`, just pay for the ext
+
+===== Assembing a Tuple
+
+* how tupple is made
+
+==== Specifying Schema for Complex Types
+
+TODO: clean up
+
+* how bag is made
+
+* We may not have needed to write out the types -- it's likely that
+  `occasions:bag{t:(occasion, year, month, day)}` would suffice. But this is another scenario where if you ask the question "Hey, do I need to specify the types or will Pig figure it out?" you've answered the question: yes, state them explicitly. The important point isn't whether Pig will figure it out, it's whether stupider-you at 3 am will figure it out.
+
+* how tupple is made
+
+==== Manipulating the Type of a Field
+
+We used `CONCAT` to combine players' city, state and country of birth into a combined field without drama. But if we tried to do the same for their date of birth by writing `CONCAT(birth_year, '-', birth_month, '-', birth_day)`, Pig would throw an error: `Could not infer the matching function for org.apache.pig.builtin.CONCAT...`. You see, `CONCAT` understandably wants to consume and deliver strings, and so isn't in the business of guessing at and fixing up types. What we need to do is coerce the `int` values -- eg, `1961`, a 32-bit integer -- into `chararray` values -- eg `'1961'`, a string of four characters. You do so using C-style typecast expression: `(chararray)birth_year`. Here it is in action:
+
+------
+birthplaces = FOREACH people GENERATE
+    player_id,
+    CONCAT((chararray)birth_year, '-', (chararray)birth_month, '-', (chararray)birth_day) AS birth_date
+  ;
+------
+
+In other cases you don't need to manipulate the type going in to a function, you need to manipulate the type going out of your `FOREACH`. Here are several takes on a `FOREACH` statement to find the slugging average:
+
+------
+obp_1 = FOREACH bat_seasons {
+  OBP = 1.0f * (H + BB + HBP) / PA; -- constant is a float
+  GENERATE OBP;                     -- making OBP a float
+};
+-- obp_1: {OBP: float}
+
+obp_2 = FOREACH bat_seasons {
+  OBP = 1.0 * (H + BB + HBP) / PA;  -- constant is a double
+  GENERATE OBP;                     -- making OBP a double
+};
+-- obp_2: {OBP: double}
+
+obp_3 = FOREACH bat_seasons {
+  OBP = (float)(H + BB + HBP) / PA; -- typecast forces floating-point arithmetic
+  GENERATE OBP AS OBP;              -- making OBP a float
+};
+-- obp_3: {OBP: float}
+
+obp_4 = FOREACH bat_seasons {
+  OBP = 1.0 * (H + BB + HBP) / PA;  -- constant is a double
+  GENERATE OBP AS OBP:float;        -- but OBP is explicitly a float
+};
+-- obp_4: {OBP: float}
+
+broken = FOREACH bat_seasons {
+  OBP = (H + BB + HBP) / PA;        -- all int operands means integer math and zero as result
+  GENERATE OBP AS OBP:float;        -- even though OBP is explicitly a float
+};
+-- broken: {OBP: float}
+------
+
+The first stanza matches what was above. We wrote the literal value as `1.0f` -- which signifies the `float` value 1.0 -- thus giving OBP the implicit type `float` as well. In the second stanza, we instead wrote the literal value as `1.0` -- type `double` -- giving OBP the implicit type double as well. The third stanza takes a different tack: it forces floating-point math by typecasting the result as a `float`, thus also implying type `float` for the generated value footnote:[As you can see, for most of the stanzas Pig picked up the name of the intermediate expression (OBP) as the name of that field in the schema. Weirdly, the typecast in the third stanza makes the current version of Pig lose track of the name, so we chose to provide it explicitly].
+
+In the fourth stanza, the constant was given as a double. However, this time the `AS` clause specifies not just a name but an explicit type, and that takes precedence footnote:[Is the intermediate result calculated using double-precision math, because it starts with a `double`, and then converted to `float`? Or is it calculated with single-precision math, because the result is a `float`? We don't know, and even if we did we wouldn't tell you. Don't resolve language edge cases by consulting the manual, resolve them by using lots of parentheses and typecasts and explicitness. If you learn fiddly rules like that -- operator precedence is another case in point -- there's a danger you might actually rely on them. Remember, you write code for humans to read and only incidentally for robots to run.]. The fifth stanza exists just to re-prove the point that if you care about the types Pig will use, say something. Although the output type is a float, the intermediate expression is calculated with integer math and so all the answers are zero. Even if that worked, you'd be a chump to rely on it: use any of the preceding four stanzas instead.
+
+==== Ints and Floats and Rounding, Oh My!
+
+Another occasion for type conversion comes when you are trying to round or truncate a fractional number. The first four fields of the following statement turn the full-precision result of calculating OBP (`0.31827113`) into a result with three fractional digits (`0.318`), as OBP is usually represented.
+
+------
+rounded = FOREACH bat_seasons GENERATE
+  (ROUND(1000.0f*(H + BB + HBP) / PA)) / 1000.0f AS round_and_typecast,
+  ((int)(1000.0f*(H + BB + HBP) / PA)) / 1000.0f AS typecast_only,
+  (FLOOR(1000.0f*(H + BB + HBP) / PA)) / 1000    AS floor_and_typecast,
+  ROUND_TO( 1.0f*(H + BB + HBP) / PA, 3)         AS what_we_would_use,
+  SPRINTF('%5.3f', 1.0f*(H + BB + HBP) / PA)     AS but_if_you_want_a_string_just_say_so,
+  1.0f*(H + BB + HBP) / PA                       AS full_value
+  ;
+------
+
+The `round_and_typecast` field shows a fairly common (and mildly flawed) method for chunking or partially rounding values: scale-truncate-rescale. Multiplying `0.31827113` by `1000.0f` gives a float result `318.27113`; rounding it gets an integer value `318`; rescaling by `1000.0f` gives a final result of `0.318f`, a `float`. The second version works mostly the same way, but has no redeeming merits. Use a typecast expression when you want to typecast, not for its side effects. This muddy formulation leads off with a story about casting things to type `int`, but only a careful ticking off of parentheses shows that we swoop in at the end and implicitly cast to float.
+If you want to truncate the fractional part, say so by using the function for truncating the fractional part, as the third formulation does. The `FLOOR` method uses machine numeric functions to generate the value. This is likely more efficient, and it is certainly more correct.
+
+Floating-point arithmetic, like unicode normalization and anything cryptography, has far more complexity than anyone who wants to get things done can grasp. At some point, take time to become aware of the  http://docs.oracle.com/javase/7/docs/api/java/lang/Math.html#method_summary[built-in math functions] that are available footnote:[either as Pig built-ins, or through the Piggybank UDF library]. You don't have to learn them, just stick the fact of their existence in the back of your head. If the folks at the IEEE have decided every computer on the planet should set aside silicon for a function to find the log of 1 plus 'x' (`log1p`), or a function to find the remainder when dividing two numbers (`IEEEremainder`), you can bet there's a really good reason why your stupid way of doing it is some mixture of incorrect, inaccurate, or fragile.
+
+That is why the formulation we would actually use to find a rounded number is the fourth one. It says what we mean ("round this number to three decimal places") and it draws on Java library functions built for just this purpose. The error between the `ROUND` formulation and the `ROUND_TO` formulation is almost certainly miniscule. But multiply "miniscule" by a billion records and you won't like what comes out.
+
+==== Calling a User-Defined Function (UDF) from an External Package
+
+TODO: clean up
+
+In the section on "Extracting a Consistent Sample of Records by Key",
+
+You can extend Pig's functionality with 'User-Defined Functions' (UDFs) written in Java, Python, Ruby, Javascript and others. These have first-class functionality -- almost all of Pig's native functions are actually Java UDFs that just happen to live in a builtin namespace. We'll describe how to author a UDF in a later chapter (REF), but this is a good time to learn how to call one.
+
+The DataFu package is an collection of Pig extensions open-sourced by LinkedIn, and in our opinion everyone who uses Pig should install it. It provides the most important flavors of hash digest and checksum you need in practice, and explains how to choose the right one. For consistent hashing purposes, the right choice is the "Mumur 3" function footnote:[Those familiar with the MD5 or SHA hashes might have expected we'd use one of them. Those would work as well, but Murmur3 is faster and has superior statistical properties; for more, see the DataFu documentation. Oh and if you're not familiar with any of the stuff we just said: don't worry about it, just know that `'murmur3-32'` is what you should type in.], and since we don't need many bytes we'll use the 32-bit flavor.
+
+You must do two things to enable use of a UDF. First, so that pig can load the UDF's code, call the `REGISTER` command with the path to the UDF's `.jar` file. You only need to `REGISTER` a jar once, even if you'll use more than one of its UDFs.
+
+Second, use the `DEFINE` command to construct it. `DEFINE` takes two arguments, separated by spaces: the short name you will use to invoke the command, and the fully-qualified package name of its class (eg `datafu.pig.hash.Hasher`). Some UDFs, including the one we're using, accept or require constructor arguments (always strings). These are passed function-call style, as shown below. There's nothing wrong with `DEFINE`-ing a UDF multiple times with different constructor arguments -- for example, adding a line `DEFINE DigestMD5  datafu.pig.hash.Hasher('md5');` would create a hash function that used the MD5 (REF) algorithm.
+
+------
+-- Please substitute the right path (and for citizens of the future, the right version number)
+REGISTER       '/path/to/data_science_fun_pack/pig/datafu/datafu-pig/build/libs/datafu-pig-1.2.1.jar';
+-- Murmur3, 32 bit version: a fast statistically smooth hash digest function
+DEFINE Digest  datafu.pig.hash.Hasher('murmur3-32');
+
+-- Prepend a hash of the player_id
+keyed_seasons = FOREACH bat_seasons GENERATE Digest(player_id) AS keep_hash, *;
+
+some_seasons  = FOREACH (
+    FILTER keyed_seasons BY (SUBSTRING(keep_hash, 0, 1) == '0')
+  ) GENERATE $0..;
+------
+
+There are three ways to accomplish this.
+
+One is to use the `REGISTER` keyword, demonstrated below. This is by far the simplest option, but our least favorite. Every source file becomes contaminated by a line that is machine-dependent and may break when packages are updated.
+
+===== Enabling UDFs by Importing a Macro File
+
+Instead, we recommend you create and `IMPORT` a macro file containing the `REGISTER` and `DEFINE` statements. This is what we use in the sample code repo:
+
+------
+-- Paths
+%DEFAULT dsfp_dir	   '/path/to/data_science_fun_pack';
+
+-- Versions; must include the leading dash when version is given
+%DEFAULT datafu_version	   '-1.2.1';
+%DEFAULT piggybank_version '';
+%DEFAULT pigsy_version	   '-2.1.0-SNAPSHOT';
+
+REGISTER           '$dsfp_dir/pig/pig/contrib/piggybank/java/piggybank$piggybank_version.jar';
+REGISTER           '$dsfp_dir/pig/datafu/datafu-pig/build/libs/datafu-pig$datafu_version.jar';
+REGISTER           '$dsfp_dir/pig/pigsy/target/pigsy$pigsy_version.jar';
+
+DEFINE Transpose   datafu.pig.util.TransposeTupleToBag();
+DEFINE Digest      datafu.pig.hash.Hasher('murmur3-32');
+------
+
+First, we define a few string defaults. Making the common root path a `%DEFAULT` means you can override it at runtime, and simplifies the lines that follow. Parameterizing the versions makes them visible and also lets you easily toggle between versions from the commandline for smoke testing.
+
+Next we register the jars, interpolating the paths and versions; then define the standard collection of UDFs we use. These definitions are executed for all scripts that import the file, but we were unable to detect any impact on execution time.
+
+===== Enabling UDFs using Java Properties
+
+Lastly, you can set the `pig.additional.jars` and `udf.import.list` java properties. For packages that you want to regard as being effectively built-in, this is our favorite method -- but the hardest to figure out. We can't go into the details (see the Pig documentation, there are many) but we can show you how to match what we used above:
+
+.Using Pig Properties to Enable UDFs
+------
+# Remove backslashes and spaces: these must sit on the same line
+pig.additional.jars=
+
+  /path/to/data_science_fun_pack/pig/datafu/datafu-pig/build/libs/datafu-pig-1.2.1.jar:
+
+  /path/to/data_science_fun_pack/pig/pig/contrib/piggybank/java/piggybank.jar:
+
+  /path/to/data_science_fun_pack/pig/pigsy/target/pigsy-2.1.0.jar
+
+# Remove backslashes and spaces: these also must sit on the same line
+udf.import.list=
+
+  datafu.pig.bags:datafu.pig.hash:datafu.pig.stats:datafu.pig.sets:datafu.pig.util:
+
+  org.apache.pig.piggybank.evaluation:pigsy.text
+------
+
+.A Quick Look into Baseball
+****
+Nate Silver calls Baseball the "perfect data set".  There are not many human-centered systems for which this comprehensive degree of detail is available, and no richer set of tables for truly demonstrating the full range of analytic patterns.
+
+For readers who are not avid baseball fans, we provide a simple -- some might say "oversimplified" -- description of the sport and its key statistics.  Please refer to Joseph Adler's _Baseball Hacks_ (O'Reilly) or Marchi and Albert's _Analyzing Baseball Data with R_ (Chapman & Hall) for more details.
+
+The stats come in tables at multiple levels of detail.
+Putting people first as we like to do, the `people` table lists each player's name and personal stats such as height and weight, birth year, and so forth. It has a primary key, the `player_id`, formed from the first five letters of their last name, first two letters of their first name, and a two digit disambiguation slug. There are also primary tables for ballparks (`parks`) listing information on every stadium that has ever hosted a game and for teams (`teams`) giving every major-league team back to the birth of the game.
+
+The core statistics table is `bat_seasons`, which gives each player's batting stats by season. (To simplify things, we only look at offensive performance.) The `player_id, year_id` fields form a primary key, and the `team_id` foreign key represents the team they played the most games for in a season. The `park_teams` table lists, for each team, all "home" parks they played in by season, along with the number of games and range of dates. We put "home" in quotes because technically it only signifies the team that bats last (a significant advantage), though teams nearly always play those home games at a single stadium in front of their fans. However, there are exceptions as you'll see in the next chapter (REF). The `park_id,team_id,year_id` fields form its primary key, so if a team did in fact have multiple home ballparks there will be multiple rows in the table.
+
+There are some demonstrations where we need data with some real heft -- not so much that you can't run it on a single-node cluster, but enough that parallelizing the computation becomes important. In those cases we'll go to the `games` table (100+ MB), which holds the final box score summary of every baseball game played, or to the full madness of the `events` table (1+ GB), which records every play for nearly every game back to the 1940s and before. These tables have nearly a hundred columns each in their original form. Not to carry the joke quite so far, we've pared them back to only a few dozen columns each, with only a handful seeing actual use.
+
+We denormalized the names of players, parks and teams into some of the non-prime tables to make their records more recognizeable. In many cases you'll see us carry along the name of a player, ballpark or team to make the final results more readable, even where they add extra heft to the job. We always try to show you sample code that represents the code we'd write professionally, and while we'd strip these fields from the script before it hit production, you're seeing just what we'd do in development. "Know your Data".
+
+*Acronyms and terminology*
+
+We use the following acronyms (and, coincidentally, field names) in our baseball dataset:
+
+* `G`, 'Games'
+* `PA`: 'Plate Appearances', the number of completed chances to contribute offensively. For historical reasons, some stats use a restricted subset of plate appearances called AB (At Bats). You should generally prefer PA to AB, and can pretend they represent the same concept.
+* `H`: 'Hits', either singles (`h1B`), doubles (`h2B`), triples (`h3B`) or home runs (`HR`)
+* `BB`: 'Walks', pitcher presented too many unsuitable pitches
+* `HBP`: 'Hit by Pitch', like a walk but more painful
+* `OBP`: 'On-base Percentage', indicates effectiveness at becoming a potential run
+* `SLG`: 'Slugging Percentage', indicates effectiveness at converting potential runs into runs
+* `OPS`: 'On-base-plus-Slugging', a reasonable estimate of overall offensive contribution
+
+For those who consider sporting events to be the dull province of jocks, holding no interest at all: when we say the "On-Base Percentage" is a simple matter of finding `(H + BB + HBP) / AB`, just trust us that (a) it's a useful statistic; (b) that's how you find its value; and then (c) pretend it's the kind of numbers-in-a-table example abstracted from the real world that many books use.
+
+*The Rules and Goals*
+
+Major League Baseball teams play a game nearly every single day from the start of April to the end of September (currently, 162 per season). The team on offense sends its players to bat in order, with the goal of having its players reach base and advance the full way around the diamond. Each time a player makes it all the way to home, their team scores a run, and at the end of the game, the team with the most runs wins. We count these events as `G` (games), `PA` (plate appearances on offense) and `R` (runs).
+
+The best way to reach base is by hitting the ball back to the fielders and reaching base safely before they can retrieve the ball and chase you down -- a hit (`H`) . You can also reach base on a 'walk' (`BB`) if the pitcher presents too many unsuitable pitches, or from a 'hit by pitch' (`HBP`) which is like a walk but more painful. You advance on the basepaths when your teammates hit the ball or reach base; the reason a hit is valuable is that you can advance as many bases as you can run in time. Most hits are singles (h1B), stopping safely at first base. Even better are doubles (`h2B`: two bases), triples (`h3B`: three bases, which are rare and require very fast running), or home runs (`HR`: reaching all the way home, usually by clobbering the ball out of the park).
+
+Your goal as a batter is both becomes a potential run and helps to convert players on base into runs. If the batter does not reach base it counts as an out, and after three outs, all the players on base lose their chance to score and the other team comes to bat. (This threshold dynamic is what makes a baseball game exciting: the outcome of a single pitch could swing the score by several points and continue the offensive campaign, or it could squander the scoring potential of a brilliant offensive position.)
+
+*Performance Metrics*
+
+The above are all "counting stats", and generally the more games the more hits and runs and so forth. For estimating performance and comparing players, it's better to use "rate stats" normalized against plate appearances.
+
+'On-base percentage' (`OBP`) indicates how well the player meets offensive goal #1: get on base, thus becoming a potential run and _not_ consuming a precious out. It is given as the fraction of plate appearances that are successful: (`(H + BB + HBP) / PA`) footnote:[Although known as percentages, OBP and SLG are always given as fractions to 3 decimal places. For OBP, we're also using a slightly modified formula to reduce the number of stats to learn. It gives nearly identical results but you will notice small discrepancies with official figures]. An `OBP` over 0.400 is very good (better than 95% of significant seasons).
+
+'Slugging Percentage' (`SLG`) indicates how well the player meets offensive goal #2: advance the runners on base, thus converting potential runs into points towards victory. It is given by the total bases gained in hitting (one for a single, two for a double, etc) divided by the number of at bats: (`(H + h2B + 2*h3B + 3*HR) / AB`). An `SLG` over 0.500 is very good.
+
+'On-base-plus-slugging' (`OPS`) combines on-base and slugging percentages to give a simple and useful estimate of overall offensive contribution. It's found by simply adding the figures: (`OBP + SLG`). Anything above 0.900 is very good.
+
+Just as a professional mechanic has an assortment of specialized and powerful tools, modern baseball analysis uses statistics significantly more nuanced than these. But when it comes time to hang a picture, they use the same hammer as the rest of us. You might think that using the on-base, slugging, and OPS figures to estimate overall performance is a simplification we made for you. In fact, these are quite actionable metrics that analysts will reach for when they want to hang a sketch that anyone can interpret.
+****
+
+=== Operations that Break One Table Into Many
+
+==== Directing Data Conditionally into Multiple Data Flows (`SPLIT`)
+
+The careers table gives the number of times each player was elected to the All-Star game (indicating extraordinary performance during a season) and whether they were elected to the Hall of Fame (indicating a truly exceptional career).
+
+===== Demonstration in Pig
+
+Separating those records into different data flows isn't straightforward in map/reduce, but it's very natural using Pig's `SPLIT` operation.
+
+----
+SPLIT bat_career
+  INTO hof     IF hofYear > 0, -- the '> 0' eliminates both NULLs and 0s
+  INTO allstar IF G_allstar > 0,
+  INTO neither OTHERWISE
+  ;
+STORE hof     INTO '/data/out/baseball/hof_careers';
+STORE allstar INTO '/data/out/baseball/allstar_careers';
+STORE neither INTO '/data/out/baseball/neither_careers';
+----
+
+The `SPLIT` operator does not short-circuit: every record is tested against every condition, and so a player who is both a hall-of-famer and an allstar will be written into both files.
+
+The most natural use of the SPLIT operator is when you really do require divergent processing flows. In the next chapter, you'll use a JOIN LEFT OUTER to geolocate (derive longitude and latitude from place name) records. That method is susceptible to missing matches, and so in practice a next step might be to apply a fancier but more costly geolocation tool. This is a strategy that arises often in advanced machine learning applications: run a first pass with a cheap algorithm that can estimate its error rate; isolate the low-confidence results for harder processing; then reunite the whole dataset.
+
+The syntax of the SPLIT command does not have an equals sign to the left of it; the new table aliases are created in its body.
+
+------
+SPLIT players_geoloced_some INTO
+  players_non_geoloced_us IF ((IsNull(lng) OR IsNull(lat)) AND (country_id == "US")),
+  players_non_geoloced_fo IF ((IsNull(lng) OR IsNull(lat)),
+  players_geoloced_a OTHERWISE;
+
+-- ... Pretend we're applying a more costly / higher quality geolocation tool, rather than just sending all unmatched records to Disneyland...
+players_geoloced_b = FOREACH players_non_geoloced_us GENERATE
+  player_id..country_id,
+  FLATTEN((Disney,land)) as (lng, lat);
+-- ... And again, pretend we are not just sending all non-us to the Eiffel Tower.
+players_geoloced_c = FOREACH players_non_geoloced_us GENERATE
+  player_id..country_id,
+  FLATTEN((Eiffel,tower)) as (lng, lat);
+
+Players_geoloced = UNION alloftheabove;
+------
+
+==== Splitting into files by key by using a Pig Storefunc UDF
+
+One reason you might find yourself splitting a table is to create multiple files on disk according to some key.
+
+If instead you're looking to partition directly into files named for a key, use the multistorage storefunc from the Piggybank UDF collection. As opposed to SPLIT, each record goes into exactly one file. Here is how to partition player seasons by primary team:
+
+There might be many reasons to do this splitting, but one of the best is to accomplish the equivalent of what traditional database admins call "vertical partitioning". You are still free to access the table as a whole, but in cases where one field is over and over again used to subset the data, the filtering can be done without ever even accessing the excluded data. Modern databases have this feature built-in and will apply it on your behalf based on the query, but our application of it here is purely ad-hoc. You will need to specify the subset of files yourself at load time to take advantage of the filtering.
+
+----
+bat_season = LOAD 'bat_season' AS (...);
+STORE bat_season INTO '/data/out/baseball/seasons_by_team' USING MultiStorage('/data/out/baseball/seasons_by_team', '10'); -- team_id, field 10
+STORE ... multistorage;
+----
+
+------
+STORE events INTO '$out_dir/evs_away'
+  USING MultiStorage('$out_dir/evs_away','5'); -- field 5: away_team_id
+STORE events INTO '$out_dir/evs_home'
+  USING MultiStorage('$out_dir/evs_home','6'); -- field 6: home_team_id
+------
+
+This script will run a map-only job with 9 map tasks (assuming 1GB+ of data and a 128MB block size). With MultiStorage, all Boston Red Sox (team id `BOS`) home games that come from say the fifth map task will go into `$out_dir/evs_home/BOS/part-m-0004` (contrast that to the normal case of  `$out_dir/evs_home/part-m-00004`). Each map task would write its records into the sub directory named for the team with the `part-m-` file named for its taskid index.
+
+Since most teams appear within each input split, each subdirectory will have a full set of part-m-00000 through part-m-00008 files. In our runs, we ended up with XXX output files -- not catastrophic, but (a) against best practices, (b) annoying to administer, (c) the cause of either nonlocal map tasks (if splits are combined) or proliferation of downstream map tasks (if splits are not combined). The methods of (REF) "Cleaning up Many Small Files" would work, but you'll need to run a cleanup job per team. Better by far is to precede the `STORE USING MultiStorage` step with a `GROUP BY team_id`. We'll learn all about grouping next chapter, but its use should be clear enough: all of each team's events will be sent to a common reducer; as long as the Pig `pig.output.lazy` option is set, the other reducers will not output files.
+
+------
+events_by_away = FOREACH (GROUP events BY away_team_id) GENERATE FLATTEN(events);
+events_by_home = FOREACH (GROUP events BY home_team_id) GENERATE FLATTEN(events);
+STORE events_by_away INTO '$out_dir/evs_away-g'
+  USING MultiStorage('$out_dir/evs_away-g','5'); -- field 5: away_team_id
+STORE events_by_home INTO '$out_dir/evs_home-g'
+  USING MultiStorage('$out_dir/evs_home-g','6'); -- field 6: home_team_id
+------
+
+The output has a directory for each key, and within directory that the same `part-NNNNN` files of any map-reduce job.
+
+This means the count of output files is the number of keys times the number of output slots, which can lead to severe many small files problem. As mentioned in Chapter 3 (REF), many small files is Not Good. If you precede the STORE operation by a `GROUP BY` on the key, the reducer guarantee provides that each subdirectory will only have one output file.
+
+==== Splitting a Table into Uniform Chunks
+
+We won't go into much detail, but one final set of patterns is to split a table into uniform chunks. If you don't need the chunks to be exactly sized, you can apply a final `ORDER BY` operation on a uniformly-distributed key -- see the section on "Shuffling the Records in a Table" in the next chapter (REF).
+
+To split into chunks with an exact number of lines, first use `RANK` to number each line, then prepare a chunk key using the line number modulo the chunk size, and store into chunks using MultiStorage. Since the rank operation's reducers number their records sequentially, only a few reducers are involved with each chunk, and so you won't hit the small files problem. Splitting a table into blocks of fixed _size_ is naturally provided by the HDFS block size parameter, but we're not aware of a good way to do so explicitly.
+
+An ORDER BY statement with parallelism forced to (output size / desired chunk size) will give you _roughly_ uniform chunks,
+
+------
+SET DEFAULT_PARALLEL 3;
+%DEFAULT chunk_size 10000;
+------
+
+------
+-- Supply enough keys to rank to ensure a stable sorting
+bat_seasons_ranked  = RANK bat_seasons BY (player_id, year_id)
+bat_seasons_chunked = FOREACH (bat_seasons_ranked) GENERATE
+  SPRINTF("%03d", FLOOR(rank/$chunk_size)) AS chunk_key, player_id..;
+
+-- Writes the chunk key into the file, like it or not.
+STORE bat_seasons_chunked INTO '$out_dir/bat_seasons_chunked'
+  USING MultiStorage('$out_dir/bat_seasons_chunked','0'); -- field 0: chunk_key
+------
+
+Note that in current versions of Pig, the RANK operator forces parallelism one. If that's unacceptable, we'll quickly sketch a final alternative but send you to the sample code for details. You can instead use RANK on the map side modulo the _number_ of chunks, group on that and store with MultiStorage. This will, however,  have non-uniformity in actual chunk sizes of about the number of map-tasks -- the final lines of each map task are more likely to short-change the higher-numbered chunks. On the upside, the final chunk isn't shorter than the rest (as it is with the prior method or the unix split command).
+
+------
+%DEFAULT n_chunks 8;
+
+bats_ranked_m = FOREACH (RANK bat_seasons) GENERATE
+  MOD(rank, $n_chunks) AS chunk_key, player_id..;
+bats_chunked_m = FOREACH (GROUP bats_ranked_m BY chunk_key)
+  GENERATE FLATTEN(bats_ranked_m);
+STORE bats_chunked_m INTO '$out_dir/bats_chunked_m'
+  USING MultiStorage('$out_dir/bat_seasons_chunked','0'); -- field 0: chunk_key
+------
+
+With no sort key fields, it's done on the map side (avoiding the single-reducer drawback of RANK)
+
+=== Operations that Treat the Union of Several Tables as One
+
+The counterpart to splitting a table into pieces is to treat many pieces as a single table. This really only makes sense when all those pieces have the same schema, so that's the only case we'll handle here.
+
+// ==== Load Multiple Files as One Table
+// 
+// The easiest way to unify several tables is to simply load them as one. Hadoop will expand a comma-separated list of paths into multiple paths, and perform simple 'glob-style' filename expansion. This snippet will load all the teams whose team_id starts with a "B" or ends with an "N":
+// 
+// ===== Demonstration in Pig
+// 
+// ----
+// b_and_n_teams = LOAD '/data/out/baseball/seasons_by_team/B*,/data/out/baseball/seasons_by_team/*N' AS (...);
+// ----
+// 
+// ===== Demonstration in map/reduce
+// 
+// ----
+// (show commandline for multiple files)
+// ----
+
+==== Treat Several Pig Relation Tables as a Single Table (Stacking Rowsets)
+
+In Pig, you can rejoin several pipelines using the `UNION` operation. The tables we've been using so far cover only batting stats; there are another set of tables covering stats for pitchers, and in rare cases a player may only appear in one or the other. To find the name and id of all players that appear in either table, we can project the fields we want (earning a uniform schema) and then unify the two streams:
+
+.Union Treats Several Tables as a Single Table
+------
+bat_career = LOAD '/data/rawd/baseball/sports/bat_career AS (...);
+pit_career = LOAD '/data/rawd/baseball/sports/pit_career AS (...);
+bat_names = FOREACH bat_career GENERATE player_id, nameFirst, nameLast;
+pit_names = FOREACH pit_career GENERATE player_id, nameFirst, nameLast;
+names_in_both = UNION bat_names, pit_names;
+player_names = DISTINCT names_in_both;
+------
+
+Note that this is not a Join (which requires a reduce, and changes the schema
+of the records) -- this is more like stacking one table atop another, making
+no changes to the records (schema or otherwise) and does not require a
+reduce.
+
+A common use of the UNION statement comes in 'symmetrizing' a relationship. For example, each line in the games table describes in a sense two game outcomes: one for the home team and one for the away team. We might reasonably want to prepare another table that listed game _outcomes_: game_id, team, opponent, team's home/away position, team's score, opponent's score. The game between BAL playing at BOS on XXX (final score BOS Y, BAL Z) would get two lines: `GAMEIDXXX BOS BAL 1 Y Z` and `GAMEID BAL BOS 0 Z Y`.
+
+// TODO: This is the same snippet used at the top. Good or bad?
+
+------
+games_a = FOREACH games GENERATE
+  year_id, home_team_id AS team,
+  home_runs_ct AS runs_for, away_runs_ct AS runs_against, 1 AS is_home:int;
+
+games_b = FOREACH games GENERATE
+  away_team_id AS team,     year_id,
+  away_runs_ct AS runs_for, home_runs_ct AS runs_against, 0 AS is_home:int;
+
+team_scores = UNION games_a, games_b;
+
+DESCRIBE team_scores;
+--   team_scores: {team: chararray,year_id: int,runs_for: int,runs_against: int,is_home: int}
+------
+
+The `UNION` operation does not remove duplicate rows as a set-wise union would. It simply tacks one table onto the end of the other, and so the last line eliminates those duplicates -- more on `DISTINCT` in the next chapter (REF). The `UNION` operation also does not provide any guarantees on ordering of rows. Some SQL users may fall into the trap of doing a UNION-then-GROUP to combine multiple tables. This is terrible in several ways, and you should instead use the COGROUP operation -- see the Won-Loss Record example in the next chapter (REF).
+
+NOTE: The UNION operator is easy to over-use. For one example, in the next chapter we'll extend the first part of this code to prepare win-loss statistics by team. A plausible first guess would be to follow the UNION statement above with a GROUP statement, but a much better approach would use a COGROUP instead (both operators are explained in the next chapter). The UNION statement is mostly harmless but fairly rare in use; give it a second look any time you find yourself writing it in to a script.
+
+==== Clean Up Many Small Files by Merging into Fewer Files
+
+//IMPROVEME: make this use the results of the multistorage script
+
+The Many Small Files problem is so pernicious because Hadoop natively assigns each mapper to only one file, and so a normal mapper-only job can only _increase_ the number of files. We know of two ways to reorganize the records of a table into fewer files.
+
+One is to perform a final `ORDER BY` operation footnote:[The tuning chapter (REF) tells you why you might want to increase the HDFS block size for truly huge dataset, and why you might not want to do so]. Since this gives the side benefit of allowing certain optimized join operations, we like to do this for "gold" datasets that will be used by many future jobs.
+
+Sorting is a fairly expensive operation, though; luckily, Pig can do this reasonably well with a mapper-only job by setting the `pig.splitCombination` configuration to true and setting `pig.maxCombinedSplitSize` to the size of the input divided by the number of files you'd like to produce.
+
+----
+set pig.splitCombination true;
+set pig.maxCombinedSplitSize 2100100100;
+----
+
+The `maxCombinedSplitSize` should be much larger than the HDFS block size so that blocks are fully used. Also note the old sailor's trick in the last line -- since there's no essential difference between 2 billion bytes, 2 gigabytes, or a number nearby, the value `2100100100` is much easier to read accurately than `2000000000` or `2147483648`.
+
+The operations in this chapter (except where noted) do not require a reduce on their own, which makes them very efficient. The really interesting applications, however, come when we put data into context, which is the subject of the next chapter.
