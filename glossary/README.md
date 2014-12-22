@@ -30,3 +30,9 @@
 
 > 译义：可用计算  
 > 语境：Once the volume of data required for synthesis exceeds some key limit of available computation 
+
+* trivially parallelizable
+
+> 译义：常规并行化  
+> 语境：~~
+
