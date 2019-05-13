@@ -1,7 +1,7 @@
 [[hadoop_basics]]
 == Hadoop Basics
 
-=== Introduction
+=== Introduction简介
 
 ++++
 <remark>Please make sure the Chimpanzee and Elephant Start a Business big does NOT appear before this Introduction</remark>
